@@ -1,0 +1,15 @@
+Titulo: Chapada Diamantina entre serras, cachoeiras e memoria do garimpo
+Regiao: Nordeste
+UF: Bahia (BA)
+Data de referencia do corpus: 2026-11-10
+Codificação: UTF-8
+
+A Rota Serras e Memoria e recomendada em meses de menor chuva, com confirmacao das condicoes locais.
+
+A Chapada Diamantina e uma area geografica da Bahia, estado que faz parte da Regiao Nordeste. O Parque Nacional da Chapada Diamantina protege parte de suas serras, vales, rios e cachoeiras. Lencois, Palmeiras e Mucuge sao localidades baianas usadas como bases para diferentes setores da chapada; uma atracao mencionada em um municipio nao deve ser automaticamente atribuida aos demais. O centro historico de Lencois e uma atracao cultural localizada no municipio de Lencois e oferece caminhada entre construcoes ligadas ao ciclo regional do diamante, alem de acesso a servicos turisticos.
+
+O Morro do Pai Inacio e uma atracao natural localizada no municipio de Palmeiras. Ele oferece trilha curta, vista panoramica e observacao geologica, sendo adequado para pessoas interessadas em fotografia e aventura moderada. A subida tem terreno irregular e exposicao ao sol, por isso nao e adequada a todos os perfis sem avaliacao. O Poco do Diabo e uma atracao natural localizada no rio Mucugezinho, na area de Lencois. Ele oferece contemplacao e, quando as condicoes e regras permitem, banho; pedras molhadas e variacao da correnteza exigem cautela. O centro historico de Mucuge e uma atracao cultural localizada em Mucuge, proxima a paisagens serranas e a atracoes ligadas a memoria do garimpo.
+
+A Rota Serras e Memoria inclui, em ordem, 1) centro historico de Lencois, 2) Poco do Diabo, 3) Morro do Pai Inacio e 4) centro historico de Mucuge. A ordem descreve uma progressao tematica e rodoviaria, nao um percurso integral a pe. O fato multi-hop e explicito: a rota inclui o Morro do Pai Inacio, que oferece trilha e vista panoramica, atividades adequadas para o perfil de viajante interessado em natureza, geologia e fotografia. Lencois e relativamente proxima de Palmeiras dentro do contexto regional, mas os tempos de deslocamento devem ser verificados.
+
+Trilhas e mirantes da Chapada Diamantina costumam ser recomendados em meses de menor chuva, frequentemente entre maio e setembro, por haver menor probabilidade de temporais; ainda assim, cachoeiras e rios respondem a chuvas recentes. Deve-se evitar canions, leitos de rio, cachoeiras e mirantes durante tempestade, alerta de tromba d'agua, baixa visibilidade ou orientacao contraria de guias e autoridades. Periodos secos tambem exigem atencao a calor, desidratacao e incendios. Esta sazonalidade e apenas orientacao geral e deve ser confirmada com a administracao da unidade, previsao oficial e condutores locais.
