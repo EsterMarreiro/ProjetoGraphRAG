@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rotagraph-brasil"
+version = "0.1.0"
+description = "GraphRAG explicavel para turismo brasileiro"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "falkordb>=1.7,<2",
+    "plotly>=6,<7",
+    "python-dotenv>=1.2,<2",
+    "streamlit>=1.61,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9,<10",
+    "pytest-cov>=7,<8",
+    "ruff>=0.16,<1",
+]
+
+[project.scripts]
+rotagraph = "rotagraph.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
