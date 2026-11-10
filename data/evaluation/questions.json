@@ -1,0 +1,107 @@
+[
+  {
+    "id": "Q01",
+    "question": "Qual rota conecta patrimonio urbano, cultura alimentar e navegacao em Manaus, e qual e a ordem das paradas?",
+    "expected_sources": ["01_manaus_aguas_e_floresta.txt"],
+    "expected_concepts": ["Aguas e Memoria de Manaus", "Teatro Amazonas", "Mercado Municipal Adolpho Lisboa", "Encontro das Aguas"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q02",
+    "question": "Por que nao se deve fixar uma data de praia na Ilha do Amor sem confirmacao?",
+    "expected_sources": ["02_alter_do_chao_rios_e_comunidades.txt"],
+    "expected_concepts": ["nivel do rio Tapajos", "banco de areia", "condicoes locais"],
+    "requires_multihop": false
+  },
+  {
+    "id": "Q03",
+    "question": "Qual fato multi-hop liga a Rota Lagoas e Costa a um perfil de ecoturista?",
+    "expected_sources": ["03_lencois_maranhenses_circuito_lagoas.txt"],
+    "expected_concepts": ["Lagoa Bonita", "caminhada", "ecoturista", "sol e areia"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q04",
+    "question": "Que duas localidades do Reconcavo sao proximas e como entram na Rota Memoria Afro-Baiana?",
+    "expected_sources": ["04_salvador_e_cachoeira_afro_brasil.txt"],
+    "expected_concepts": ["Cachoeira", "Sao Felix", "terceira", "quarta"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q05",
+    "question": "Onde fica o Morro do Pai Inacio, o que ele oferece e para qual perfil e adequado?",
+    "expected_sources": ["05_chapada_diamantina_trilhas_e_memoria.txt"],
+    "expected_concepts": ["Palmeiras", "trilha curta", "vista panoramica", "fotografia", "aventura moderada"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q06",
+    "question": "Qual sequencia liga Cuiaba a Porto Jofre e qual atividade caracteriza a Transpantaneira?",
+    "expected_sources": ["06_pantanal_transpantaneira_observacao.txt"],
+    "expected_concepts": ["Cuiaba", "Pocone", "Transpantaneira", "Porto Jofre", "observacao responsavel de fauna"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q07",
+    "question": "Que cuidados sazonais o corpus associa ao periodo seco e ao periodo chuvoso na Chapada dos Veadeiros?",
+    "expected_sources": ["07_chapada_veadeiros_cerrado_e_cultura.txt"],
+    "expected_concepts": ["baixa umidade", "risco de incendio", "subida rapida dos rios", "previsao"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q08",
+    "question": "Quais atracoes compoem a Rota Brasilia Monumental e qual complemento natural aparece separado?",
+    "expected_sources": ["08_brasilia_eixo_monumental_cerrado.txt"],
+    "expected_concepts": ["Praca dos Tres Poderes", "Catedral Metropolitana", "Museu Nacional da Republica", "Torre de TV", "Parque Nacional de Brasilia"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q09",
+    "question": "Como a Rota Barroco e Mineracao relaciona arte barroca e memoria da mineracao?",
+    "expected_sources": ["09_ouro_preto_mariana_congonhas.txt"],
+    "expected_concepts": ["Mina da Passagem", "historia da mineracao", "Santuario do Bom Jesus de Matosinhos", "arte e arquitetura barrocas"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q10",
+    "question": "Qual conexao liga o Corcovado ao perfil interessado em natureza e fotografia?",
+    "expected_sources": ["10_rio_de_janeiro_paisagem_e_memoria.txt"],
+    "expected_concepts": ["Corcovado", "Parque Nacional da Tijuca", "contemplacao", "trilhas", "fotografia"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q11",
+    "question": "Quais dois pontos podem ser combinados pela proximidade na primeira parte da Rota Aguas e Culturas de Foz?",
+    "expected_sources": ["11_foz_iguacu_aguas_e_diversidade.txt"],
+    "expected_concepts": ["Parque Nacional do Iguacu", "Cataratas", "Parque das Aves", "proximo"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q12",
+    "question": "Como o texto das Missoes evita uma leitura apenas colonial do sitio de Sao Miguel?",
+    "expected_sources": ["12_missoes_guarani_patrimonio.txt"],
+    "expected_concepts": ["protagonismo indigena", "cultura guarani", "arquitetura colonial"],
+    "requires_multihop": false
+  },
+  {
+    "id": "Q13",
+    "question": "Quais rotas do corpus oferecem explicitamente atividades adequadas para fotografia de natureza?",
+    "expected_sources": ["01_manaus_aguas_e_floresta.txt", "05_chapada_diamantina_trilhas_e_memoria.txt", "06_pantanal_transpantaneira_observacao.txt", "10_rio_de_janeiro_paisagem_e_memoria.txt", "11_foz_iguacu_aguas_e_diversidade.txt"],
+    "expected_concepts": ["Aguas e Memoria de Manaus", "Serras e Memoria", "Portal do Pantanal Norte", "Paisagem e Memoria Carioca", "Aguas e Culturas de Foz"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q14",
+    "question": "Em quais documentos uma tempestade e motivo explicito para evitar navegacao?",
+    "expected_sources": ["01_manaus_aguas_e_floresta.txt", "02_alter_do_chao_rios_e_comunidades.txt", "06_pantanal_transpantaneira_observacao.txt"],
+    "expected_concepts": ["Manaus", "Alter do Chao", "Pantanal", "tempestade", "navegacao"],
+    "requires_multihop": true
+  },
+  {
+    "id": "Q15",
+    "question": "Que rotas combinam, no mesmo documento, uma atracao natural e uma atracao historica ou cultural?",
+    "expected_sources": ["01_manaus_aguas_e_floresta.txt", "05_chapada_diamantina_trilhas_e_memoria.txt", "08_brasilia_eixo_monumental_cerrado.txt", "10_rio_de_janeiro_paisagem_e_memoria.txt", "11_foz_iguacu_aguas_e_diversidade.txt"],
+    "expected_concepts": ["Aguas e Memoria de Manaus", "Serras e Memoria", "Brasilia Monumental", "Paisagem e Memoria Carioca", "Aguas e Culturas de Foz"],
+    "requires_multihop": true
+  }
+]
