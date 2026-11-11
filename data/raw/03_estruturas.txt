@@ -1,0 +1,9 @@
+Título: Estruturas de Dados
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Estruturas de Dados aborda a área Fundamentos e desenvolve a competência Organização de coleções.
+O curso Estruturas de Dados é classificado no nível Intermediário e é indicado para o perfil Desenvolvedores.
+O curso Estruturas de Dados tem código 03_estruturas e carga horária fictícia de 30 horas.
+A trilha Dados e Conhecimento inclui o curso Estruturas de Dados.
+O curso Estruturas de Dados exige como pré-requisito o curso Programação Python.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

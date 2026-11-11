@@ -4,16 +4,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from rotagraph.ingestion.canonicalization import (
+from trilhagraph.ingestion.canonicalization import (
     EntityCanonicalizer,
     normalize_text,
     slugify,
 )
-from rotagraph.ingestion.chunking import split_document
-from rotagraph.ingestion.extraction import parse_extraction
-from rotagraph.ingestion.loader import load_documents
-from rotagraph.ingestion.models import Document, ExtractedEntity, ExtractionResult
-from rotagraph.ingestion.pipeline import IngestionPipeline
+from trilhagraph.ingestion.chunking import split_document
+from trilhagraph.ingestion.extraction import parse_extraction
+from trilhagraph.ingestion.loader import load_documents
+from trilhagraph.ingestion.models import Document, ExtractedEntity, ExtractionResult
+from trilhagraph.ingestion.pipeline import IngestionPipeline
 
 
 class LoaderAndChunkingTests(unittest.TestCase):
@@ -21,7 +21,7 @@ class LoaderAndChunkingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             data_dir = Path(directory)
             (data_dir / "destino.txt").write_text(
-                "# Salvador\n\nSalvador fica na Bahia.", encoding="utf-8"
+                "# Programação\n\nProgramação fica na Bahia.", encoding="utf-8"
             )
             (data_dir / "vazio.txt").write_text("", encoding="utf-8")
             (data_dir / "ignorar.md").write_text("texto", encoding="utf-8")
@@ -29,7 +29,7 @@ class LoaderAndChunkingTests(unittest.TestCase):
             documents = load_documents(data_dir)
 
         self.assertEqual(len(documents), 1)
-        self.assertEqual(documents[0].title, "Salvador")
+        self.assertEqual(documents[0].title, "Programação")
         self.assertEqual(documents[0].id, "documento:destino")
         self.assertEqual(len(documents[0].checksum), 64)
 
@@ -54,21 +54,26 @@ class CanonicalizationTests(unittest.TestCase):
     def test_normalizes_accents_and_aliases(self) -> None:
         canonicalizer = EntityCanonicalizer()
         first = ExtractedEntity(
-            "a", "Localidade", "São Paulo", {"aliases": ["Sampa"], "uf": "SP"}
+            "a",
+            "Area",
+            "Programação Python",
+            {"aliases": ["Python"], "provedor": "Equipe A"},
         )
-        alias = ExtractedEntity("b", "Localidade", "sampa")
+        alias = ExtractedEntity("b", "Area", "python")
 
         first_id = canonicalizer.canonicalize(first)
         alias_id = canonicalizer.canonicalize(alias)
 
-        self.assertEqual(normalize_text("  São  Paulo "), "sao paulo")
-        self.assertEqual(slugify("Lençóis Maranhenses"), "lencois-maranhenses")
+        self.assertEqual(normalize_text("  Programação  Python "), "programacao python")
+        self.assertEqual(slugify("Recuperação Híbrida"), "recuperacao-hibrida")
         self.assertEqual(first_id, alias_id)
 
-    def test_does_not_merge_homonyms_from_different_states(self) -> None:
+    def test_does_not_merge_homonyms_from_different_providers(self) -> None:
         canonicalizer = EntityCanonicalizer()
-        first = ExtractedEntity("a", "Localidade", "Bom Jesus", {"uf": "PI"})
-        second = ExtractedEntity("b", "Localidade", "Bom Jesus", {"uf": "RS"})
+        first = ExtractedEntity("a", "Area", "Curso Homônimo", {"provedor": "Equipe A"})
+        second = ExtractedEntity(
+            "b", "Area", "Curso Homônimo", {"provedor": "Equipe B"}
+        )
 
         self.assertNotEqual(
             canonicalizer.canonicalize(first), canonicalizer.canonicalize(second)
@@ -82,22 +87,22 @@ class ExtractionParsingTests(unittest.TestCase):
                 "entities": [
                     {
                         "ref": "a1",
-                        "label": "Atracao",
-                        "name": "Pelourinho",
+                        "label": "Curso",
+                        "name": "APIs Web",
                         "properties": {"tipo": "historica"},
                     },
                     {
                         "ref": "l1",
-                        "label": "Localidade",
-                        "name": "Salvador",
-                        "properties": {"uf": "BA"},
+                        "label": "Area",
+                        "name": "Programação",
+                        "properties": {"tipo": "fundamentos"},
                     },
                 ],
                 "relationships": [
                     {
                         "source_ref": "a1",
                         "target_ref": "l1",
-                        "relationship_type": "LOCALIZADA_EM",
+                        "relationship_type": "ABORDA",
                         "confidence": 0.98,
                         "properties": {},
                     }
@@ -106,18 +111,16 @@ class ExtractionParsingTests(unittest.TestCase):
         )
 
         self.assertEqual(len(result.entities), 2)
-        self.assertEqual(result.relationships[0].relationship_type, "LOCALIZADA_EM")
+        self.assertEqual(result.relationships[0].relationship_type, "ABORDA")
 
     def test_rejects_dangling_relationship(self) -> None:
         raw = {
-            "entities": [
-                {"ref": "a", "label": "Atracao", "name": "X", "properties": {}}
-            ],
+            "entities": [{"ref": "a", "label": "Curso", "name": "X", "properties": {}}],
             "relationships": [
                 {
                     "source_ref": "a",
                     "target_ref": "missing",
-                    "relationship_type": "LOCALIZADA_EM",
+                    "relationship_type": "ABORDA",
                     "confidence": 1,
                     "properties": {},
                 }
@@ -139,7 +142,11 @@ class FakeWriter:
         return self.current
 
     def prepare_document(self, document: Document) -> None:
+        self.current = False
         self.documents.append(document)
+
+    def complete_document(self, document: Document) -> None:
+        self.current = True
 
     def upsert_chunk(self, chunk, embedding) -> None:
         self.chunks.append((chunk, embedding))
@@ -157,7 +164,9 @@ class FakeWriter:
 class FakeExtractor:
     def extract(self, text: str) -> ExtractionResult:
         return ExtractionResult(
-            entities=[ExtractedEntity("l1", "Localidade", "Salvador", {"uf": "BA"})]
+            entities=[
+                ExtractedEntity("l1", "Area", "Programação", {"tipo": "fundamentos"})
+            ]
         )
 
 
@@ -170,8 +179,8 @@ class PipelineTests(unittest.TestCase):
     def test_processes_document_and_skips_unchanged_one(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             data_dir = Path(directory)
-            (data_dir / "salvador.txt").write_text(
-                "Salvador\n\nSalvador oferece turismo cultural.", encoding="utf-8"
+            (data_dir / "programacao.txt").write_text(
+                "Programação\n\nProgramação oferece aprendizagem.", encoding="utf-8"
             )
             writer = FakeWriter()
             pipeline = IngestionPipeline(

@@ -1,0 +1,9 @@
+Título: Contêineres
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Contêineres aborda a área Infraestrutura e desenvolve a competência Empacotamento de aplicações.
+O curso Contêineres é classificado no nível Intermediário e é indicado para o perfil Desenvolvedores.
+O curso Contêineres tem código 08_conteineres e carga horária fictícia de 20 horas.
+A trilha Desenvolvimento Web inclui o curso Contêineres.
+O curso Contêineres exige como pré-requisito o curso APIs Web.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

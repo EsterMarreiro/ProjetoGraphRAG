@@ -5,13 +5,13 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from rotagraph.evaluation.evaluator import (
+from trilhagraph.evaluation.evaluator import (
     EvaluationCase,
     evaluate_service,
     load_cases,
     render_markdown,
 )
-from rotagraph.retrieval.models import (
+from trilhagraph.retrieval.models import (
     GraphEdge,
     GroundedAnswer,
     RetrievalResult,
@@ -36,7 +36,7 @@ class FakeService:
             nodes=[],
             edges=[
                 GraphEdge("rota:1", "atracao:1", "INCLUI"),
-                GraphEdge("atracao:1", "localidade:1", "LOCALIZADA_EM"),
+                GraphEdge("atracao:1", "localidade:1", "ABORDA"),
             ],
             queries=["MATCH ..."],
             confidence=0.8,
@@ -46,6 +46,7 @@ class FakeService:
             citations=["F1"],
             caveats=[],
             retrieval=retrieval,
+            supporting_edges=["G1", "G2"],
         )
 
 

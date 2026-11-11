@@ -1,104 +1,51 @@
-# RotaGraph Brasil
+# TrilhaGraph
 
-Sistema GraphRAG/KAG para descoberta de destinos e criação de roteiros turísticos
-explicáveis no Brasil.
+Assistente GraphRAG/KAG para explorar percursos de aprendizagem em engenharia de software. Responde a partir de um **catálogo didático fictício e autoral** de 12 cursos; não representa ofertas reais, certificados ou equivalência acadêmica.
 
-O projeto transforma documentos de texto em um grafo de conhecimento e combina
-busca semântica, busca textual e travessias no grafo para responder perguntas em
-linguagem natural. Cada resposta deverá apresentar as fontes e o subgrafo que a
-fundamentaram.
+Combina embeddings, busca textual e Cypher selecionado por LLM em gramática restrita. A travessia de dois saltos conecta cursos, pré-requisitos, competências, áreas, públicos e trilhas. O chat exibe fontes, subgrafo interativo, nós, consultas e confiança heurística.
 
-## Estado do projeto
+## Reprodução local
 
-- [x] Etapa 1 — proposta, casos de uso e modelagem LPG
-- [x] Etapa 2 — infraestrutura e esqueleto da aplicação
-- [x] Etapa 3 — elaboração do dataset em arquivos TXT
-- [x] Etapa 4 — pipeline Text-to-Graph
-- [x] Etapa 5 — recuperação híbrida e algoritmos de grafo
-- [x] Etapa 6 — interface e visualização
-- [x] Etapa 7 — avaliação, testes e documentação final
-
-## Decisões iniciais
-
-- Domínio: turismo brasileiro.
-- Banco de grafos: FalkorDB.
-- Linguagem: Python.
-- Modelos locais: Ollama, com nomes configuráveis por variáveis de ambiente.
-- Interface: Streamlit com visualizacao interativa em Plotly.
-- Entradas da ingestão: arquivos `.txt` em português.
-
-O escopo completo da primeira etapa está em
-[`docs/01-proposta-modelagem.md`](docs/01-proposta-modelagem.md).
-
-As instruções da infraestrutura estão em
-[`docs/02-infraestrutura.md`](docs/02-infraestrutura.md).
-
-A cobertura do corpus e as perguntas de avaliação estão em
-[`docs/03-dataset.md`](docs/03-dataset.md).
-
-O pipeline de ingestão está documentado em
-[`docs/04-ingestao.md`](docs/04-ingestao.md).
-
-A recuperação híbrida e os algoritmos estão documentados em
-[`docs/05-recuperacao.md`](docs/05-recuperacao.md).
-
-A interface Streamlit está documentada em
-[`docs/06-interface-streamlit.md`](docs/06-interface-streamlit.md).
-
-A avaliação e o checklist de entrega estão em
-[`docs/07-avaliacao-entrega.md`](docs/07-avaliacao-entrega.md). O rascunho do
-artigo e o roteiro da defesa estão em [`docs/ARTIGO_TECNICO.md`](docs/ARTIGO_TECNICO.md)
-e [`docs/APRESENTACAO.md`](docs/APRESENTACAO.md).
-
-## Interface
-
-```bash
-streamlit run streamlit_app.py
-```
-
-## Início rápido
+Requisitos: Python 3.12 ou superior, Docker e Compose. Execute na raiz:
 
 ```bash
 cp .env.example .env
-docker compose up -d falkordb
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-rotagraph health
-rotagraph setup-schema
-rotagraph ingest --data-dir data/raw
+docker compose up -d falkordb ollama
+docker compose exec ollama ollama pull nomic-embed-text
+docker compose exec ollama ollama pull qwen2.5:3b
+trilhagraph health
+trilhagraph setup-schema
+trilhagraph ingest --data-dir data/raw
 streamlit run streamlit_app.py
 ```
 
-O Ollama deve estar ativo e conter os modelos definidos em `.env`. Por padrão:
+O modelo de chat padrão é `qwen2.5:3b`; pode ser trocado em `CHAT_MODEL`. Tempo e memória de inferência dependem do hardware. A API Ollama deve estar em `http://localhost:11434`. O `.env.example` usa FalkorDB em `6380` e navegador em `3001`, evitando conflito com Redis na porta 6379. Use as mesmas variáveis ao subir Compose e executar Python.
 
 ```bash
-ollama pull nomic-embed-text
-ollama pull llama3.1:8b
-```
-
-## Avaliação
-
-O conjunto em `data/evaluation/questions.json` possui 15 casos, dos quais 13 são
-multi-hop. Após a ingestão, gere os relatórios reproduzíveis:
-
-```bash
-rotagraph evaluate \
-  --json-output artifacts/evaluation-report.json \
-  --markdown-output artifacts/evaluation-report.md
-```
-
-## Testes
-
-```bash
+trilhagraph ask 'Que competências dos pré-requisitos sustentam Recuperação Híbrida?'
+trilhagraph evaluate --json-output artifacts/evaluation-report.json --markdown-output artifacts/evaluation-report.md
 python -m unittest discover -s tests -v
 python tests/integration_smoke.py
-python -m compileall -q src tests
-docker compose config -q
+ruff check src tests scripts
 ```
 
-## Materiais fornecidos
+O smoke test usa FalkorDB real em um grafo temporário próprio, com extrator e embeddings determinísticos. Não comprova a qualidade do LLM. A avaliação real usa os modelos configurados, sem respostas pré-gravadas. Perguntas negativas para revisão factual estão em `data/evaluation/negative_questions.json`.
 
-O documento de especificação e o ZIP do professor permanecem na raiz como
-referência. O código da aplicação foi desenvolvido separadamente, com estrutura,
-documentação e testes próprios.
+## Organização e documentação
+
+- [Proposta e esquema LPG](docs/01-proposta-modelagem.md).
+- [Infraestrutura](docs/02-infraestrutura.md), [corpus](docs/03-dataset.md), [ingestão](docs/04-ingestao.md), [recuperação](docs/05-recuperacao.md) e [interface](docs/06-interface-streamlit.md).
+- [Auditoria dos requisitos](docs/AUDITORIA_REQUISITOS.md), [avaliação e entrega](docs/07-avaliacao-entrega.md).
+- [Texto do artigo](docs/ARTIGO_TECNICO.md), [PDF SBC](docs/artigo/main.pdf), [fontes LaTeX](docs/artigo/) e [apresentação PDF](docs/APRESENTACAO.pdf), ainda em fechamento com resultados completos/autoria.
+- [Roteiro da defesa](docs/APRESENTACAO.md) e [evidências de execução](artifacts/README.md).
+
+A implementação é independente do ZIP do professor. O novo domínio substitui o turismo da versão anterior; o namespace `trilhagraph_aprendizagem` mantém o grafo separado. Os materiais da Aula 08 e os modelos de TCC foram analisados e estão identificados em [referências da atividade](docs/referencias/README.md). FalkorDB substitui Neo4j conforme autorização do professor informada pelo usuário.
+
+O catálogo pode ser recriado com `python scripts/build_catalog.py`. Essa rotina escreve os TXT e gabaritos; o pipeline normal extrai entidades e relações da prosa via LLM. A tabela do gerador não é carregada diretamente no grafo.
+
+## Estado da entrega
+
+A troca de tema e corpus foi implementada. A execução integral com LLM, a revisão factual, a verificação visual e o artigo SBC/PDF final ainda estão em andamento. Consulte a auditoria para separar implementação de evidência empírica.

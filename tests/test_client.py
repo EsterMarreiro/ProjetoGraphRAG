@@ -5,8 +5,8 @@ import types
 import unittest
 from unittest.mock import patch
 
-from rotagraph.config import Settings
-from rotagraph.graph.client import GraphConnection
+from trilhagraph.config import Settings
+from trilhagraph.graph.client import GraphConnection
 
 
 class FakeGraph:

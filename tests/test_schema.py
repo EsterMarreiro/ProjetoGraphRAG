@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from rotagraph.graph.schema import ENTITY_LABELS, SchemaManager
+from trilhagraph.graph.schema import ENTITY_LABELS, SchemaManager
 
 
 class FakeGraph:

@@ -1,0 +1,9 @@
+Título: Programação Python
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Programação Python aborda a área Programação e desenvolve a competência Implementação de funções.
+O curso Programação Python é classificado no nível Iniciante e é indicado para o perfil Estudantes.
+O curso Programação Python tem código 02_python e carga horária fictícia de 30 horas.
+A trilha Desenvolvimento Web inclui o curso Programação Python.
+O curso Programação Python exige como pré-requisito o curso Lógica de Programação.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

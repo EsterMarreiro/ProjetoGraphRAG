@@ -1,0 +1,10 @@
+Título: Grafos de Conhecimento
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Grafos de Conhecimento aborda a área Dados e desenvolve a competência Representação de relações.
+O curso Grafos de Conhecimento é classificado no nível Avançado e é indicado para o perfil Analistas de dados.
+O curso Grafos de Conhecimento tem código 10_grafos e carga horária fictícia de 30 horas.
+A trilha Dados e Conhecimento inclui o curso Grafos de Conhecimento.
+O curso Grafos de Conhecimento exige como pré-requisito o curso Modelagem Relacional.
+O curso Grafos de Conhecimento exige como pré-requisito o curso Estruturas de Dados.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

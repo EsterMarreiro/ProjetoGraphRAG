@@ -1,0 +1,10 @@
+Título: Recuperação Híbrida
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Recuperação Híbrida aborda a área Inteligência Artificial e desenvolve a competência Fundamentação por evidências.
+O curso Recuperação Híbrida é classificado no nível Avançado e é indicado para o perfil Analistas de dados.
+O curso Recuperação Híbrida tem código 12_hibrida e carga horária fictícia de 32 horas.
+A trilha Dados e Conhecimento inclui o curso Recuperação Híbrida.
+O curso Recuperação Híbrida exige como pré-requisito o curso Grafos de Conhecimento.
+O curso Recuperação Híbrida exige como pré-requisito o curso Busca Semântica.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

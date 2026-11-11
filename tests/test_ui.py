@@ -2,43 +2,42 @@ from __future__ import annotations
 
 import unittest
 
-from rotagraph.retrieval.models import GraphEdge, GraphNode
-from rotagraph.ui.filters import TourismFilters
-from rotagraph.ui.graph_view import build_graph_view_data
+from trilhagraph.retrieval.models import GraphEdge, GraphNode
+from trilhagraph.ui.filters import LearningFilters
+from trilhagraph.ui.graph_view import build_graph_view_data
 
 
 class FilterTests(unittest.TestCase):
     def test_augments_question_with_explicit_filters(self) -> None:
-        filters = TourismFilters(
-            regions=("Nordeste",),
-            state="BA",
-            activity="Gastronomia",
-            profile="Famílias",
-            period="Período seco",
+        filters = LearningFilters(
+            area="Dados",
+            competency="Recuperação vetorial",
+            profile="Analistas de dados",
+            level="Intermediário",
         )
 
-        result = filters.augment_question("Qual destino escolher?")
+        result = filters.augment_question("Qual curso escolher?")
 
-        self.assertIn("Qual destino escolher?", result)
-        self.assertIn("regiões: Nordeste", result)
-        self.assertIn("UF ou estado: BA", result)
-        self.assertIn("atividade: Gastronomia", result)
+        self.assertIn("Qual curso escolher?", result)
+        self.assertIn("área: Dados", result)
+        self.assertIn("nível: Intermediário", result)
+        self.assertIn("competência: Recuperação vetorial", result)
 
     def test_keeps_question_unchanged_without_filters(self) -> None:
         self.assertEqual(
-            TourismFilters().augment_question("  Minha pergunta  "), "Minha pergunta"
+            LearningFilters().augment_question("  Minha pergunta  "), "Minha pergunta"
         )
 
 
 class GraphViewTests(unittest.TestCase):
     def test_layout_is_deterministic_and_ignores_dangling_edges(self) -> None:
         nodes = [
-            GraphNode("b", "Localidade", "Bahia"),
-            GraphNode("a", "Atracao", "Pelourinho"),
+            GraphNode("b", "Area", "Dados"),
+            GraphNode("a", "Curso", "Grafos de Conhecimento"),
         ]
         edges = [
-            GraphEdge("a", "b", "LOCALIZADA_EM"),
-            GraphEdge("a", "missing", "PROXIMA_DE"),
+            GraphEdge("a", "b", "ABORDA"),
+            GraphEdge("a", "missing", "PRE_REQUISITO"),
         ]
 
         first = build_graph_view_data(nodes, edges)
@@ -46,7 +45,7 @@ class GraphViewTests(unittest.TestCase):
 
         self.assertEqual(first.positions, second.positions)
         self.assertEqual(len(first.edges), 1)
-        self.assertEqual(first.edges[0].relationship_type, "LOCALIZADA_EM")
+        self.assertEqual(first.edges[0].relationship_type, "ABORDA")
 
 
 if __name__ == "__main__":

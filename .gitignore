@@ -12,3 +12,16 @@ dist/
 build/
 *.egg-info/
 *:Zone.Identifier
+
+.tools/
+docs/artigo/*.aux
+docs/artigo/*.log
+docs/artigo/*.bbl
+docs/artigo/*.blg
+
+.runtime/
+
+# Materiais consultados no portal: manter originais privados fora da publicação.
+docs/referencias/modelo-artigo-tcc.docx
+docs/referencias/modelo-artigo-tcc.txt
+docs/referencias/modelo-tcc-latex.zip

@@ -1,58 +1,55 @@
 from __future__ import annotations
 
+import json
 import re
 import unittest
 from pathlib import Path
 
-from rotagraph.ingestion.loader import load_documents
+from trilhagraph.ingestion.loader import load_documents
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_DIR = PROJECT_ROOT / "data" / "raw"
-DATASET_DOC = PROJECT_ROOT / "docs" / "03-dataset.md"
+ROOT = Path(__file__).resolve().parents[1]
 
 
-class TourismDatasetTests(unittest.TestCase):
+class LearningDatasetTests(unittest.TestCase):
     @classmethod
-    def setUpClass(cls) -> None:
-        cls.documents = load_documents(DATA_DIR)
-        cls.corpus = "\n".join(document.content for document in cls.documents)
+    def setUpClass(cls):
+        cls.documents = load_documents(ROOT / "data/raw")
+        cls.cases = json.loads((ROOT / "data/evaluation/questions.json").read_text())
 
-    def test_has_expected_number_of_documents(self) -> None:
-        self.assertGreaterEqual(len(self.documents), 10)
-        self.assertLessEqual(len(self.documents), 15)
+    def test_catalog_and_cases_have_complete_source_references(self):
+        self.assertEqual(len(self.documents), 12)
+        self.assertEqual(len(self.cases), 15)
+        filenames = {doc.path.name for doc in self.documents}
+        for case in self.cases:
+            self.assertLessEqual(set(case["expected_sources"]), filenames)
+            self.assertTrue(case["expected_concepts"])
 
-    def test_every_document_has_required_header_and_route(self) -> None:
-        required = (
-            "Titulo:",
-            "Regiao:",
-            "UF:",
-            "Data de referencia do corpus:",
-        )
-        for document in self.documents:
-            with self.subTest(document=document.path.name):
-                for field in required:
-                    self.assertIn(field, document.content)
-                self.assertRegex(document.content, r"A Rota .+ inclui, (?:em|na) ordem")
+    def test_catalog_discloses_fictional_origin_and_limits(self):
+        for doc in self.documents:
+            with self.subTest(file=doc.path.name):
+                self.assertIn("fictício e autoral", doc.content)
+                self.assertIn("Não há informações sobre preços", doc.content)
+                self.assertNotIn("Título:", doc.title)
 
-    def test_covers_all_brazilian_regions(self) -> None:
-        for region in ("Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"):
-            with self.subTest(region=region):
-                self.assertIn(f"Regiao: {region}", self.corpus)
+    def test_prerequisites_are_defined_and_acyclic(self):
+        names = {doc.title for doc in self.documents}
+        adjacency = {}
+        for doc in self.documents:
+            dependencies = re.findall(
+                r"exige como pré-requisito o curso ([^.]+)\.", doc.content
+            )
+            self.assertLessEqual(set(dependencies), names)
+            adjacency[doc.title] = dependencies
 
-    def test_documents_cover_safety_and_provenance_language(self) -> None:
-        for document in self.documents:
-            with self.subTest(document=document.path.name):
-                normalized = document.content.casefold()
-                self.assertIn("adequad", normalized)
-                self.assertIn("recomendad", normalized)
-                self.assertIn("evitar", normalized)
-                self.assertIn("confirm", normalized)
+        def visit(name, stack):
+            self.assertNotIn(name, stack, f"Ciclo: {stack} -> {name}")
+            for dependency in adjacency[name]:
+                visit(dependency, stack + [name])
 
-    def test_evaluation_document_has_at_least_twelve_questions(self) -> None:
-        content = DATASET_DOC.read_text(encoding="utf-8")
-        questions = re.findall(r"^\d+\. \*\*", content, flags=re.MULTILINE)
-        self.assertGreaterEqual(len(questions), 12)
+        for name in names:
+            visit(name, [])
 
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_multihop_cases_require_cross_document_evidence(self):
+        multi = [case for case in self.cases if case["requires_multihop"]]
+        self.assertGreaterEqual(len(multi), 12)
+        self.assertGreaterEqual(sum(len(c["expected_sources"]) >= 2 for c in multi), 10)

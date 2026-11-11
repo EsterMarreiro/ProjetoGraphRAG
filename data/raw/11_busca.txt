@@ -1,0 +1,10 @@
+Título: Busca Semântica
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Busca Semântica aborda a área Inteligência Artificial e desenvolve a competência Recuperação vetorial.
+O curso Busca Semântica é classificado no nível Intermediário e é indicado para o perfil Analistas de dados.
+O curso Busca Semântica tem código 11_busca e carga horária fictícia de 24 horas.
+A trilha Dados e Conhecimento inclui o curso Busca Semântica.
+O curso Busca Semântica exige como pré-requisito o curso Programação Python.
+O curso Busca Semântica exige como pré-requisito o curso Estruturas de Dados.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

@@ -2,17 +2,17 @@ from __future__ import annotations
 
 import unittest
 
-from rotagraph.retrieval.algorithms import GraphAlgorithms, _calculate_pagerank
-from rotagraph.retrieval.fusion import reciprocal_rank_fusion
-from rotagraph.retrieval.generation import AnswerGenerator
-from rotagraph.retrieval.models import (
+from trilhagraph.retrieval.algorithms import GraphAlgorithms, _calculate_pagerank
+from trilhagraph.retrieval.fusion import reciprocal_rank_fusion
+from trilhagraph.retrieval.generation import AnswerGenerator
+from trilhagraph.retrieval.models import (
     GraphEdge,
     GraphNode,
     RetrievalResult,
     SearchHit,
 )
-from rotagraph.retrieval.repository import RetrievalRepository, _fulltext_query
-from rotagraph.retrieval.retriever import HybridRetriever
+from trilhagraph.retrieval.repository import RetrievalRepository, _fulltext_query
+from trilhagraph.retrieval.retriever import HybridRetriever
 
 
 def hit(chunk_id: str, score: float, channel: str) -> SearchHit:
@@ -56,21 +56,21 @@ class ExpansionGraph:
 
     def ro_query(self, query, params):
         if "MENCIONA" in query:
-            return FakeResult([["a", "Atracao", "Atracao A"]])
+            return FakeResult([["a", "Curso", "Curso A"]])
         self.neighbor_calls += 1
         if self.neighbor_calls == 1:
             return FakeResult(
                 [
                     [
                         "a",
-                        "Atracao",
-                        "Atracao A",
+                        "Curso",
+                        "Curso A",
                         "b",
-                        "Localidade",
+                        "Area",
                         "Cidade B",
                         "a",
                         "b",
-                        "LOCALIZADA_EM",
+                        "ABORDA",
                         0.9,
                         "t1",
                     ]
@@ -80,14 +80,14 @@ class ExpansionGraph:
             [
                 [
                     "b",
-                    "Localidade",
+                    "Area",
                     "Cidade B",
                     "c",
-                    "Localidade",
+                    "Area",
                     "Estado C",
                     "b",
                     "c",
-                    "FAZ_PARTE_DE",
+                    "PERTENCE_A",
                     0.8,
                     "t2",
                 ]
@@ -124,8 +124,8 @@ class FakeRepository:
 
     def expand(self, chunk_ids, *, max_hops):
         return (
-            [GraphNode("a", "Atracao", "A")],
-            [GraphEdge("a", "b", "LOCALIZADA_EM", 1.0, "shared")],
+            [GraphNode("a", "Curso", "A")],
+            [GraphEdge("a", "b", "ABORDA", 1.0, "shared")],
         )
 
 
@@ -146,8 +146,14 @@ class RetrieverTests(unittest.TestCase):
 class FakeChatClient:
     def chat_json(self, **kwargs):
         return {
-            "answer": "A resposta usa a fonte [F1].",
-            "citations": ["F1"],
+            "claims": [
+                {
+                    "text": "A resposta usa a fonte.",
+                    "citations": ["F1"],
+                    "graph_edges": [],
+                }
+            ],
+            "abstained": False,
             "caveats": ["Confirme as condicoes locais."],
         }
 
@@ -171,8 +177,8 @@ class GenerationTests(unittest.TestCase):
 class AlgorithmGraph:
     def ro_query(self, query, params):
         if "shortestPath" in query:
-            return FakeResult([[["a", "b"], ["LOCALIZADA_EM"], 1]])
-        return FakeResult([["a", "Atracao A", "Atracao", 0.75]])
+            return FakeResult([[["a", "b"], ["ABORDA"], 1]])
+        return FakeResult([["a", "Curso A", "Curso", 0.75]])
 
 
 class AlgorithmTests(unittest.TestCase):

@@ -1,0 +1,9 @@
+Título: Modelagem Relacional
+Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
+Versão do catálogo: 1.0, 11 de novembro de 2026.
+O curso Modelagem Relacional aborda a área Dados e desenvolve a competência Projeto de esquemas SQL.
+O curso Modelagem Relacional é classificado no nível Intermediário e é indicado para o perfil Analistas de dados.
+O curso Modelagem Relacional tem código 04_relacional e carga horária fictícia de 24 horas.
+A trilha Dados e Conhecimento inclui o curso Modelagem Relacional.
+O curso Modelagem Relacional exige como pré-requisito o curso Programação Python.
+As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

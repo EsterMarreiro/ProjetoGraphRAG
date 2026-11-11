@@ -1,0 +1,17 @@
+[
+  {
+    "id": "N01",
+    "question": "Qual é o preço de inscrição em Recuperação Híbrida?",
+    "expected_behavior": "Informar que o catálogo não informa preços; não inventar valor."
+  },
+  {
+    "id": "N02",
+    "question": "Qual certificado é emitido em APIs Web e em que data abrem as inscrições?",
+    "expected_behavior": "Declarar ausência de informações sobre certificados e inscrições."
+  },
+  {
+    "id": "N03",
+    "question": "Qual curso de medicina deste catálogo ensina cardiologia?",
+    "expected_behavior": "Abster-se; o catálogo não contém medicina nem cardiologia."
+  }
+]
