@@ -22,10 +22,11 @@ from trilhagraph.evaluation.evaluator import (
     load_cases,
     render_markdown,
 )
+from trilhagraph.evaluation.judge import Judge, summarize
 from trilhagraph.graph import GraphConnection, SchemaManager
 from trilhagraph.ingestion.extraction import LearningExtractor
+from trilhagraph.ingestion.llm import OpenAIClient
 from trilhagraph.ingestion.loader import load_documents
-from trilhagraph.ingestion.ollama import OllamaClient
 from trilhagraph.ingestion.pipeline import IngestionPipeline
 from trilhagraph.ingestion.writer import GraphWriter
 from trilhagraph.retrieval.generation import AnswerGenerator
@@ -45,9 +46,13 @@ def write_json(path: Path, value):
     temporary.replace(path)
 
 
-class AuditedOllama(OllamaClient):
+class AuditedLLM(OpenAIClient):
     def __init__(self, settings, directory):
-        super().__init__(settings.ollama_base_url, timeout=settings.ollama_timeout)
+        super().__init__(
+            settings.openai_api_key or "",
+            base_url=settings.openai_base_url,
+            timeout=settings.openai_timeout,
+        )
         self.directory = directory
         self.calls = 0
 
@@ -94,18 +99,50 @@ def main():
     parser.add_argument("--skip-ingest", action="store_true")
     parser.add_argument("--force-ingest", action="store_true")
     parser.add_argument("--limit", type=int)
+    parser.add_argument("--case-ids", nargs="+")
+    parser.add_argument("--skip-negatives", action="store_true")
     parser.add_argument(
         "--modes", nargs="+", choices=["hybrid", "vector"], default=["hybrid", "vector"]
     )
+    parser.add_argument(
+        "--dataset", type=Path, default=ROOT / "data/evaluation/questions.json"
+    )
+    parser.add_argument(
+        "--negatives",
+        type=Path,
+        default=ROOT / "data/evaluation/negative_questions.json",
+    )
+    parser.add_argument("--judge-model", default="gpt-4o")
+    parser.add_argument("--no-judge", action="store_true")
+    parser.add_argument("--tag", default="")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    if args.limit is not None and args.limit <= 0:
+        parser.error("--limit deve ser positivo")
+    cases = load_cases(args.dataset)
+    if args.case_ids:
+        unknown = set(args.case_ids) - {case.id for case in cases}
+        if unknown:
+            parser.error(f"Casos desconhecidos: {sorted(unknown)}")
+        cases = [case for case in cases if case.id in args.case_ids]
+    if args.limit:
+        cases = cases[: args.limit]
     directory = args.output or ROOT / "artifacts" / datetime.now(UTC).strftime(
         "run-%Y%m%dT%H%M%SZ"
     )
     directory.mkdir(parents=True, exist_ok=False)
     capture(directory)
     settings = Settings.from_env()
-    ollama = AuditedOllama(settings, directory)
+    llm = AuditedLLM(settings, directory)
+    judge = (
+        None
+        if args.no_judge
+        else Judge.from_directory(
+            OpenAIClient.from_settings(settings),
+            model=args.judge_model,
+            directory=ROOT / "data/raw",
+        )
+    )
     metadata = {
         "started_at": datetime.now(UTC).isoformat(),
         "python": platform.python_version(),
@@ -114,16 +151,25 @@ def main():
             ["git", "rev-parse", "HEAD"], text=True
         ).strip(),
         "git_diff": subprocess.check_output(["git", "diff", "--stat"], text=True),
-        "settings": {k: v for k, v in asdict(settings).items() if "password" not in k},
+        "settings": {
+            k: v
+            for k, v in asdict(settings).items()
+            if "password" not in k and "api_key" not in k
+        },
         "packages": {
             name: version(name) for name in ["falkordb", "streamlit", "trilhagraph"]
         },
-        "models": ollama._get("/api/tags"),
-        "chat_options": ollama.chat_options,
+        "models": {"chat": settings.chat_model, "embedding": settings.embedding_model},
+        "chat_options": llm.chat_options,
         "corpus": {
             doc.path.name: doc.checksum for doc in load_documents(ROOT / "data/raw")
         },
         "modes": args.modes,
+        "case_ids": [case.id for case in cases],
+        "include_negatives": not args.skip_negatives,
+        "dataset": str(args.dataset.name),
+        "tag": args.tag,
+        "judge_model": None if args.no_judge else args.judge_model,
     }
     write_json(directory / "metadata.json", metadata)
     print(f"Experimento: {directory}", flush=True)
@@ -134,8 +180,8 @@ def main():
         if not args.skip_ingest:
             report = IngestionPipeline(
                 writer=GraphWriter(connection.graph),
-                extractor=LearningExtractor(ollama, model=settings.chat_model),
-                ollama=ollama,
+                extractor=LearningExtractor(llm, model=settings.extraction_model),
+                llm=llm,
                 embedding_model=settings.embedding_model,
                 embedding_dimension=settings.embedding_dimension,
                 chunk_size=settings.chunk_size,
@@ -153,51 +199,87 @@ def main():
                 ).result_set,
             },
         )
-        cases = load_cases(ROOT / "data/evaluation/questions.json")
-        if args.limit:
-            cases = cases[: args.limit]
         for mode in args.modes:
             service = RecordedService(
                 QuestionAnsweringService(
                     retriever=HybridRetriever(
                         repository=RetrievalRepository(connection.graph),
-                        ollama=ollama,
+                        llm=llm,
                         embedding_model=settings.embedding_model,
                         embedding_dimension=settings.embedding_dimension,
-                        planner=CypherPlanner(ollama, model=settings.chat_model),
+                        planner=CypherPlanner(llm, model=settings.chat_model),
                         mode=mode,
                     ),
-                    generator=AnswerGenerator(ollama, model=settings.chat_model),
+                    generator=AnswerGenerator(
+                        llm,
+                        model=settings.chat_model,
+                        verifier_model=settings.verifier_model,
+                    ),
                 ),
                 directory / f"{mode}-answers.jsonl",
             )
             results = []
+            verdicts = []
             for case in cases:
                 print(f"{mode}: {case.id}", flush=True)
                 results.extend(evaluate_service(service, [case]).cases)
                 summary = _summarize(results)
                 write_json(directory / f"{mode}-report.json", summary.as_dict())
                 (directory / f"{mode}-report.md").write_text(render_markdown(summary))
-            negatives = json.loads(
-                (ROOT / "data/evaluation/negative_questions.json").read_text()
+                if judge:
+                    last = results[-1]
+                    if not last.error:
+                        verdicts.append(
+                            judge.judge_positive(
+                                case.id,
+                                case.question,
+                                last.answer,
+                                case.expected_concepts,
+                            )
+                        )
+                    write_json(
+                        directory / f"{mode}-judge.json",
+                        {
+                            "summary": summarize(verdicts),
+                            "cases": [asdict(v) for v in verdicts],
+                        },
+                    )
+            negatives = (
+                [] if args.skip_negatives else json.loads(args.negatives.read_text())
             )
+            neg_verdicts = []
             for case in negatives:
                 print(f"{mode}: {case['id']}", flush=True)
                 try:
                     answer = service.answer(case["question"])
-                    write_json(
-                        directory / f"{mode}-{case['id']}.json",
-                        {
-                            **case,
-                            "result": asdict(answer),
-                            "review_status": "pending_human_review",
-                        },
-                    )
+                    entry = {
+                        **case,
+                        "result": asdict(answer),
+                        "review_status": "pending_human_review",
+                    }
+                    if judge:
+                        verdict = judge.judge_negative(
+                            case["id"],
+                            case["question"],
+                            answer.answer,
+                            case["expected_behavior"],
+                        )
+                        neg_verdicts.append(verdict)
+                        entry["judge"] = asdict(verdict)
+                    write_json(directory / f"{mode}-{case['id']}.json", entry)
                 except Exception as exc:
                     write_json(
                         directory / f"{mode}-{case['id']}.json",
                         {**case, "error": str(exc)},
                     )
+            if judge and neg_verdicts:
+                write_json(
+                    directory / f"{mode}-judge-negatives.json",
+                    {
+                        "summary": summarize(neg_verdicts),
+                        "cases": [asdict(v) for v in neg_verdicts],
+                    },
+                )
     metadata["completed_at"] = datetime.now(UTC).isoformat()
     write_json(directory / "metadata.json", metadata)
     print("Experimento concluído", flush=True)

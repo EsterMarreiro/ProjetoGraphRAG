@@ -41,6 +41,8 @@ class RetrievalResult:
     queries: list[str]
     confidence: float
     warnings: list[str] = field(default_factory=list)
+    paths: list[list[str]] = field(default_factory=list)
+    communities: list[list[str]] = field(default_factory=list)
 
 
 @dataclass(frozen=True, slots=True)

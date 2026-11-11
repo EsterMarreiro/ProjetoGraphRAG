@@ -6,8 +6,8 @@ import json
 from dataclasses import dataclass
 
 from trilhagraph.ingestion.canonicalization import normalize_text
+from trilhagraph.ingestion.llm import OpenAIClient
 from trilhagraph.ingestion.models import ALLOWED_LABELS, RELATIONSHIP_ENDPOINTS
-from trilhagraph.ingestion.ollama import OllamaClient
 
 QUERY_BY_TYPES = {
     (label, relationship): f"MATCH p=(a:{label})-[:{relationship}*1..2]-(b) "
@@ -40,7 +40,7 @@ class CypherPlan:
 
 
 class CypherPlanner:
-    def __init__(self, client: OllamaClient, *, model: str) -> None:
+    def __init__(self, client: OpenAIClient, *, model: str) -> None:
         self.client = client
         self.model = model
 
@@ -64,7 +64,11 @@ A aplicação compila o plano em Cypher de leitura e percorre até dois saltos.
 """
         for attempt in range(2):
             raw = self.client.chat_json(
-                model=self.model, system=system, prompt=prompt, schema=PLAN_SCHEMA
+                model=self.model,
+                system=system,
+                prompt=prompt,
+                schema=PLAN_SCHEMA,
+                strict=True,
             )
             label, relation, name = (
                 raw.get(k) for k in ("label", "relationship", "name")
@@ -75,7 +79,7 @@ A aplicação compila o plano em Cypher de leitura e percorre até dois saltos.
                 if attempt == 0:
                     prompt += "\nEscolha tipos e relação compatíveis com o esquema."
                     continue
-                raise ValueError("Plano Cypher fora do esquema permitido")
+                return None
             name = name.strip()
             if 2 <= len(name) <= 120 and normalize_text(name) in normalize_text(
                 question

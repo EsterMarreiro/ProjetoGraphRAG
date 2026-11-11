@@ -98,7 +98,7 @@ def render_sidebar(runtime: UIRuntime) -> tuple[LearningFilters, bool]:
         st.divider()
         st.subheader("Estado dos serviços")
         database_ok = _database_status(runtime)
-        ollama_ok = _ollama_status(runtime)
+        llm_ok = _llm_status(runtime)
 
         st.divider()
         if st.button("Limpar conversa", use_container_width=True):
@@ -111,7 +111,7 @@ def render_sidebar(runtime: UIRuntime) -> tuple[LearningFilters, bool]:
 
     return (
         LearningFilters(area, competency, profile, level),
-        database_ok and ollama_ok,
+        database_ok and llm_ok,
     )
 
 
@@ -128,25 +128,21 @@ def _database_status(runtime: UIRuntime) -> bool:
         return False
 
 
-def _model_tag(name: str) -> str:
-    return name if ":" in name.rsplit("/", 1)[-1] else f"{name}:latest"
-
-
-def _ollama_status(runtime: UIRuntime) -> bool:
+def _llm_status(runtime: UIRuntime) -> bool:
     try:
-        models = runtime.ollama.list_models()
+        models = runtime.llm.list_models()
     except Exception as exc:
-        st.error(f"Ollama indisponível: {exc}", icon="🚨")
+        st.error(f"OpenAI indisponível: {exc}", icon="🚨")
         return False
     missing = [
         model
         for model in (runtime.settings.chat_model, runtime.settings.embedding_model)
-        if _model_tag(model) not in {_model_tag(name) for name in models}
+        if model not in models
     ]
     if missing:
-        st.warning(f"Modelos ausentes no Ollama: {', '.join(missing)}", icon="⚠️")
+        st.warning(f"Modelos indisponíveis na OpenAI: {', '.join(missing)}", icon="⚠️")
         return False
-    st.success("Ollama e modelos disponíveis", icon="✅")
+    st.success("OpenAI e modelos disponíveis", icon="✅")
     return True
 
 
@@ -269,6 +265,15 @@ def render_trace(answer: GroundedAnswer) -> None:
         width="stretch",
         hide_index=True,
     )
+    retrieval = answer.retrieval
+    if retrieval.paths:
+        st.markdown("**Caminho mais curto por pré-requisitos**")
+        for path in retrieval.paths:
+            st.write(" → ".join(path))
+    if retrieval.communities:
+        st.markdown("**Comunidades de cursos (Louvain)**")
+        for group in retrieval.communities:
+            st.write(", ".join(group))
     st.markdown("**Consultas executadas**")
     for index, query in enumerate(answer.retrieval.queries, start=1):
         with st.expander(f"Cypher {index}"):

@@ -1,0 +1,7 @@
+[
+  {"id": "HN01", "question": "Qual é a duração em semanas do curso Docker Avançado?", "expected_behavior": "O catálogo não tem esse curso nem durações em semanas; não inventar."},
+  {"id": "HN02", "question": "Quem é o professor responsável por Redes e HTTP?", "expected_behavior": "O catálogo não informa docentes; não inventar nomes."},
+  {"id": "HN03", "question": "Qual é a nota mínima de aprovação em APIs Web?", "expected_behavior": "O catálogo não informa notas ou critérios de aprovação."},
+  {"id": "HN04", "question": "Programação Python exige Cálculo Diferencial como pré-requisito?", "expected_behavior": "Premissa falsa: o único pré-requisito é Lógica de Programação."},
+  {"id": "HN05", "question": "Qual curso do catálogo ensina Kubernetes?", "expected_behavior": "Kubernetes não consta; não atribuir a Contêineres uma competência que ele não tem."}
+]

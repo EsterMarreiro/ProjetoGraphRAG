@@ -170,7 +170,7 @@ class FakeExtractor:
         )
 
 
-class FakeOllama:
+class FakeLLM:
     def embed(self, *, model: str, texts: list[str], dimensions: int):
         return [[0.0] * dimensions for _ in texts]
 
@@ -186,7 +186,7 @@ class PipelineTests(unittest.TestCase):
             pipeline = IngestionPipeline(
                 writer=writer,
                 extractor=FakeExtractor(),
-                ollama=FakeOllama(),
+                llm=FakeLLM(),
                 embedding_model="fake",
                 embedding_dimension=4,
                 chunk_size=100,

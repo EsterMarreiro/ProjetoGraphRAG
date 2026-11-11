@@ -122,7 +122,7 @@ class FakeRepository:
     def fulltext_search(self, question, *, limit):
         return [hit("shared", 5.0, "fulltext")]
 
-    def expand(self, chunk_ids, *, max_hops):
+    def expand(self, chunk_ids, *, max_hops, question=None, seed_ids=None):
         return (
             [GraphNode("a", "Curso", "A")],
             [GraphEdge("a", "b", "ABORDA", 1.0, "shared")],
@@ -133,7 +133,7 @@ class RetrieverTests(unittest.TestCase):
     def test_runs_hybrid_search_and_returns_trace(self) -> None:
         result = HybridRetriever(
             repository=FakeRepository(),
-            ollama=FakeEmbeddingClient(),
+            llm=FakeEmbeddingClient(),
             embedding_model="fake",
             embedding_dimension=2,
         ).retrieve("Onde fazer trilha?")
@@ -202,3 +202,53 @@ class AlgorithmTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EntityLinkingAndAlgorithmsTests(unittest.TestCase):
+    def _repository(self, names):
+        graph = unittest.mock.Mock()
+        graph.ro_query.return_value.result_set = [
+            [f"id:{i}", label, name] for i, (label, name) in enumerate(names)
+        ]
+        return RetrievalRepository(graph)
+
+    def test_linking_ignores_names_contained_in_longer_names(self):
+        repository = self._repository(
+            [
+                ("Area", "Dados"),
+                ("Curso", "Estruturas de Dados"),
+                ("Nivel", "Avançado"),
+                ("Perfil", "Analistas de dados"),
+            ]
+        )
+        linked = repository.linked_entities(
+            "Cursos avançados para Analistas de dados e Estruturas de Dados?"
+        )
+        self.assertEqual(
+            {node.name for node in linked},
+            {"Estruturas de Dados", "Analistas de dados"},
+        )
+
+    def test_linking_is_accent_and_case_insensitive(self):
+        repository = self._repository([("Nivel", "Avançado")])
+        self.assertEqual(
+            [n.name for n in repository.linked_entities("cursos de nivel AVANCADO")],
+            ["Avançado"],
+        )
+
+    def test_louvain_groups_connected_courses_deterministically(self):
+        from trilhagraph.retrieval.algorithms import louvain_communities
+
+        edges = [("a", "b"), ("b", "c"), ("a", "c"), ("x", "y")]
+        groups = louvain_communities(edges)
+        self.assertEqual(groups, louvain_communities(edges))
+        self.assertIn(["a", "b", "c"], groups)
+        self.assertIn(["x", "y"], groups)
+
+    def test_typed_shortest_path_rejects_unsafe_relationship(self):
+        from trilhagraph.retrieval.algorithms import GraphAlgorithms
+
+        with self.assertRaises(ValueError):
+            GraphAlgorithms(unittest.mock.Mock()).shortest_path(
+                "a", "b", relationship_type="X] DETACH DELETE n //"
+            )

@@ -8,7 +8,11 @@ ROOT = Path(__file__).resolve().parents[1]
 BOXES = [
     ("Text-to-Graph", "TXT → segmentos → LLM", "validação e canonicalização"),
     ("FalkorDB LPG", "entidades, relações e fontes", "índices e constraints"),
-    ("Recuperação e geração", "vetor + texto + Cypher", "expansão, PageRank e LLM"),
+    (
+        "Recuperação e geração",
+        "vetor + texto + Cypher + grafo",
+        "caminho, Louvain, PageRank, verificação",
+    ),
     ("Interface Streamlit", "resposta com citações", "fontes, subgrafo e consultas"),
 ]
 parts = [

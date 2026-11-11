@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
@@ -27,13 +28,23 @@ class GraphAlgorithms:
         self.graph = graph
 
     def shortest_path(
-        self, source_id: str, target_id: str, *, max_hops: int = 6
+        self,
+        source_id: str,
+        target_id: str,
+        *,
+        max_hops: int = 6,
+        relationship_type: str | None = None,
     ) -> PathResult | None:
         if not 1 <= max_hops <= 10:
             raise ValueError("max_hops deve estar entre 1 e 10")
+        if relationship_type is not None and not re.fullmatch(
+            r"[A-Z_]+", relationship_type
+        ):
+            raise ValueError("relationship_type invalido")
+        pattern = f":{relationship_type}" if relationship_type else ""
         query = f"""
             MATCH (source {{id: $source_id}}), (target {{id: $target_id}})
-            WITH shortestPath((source)-[*..{max_hops}]-(target)) AS path
+            WITH shortestPath((source)-[{pattern}*..{max_hops}]-(target)) AS path
             RETURN [node IN nodes(path) | node.id],
                    [relationship IN relationships(path) | type(relationship)],
                    length(path)
@@ -48,7 +59,9 @@ class GraphAlgorithms:
                 not in str(exc).lower()
             ):
                 raise
-            return self._shortest_path_fallback(source_id, target_id, max_hops)
+            return self._shortest_path_fallback(
+                source_id, target_id, max_hops, relationship_type
+            )
         if not rows or rows[0][0] is None:
             return None
         return PathResult(
@@ -57,7 +70,13 @@ class GraphAlgorithms:
             length=int(rows[0][2]),
         )
 
-    def _shortest_path_fallback(self, source: str, target: str, max_hops: int):
+    def _shortest_path_fallback(
+        self,
+        source: str,
+        target: str,
+        max_hops: int,
+        relationship_type: str | None = None,
+    ):
         """BFS on domain edges for engines lacking undirected shortestPath."""
         query = """
             MATCH (a)-[r]->(b)
@@ -67,6 +86,8 @@ class GraphAlgorithms:
         """
         adjacency: dict[str, set[tuple[str, str]]] = {}
         for a, b, relation in self.graph.ro_query(query).result_set:
+            if relationship_type and relation != relationship_type:
+                continue
             adjacency.setdefault(a, set()).add((b, relation))
             adjacency.setdefault(b, set()).add((a, relation))
         if source not in adjacency or target not in adjacency:
@@ -136,6 +157,20 @@ class GraphAlgorithms:
             RankedNode(node_id, metadata[node_id][0], metadata[node_id][1], score)
             for node_id, score in ordered
         ]
+
+
+def louvain_communities(
+    edges: list[tuple[str, str]], *, seed: int = 42
+) -> list[list[str]]:
+    """Comunidades de Louvain (não direcionadas), em ordem determinística."""
+    import networkx as nx
+
+    graph = nx.Graph()
+    graph.add_edges_from(edges)
+    if graph.number_of_edges() == 0:
+        return []
+    groups = nx.community.louvain_communities(graph, seed=seed)
+    return sorted((sorted(group) for group in groups), key=lambda g: (-len(g), g))
 
 
 def _calculate_pagerank(

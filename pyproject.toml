@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "falkordb>=1.7,<2",
+    "networkx>=3.4,<4",
     "plotly>=6,<7",
     "python-dotenv>=1.2,<2",
     "streamlit>=1.61,<2",

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from trilhagraph.ingestion.catalog import CATALOG_PROMPT, CATALOG_SCHEMA, parse_catalog
+from trilhagraph.ingestion.llm import OpenAIClient
 from trilhagraph.ingestion.models import (
     ALLOWED_LABELS,
     ALLOWED_RELATIONSHIPS,
@@ -13,7 +14,6 @@ from trilhagraph.ingestion.models import (
     ExtractedRelationship,
     ExtractionResult,
 )
-from trilhagraph.ingestion.ollama import OllamaClient
 
 EXTRACTION_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -95,7 +95,7 @@ atributos explícitos. codigo e carga_horaria pertencem apenas a Curso.
 
 
 class LearningExtractor:
-    def __init__(self, client: OllamaClient, *, model: str) -> None:
+    def __init__(self, client: OpenAIClient, *, model: str) -> None:
         self.client = client
         self.model = model
 

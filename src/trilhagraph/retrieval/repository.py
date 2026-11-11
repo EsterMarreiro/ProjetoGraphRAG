@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from trilhagraph.ingestion.canonicalization import normalize_text
 from trilhagraph.retrieval.models import GraphEdge, GraphNode, SearchHit
 from trilhagraph.retrieval.planning import CYPHER_CHOICES, CypherPlan
 
@@ -41,10 +42,13 @@ MATCH (chunk:Trecho {id: chunk_id})-[:MENCIONA]->(entity)
 RETURN DISTINCT entity.id, labels(entity)[0], entity.nome
 """
 
+# Nós-hub (Area, Nivel, Perfil, Trilha) aparecem como vizinhos, mas não são expandidos.
+# A segunda fronteira segue apenas pré-requisitos e competências, sem espalhar o
+# contexto pelo catálogo inteiro.
 NEIGHBOR_QUERY = """
 UNWIND $entity_ids AS entity_id
 MATCH (focus {id: entity_id})-[relationship]-(other)
-WHERE NOT focus:Trecho AND NOT focus:Documento
+WHERE (focus:Curso OR focus:Competencia)
   AND NOT other:Trecho AND NOT other:Documento
 RETURN DISTINCT
     focus.id, labels(focus)[0], focus.nome,
@@ -55,10 +59,28 @@ LIMIT $limit
 """
 
 
+NAMED_HOP_QUERY = NEIGHBOR_QUERY.replace(
+    "WHERE (focus:Curso OR focus:Competencia)\n  AND NOT other:Trecho",
+    "WHERE NOT focus:Trecho AND NOT focus:Documento\n  AND NOT other:Trecho",
+)
+
+ENTITY_QUERY = """
+MATCH (n)
+WHERE NOT n:Trecho AND NOT n:Documento
+RETURN n.id, labels(n)[0], n.nome
+"""
+
+SECOND_HOP_QUERY = NEIGHBOR_QUERY.replace(
+    "WHERE (focus:Curso OR focus:Competencia)",
+    "WHERE focus:Curso AND type(relationship) IN ['PRE_REQUISITO', 'DESENVOLVE']",
+)
+
+
 class RetrievalRepository:
     def __init__(self, graph: Any) -> None:
         self.graph = graph
         self.warnings: list[str] = []
+        self._entities: list[GraphNode] | None = None
 
     def structured_search(self, plan: CypherPlan) -> list[SearchHit]:
         if plan.cypher not in CYPHER_CHOICES:
@@ -102,30 +124,86 @@ class RetrievalRepository:
         ).result_set
         return [self._row_to_hit(row, "fulltext") for row in rows]
 
+    def entities(self) -> list[GraphNode]:
+        if self._entities is None:
+            rows = self.graph.ro_query(ENTITY_QUERY).result_set
+            self._entities = [
+                GraphNode(str(row[0]), str(row[1]), str(row[2] or row[0]))
+                for row in rows
+            ]
+        return self._entities
+
+    def linked_entities(self, question: str) -> list[GraphNode]:
+        """Entidades citadas pelo nome, ignorando nomes contidos em outros."""
+        asked = normalize_text(question)
+        spans = []
+        for node in self.entities():
+            name = normalize_text(node.name)
+            if len(name) < 3:
+                continue
+            for match in re.finditer(rf"(?<!\w){re.escape(name)}(?!\w)", asked):
+                spans.append((match.start(), match.end(), node))
+        kept = [
+            span
+            for span in spans
+            if not any(
+                other is not span
+                and other[0] <= span[0]
+                and span[1] <= other[1]
+                and (other[1] - other[0]) > (span[1] - span[0])
+                for other in spans
+            )
+        ]
+        return list({span[2].id: span[2] for span in kept}.values())
+
+    def prerequisite_path(self, source_id: str, target_id: str) -> list[str]:
+        from trilhagraph.retrieval.algorithms import GraphAlgorithms
+
+        path = GraphAlgorithms(self.graph).shortest_path(
+            source_id, target_id, relationship_type="PRE_REQUISITO"
+        )
+        return path.node_ids if path else []
+
     def expand(
-        self, chunk_ids: list[str], *, max_hops: int = 2, limit: int = 200
+        self,
+        chunk_ids: list[str],
+        *,
+        max_hops: int = 2,
+        limit: int = 200,
+        question: str | None = None,
+        seed_ids: list[str] | None = None,
     ) -> tuple[list[GraphNode], list[GraphEdge]]:
         if max_hops not in {1, 2}:
             raise ValueError("max_hops deve ser 1 ou 2")
         if not chunk_ids:
             return [], []
 
-        seed_rows = self.graph.ro_query(
-            SEED_QUERY, params={"chunk_ids": chunk_ids}
-        ).result_set
-        nodes: dict[str, GraphNode] = {
-            str(row[0]): GraphNode(str(row[0]), str(row[1]), str(row[2] or row[0]))
-            for row in seed_rows
-        }
+        named = {n.id: n for n in self.linked_entities(question)} if question else {}
+        if seed_ids:
+            by_id = {n.id: n for n in self.entities()}
+            named.update({i: by_id[i] for i in seed_ids if i in by_id})
+        if named:
+            nodes = dict(named)
+        else:
+            seed_rows = self.graph.ro_query(
+                SEED_QUERY, params={"chunk_ids": chunk_ids}
+            ).result_set
+            nodes = {
+                str(row[0]): GraphNode(str(row[0]), str(row[1]), str(row[2] or row[0]))
+                for row in seed_rows
+            }
         frontier = list(nodes)
         edges: dict[tuple[str, str, str, str | None], GraphEdge] = {}
 
-        for _ in range(max_hops):
+        for hop in range(max_hops):
             if not frontier:
                 break
+            if hop == 0:
+                query = NAMED_HOP_QUERY if named else NEIGHBOR_QUERY
+            else:
+                query = SECOND_HOP_QUERY
             rows = self.graph.ro_query(
-                NEIGHBOR_QUERY,
-                params={"entity_ids": frontier, "limit": limit},
+                query, params={"entity_ids": frontier, "limit": limit}
             ).result_set
             next_frontier: list[str] = []
             for row in rows:

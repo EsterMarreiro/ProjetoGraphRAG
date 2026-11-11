@@ -8,9 +8,9 @@ from typing import Protocol
 
 from trilhagraph.ingestion.canonicalization import EntityCanonicalizer
 from trilhagraph.ingestion.chunking import split_document
+from trilhagraph.ingestion.llm import OpenAIClient
 from trilhagraph.ingestion.loader import load_documents
 from trilhagraph.ingestion.models import ExtractionResult
-from trilhagraph.ingestion.ollama import OllamaClient
 from trilhagraph.ingestion.writer import GraphWriter
 
 
@@ -44,7 +44,7 @@ class IngestionPipeline:
         *,
         writer: GraphWriter,
         extractor: Extractor,
-        ollama: OllamaClient,
+        llm: OpenAIClient,
         embedding_model: str,
         embedding_dimension: int,
         chunk_size: int = 1200,
@@ -52,7 +52,7 @@ class IngestionPipeline:
     ) -> None:
         self.writer = writer
         self.extractor = extractor
-        self.ollama = ollama
+        self.llm = llm
         self.embedding_model = embedding_model
         self.embedding_dimension = embedding_dimension
         self.chunk_size = chunk_size
@@ -83,7 +83,7 @@ class IngestionPipeline:
                     _entity_embedding_text(entity.name, entity.properties)
                     for entity in extraction.entities
                 ]
-                embeddings = self.ollama.embed(
+                embeddings = self.llm.embed(
                     model=self.embedding_model,
                     texts=[chunk.text, *entity_texts],
                     dimensions=self.embedding_dimension,

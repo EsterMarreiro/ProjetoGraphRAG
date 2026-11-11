@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run", type=Path, required=True)
+    parser.add_argument("--run", type=Path, help="mantido por compatibilidade")
     parser.add_argument("--authors-json", type=Path)
     args = parser.parse_args()
     authors = "Autoria em confirmação"
@@ -52,7 +52,7 @@ def main():
 
     slide(
         "TrilhaGraph\nPercursos de aprendizagem explicáveis",
-        f"{authors}\n\nGraphRAG com FalkorDB, modelos locais e fontes auditáveis.\n"
+        f"{authors}\n\nGraphRAG com FalkorDB, API OpenAI e fontes auditáveis.\n"
         "Catálogo didático fictício e autoral: não representa ofertas reais.",
     )
     slide(
@@ -70,7 +70,7 @@ def main():
         "Curso -> PRE_REQUISITO -> Curso -> DESENVOLVE -> Competência\n"
         "Trilha -> INCLUI -> Curso\n\n"
         "Cada relação preserva o trecho de origem. "
-        "FalkorDB aprovado para substituir Neo4j.",
+        "FalkorDB no lugar do Neo4j, com autorização presencial do professor.",
     )
     page = slide("Quatro pilares implementados", "")
     with pymupdf.open(ROOT / "docs/artigo/arquitetura.pdf") as diagram:
@@ -98,28 +98,22 @@ def main():
         "Limite: resultado de um catálogo pequeno e controlado. "
         "Não é acurácia em documentos externos.",
     )
-    reports = {}
-    for mode in ("hybrid", "vector"):
-        path = args.run / f"{mode}-report.json"
-        if path.exists():
-            reports[mode] = json.loads(path.read_text())
-    metrics = []
-    for mode in ("hybrid", "vector"):
-        if mode not in reports:
-            metrics.append(f"{mode}: execução pendente.")
-            continue
-        r = reports[mode]
-        status = "CONCLUÍDO" if r["total"] == 15 and r["completed"] == 15 else "PARCIAL"
-        metrics.append(
-            f"{mode}: {status}, {r['completed']}/15 casos; "
-            f"critérios de conteúdo {r['content_check_rate']:.0%}; "
-            f"recall de fontes {r['mean_source_recall']:.0%}."
-        )
     slide(
-        "Avaliação observada",
-        "\n\n".join(metrics) + "\n\nMesmos 15 casos e modelos. "
-        "O pipeline híbrido pode recuperar mais fontes. "
-        "A taxa de conteúdo não exige grafo no baseline.",
+        "Recuperação em grafo",
+        "Entidades citadas na pergunta viram sementes; expansão em 2 saltos.\n\n"
+        "Caminho mínimo por pré-requisitos, comunidades de Louvain e PageRank "
+        "entram no contexto do LLM.\n\n"
+        "Verificador descarta afirmações sem apoio; temas ausentes "
+        "(preço, certificado) recebem aviso fixo.",
+    )
+    slide(
+        "Avaliação: 38 casos, juiz com o corpus",
+        "Acertos (30 positivas | 8 negativas):\n"
+        "Pipeline inicial (gpt-4o-mini): 21 | 6\n"
+        "Versão final (gpt-4.1): 30 | 8, sem afirmações falsas\n"
+        "Baseline vetorial (gpt-4.1): 18 | 8\n\n"
+        "Ablação: recuperação +5, modelo +4, verificador 0.\n"
+        "Conjunto retido escrito pelos autores; juiz é um LLM.",
     )
     slide(
         "Demonstração e revisão factual",
@@ -127,15 +121,15 @@ def main():
         "Decomposição de problemas e sua trilha.\n"
         "2. Abrir fonte, subgrafo e relações de apoio.\n"
         "3. Perguntar preço ou certificado e verificar a abstenção.\n\n"
-        "Q02 mostrou que critérios automáticos podem aprovar uma resposta incompleta. "
-        "Relatar esse limite sem esconder o caso.",
+        "A primeira versão do juiz marcou como falsas afirmações verdadeiras; "
+        "o prompt foi corrigido e conferido com outro modelo.",
     )
     slide(
         "Conclusões e limites",
         "A ingestão reconstruiu o grafo controlado e preservou proveniência.\n\n"
         "A interface permite inspecionar fontes, nós, relações e Cypher.\n\n"
-        "Corpus sintético, sobre-recuperação e julgamento lexical "
-        "limitam a generalização. "
+        "Corpus sintético, contexto maior que o do baseline, perguntas retidas "
+        "escritas pelos autores e juiz LLM limitam a generalização. "
         "Não se implementou integralmente o framework KAG externo.",
     )
     output = ROOT / "docs/APRESENTACAO.pdf"

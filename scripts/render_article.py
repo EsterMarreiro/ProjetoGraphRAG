@@ -35,6 +35,20 @@ def inline(text: str) -> str:
         ("Edge et al. (2025)", "edge2025"),
         ("Liang et al. (2024)", "liang2024"),
         ("Cormack, Clarke e Buettcher (2009)", "cormack2009"),
+        ("Robertson e Zaragoza (2009)", "robertson2009"),
+        ("Francis et al. (2018)", "francis2018"),
+        ("Angles e Gutierrez (2008)", "angles2008"),
+        ("Page et al. (1999)", "page1999"),
+        ("Traag, Waltman e van Eck (2019)", "traag2019"),
+        ("Ji et al. (2023)", "ji2023"),
+        ("Gao et al. (2023)", "gao2023"),
+        ("Peng et al. (2024)", "peng2024"),
+        ("Es et al. (2024)", "es2024"),
+        ("Zheng et al. (2023)", "zheng2023"),
+        ("Dhuliawala et al. (2023)", "dhuliawala2023"),
+        ("Wilson (1927)", "wilson1927"),
+        ("Hagberg, Schult e Swart (2008)", "hagberg2008"),
+        ("Blondel et al. (2008)", "blondel2008"),
     ]:
         text = text.replace(original, r"\cite{" + key + "}")
     text = re.sub(r"\*\*(.+?)\*\*", r"\\textbf{\1}", text)
@@ -121,14 +135,20 @@ def main() -> None:
                         output.append(r"\hline")
                 output.extend([r"\hline", r"\end{tabular}", r"\end{table}"])
                 continue
-            figure = re.fullmatch(r"!\[(.+)\]\(artigo/([^)]+)\)", paragraph)
+            figure = re.fullmatch(
+                r"!\[(.+)\]\(artigo/([^)]+)\)(?:\{width=([0-9.]+)\})?", paragraph
+            )
             if figure:
-                caption, filename = figure.groups()
+                caption, filename, width = figure.groups()
                 output.extend(
                     [
                         r"\begin{figure}[ht]",
                         r"\centering",
-                        r"\includegraphics[width=\textwidth]{" + filename + "}",
+                        r"\includegraphics[width="
+                        + (width or "1")
+                        + r"\textwidth]{"
+                        + filename
+                        + "}",
                         r"\caption{" + escape(caption) + "}",
                         r"\end{figure}",
                     ]

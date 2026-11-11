@@ -72,7 +72,7 @@ def main() -> None:
                 report = IngestionPipeline(
                     writer=GraphWriter(connection.graph),
                     extractor=SmokeExtractor(),
-                    ollama=SmokeEmbeddings(),
+                    llm=SmokeEmbeddings(),
                     embedding_model="fake",
                     embedding_dimension=settings.embedding_dimension,
                 ).run(data_dir)
@@ -131,7 +131,7 @@ def main() -> None:
                 pipeline = IngestionPipeline(
                     writer=writer,
                     extractor=SmokeExtractor(),
-                    ollama=SmokeEmbeddings(),
+                    llm=SmokeEmbeddings(),
                     embedding_model="fake",
                     embedding_dimension=settings.embedding_dimension,
                 )

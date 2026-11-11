@@ -26,7 +26,7 @@ class SettingsTests(unittest.TestCase):
             "EMBEDDING_MODEL": "custom-embed",
             "EMBEDDING_DIMENSION": "1024",
             "CHAT_MODEL": "custom-chat",
-            "OLLAMA_BASE_URL": "http://ollama:11434/",
+            "OPENAI_BASE_URL": "https://proxy.local/v1/",
         }
         with patch.dict(os.environ, environment, clear=True):
             settings = Settings.from_env(load_file=False)
@@ -35,7 +35,7 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(settings.falkordb_port, 6380)
         self.assertEqual(settings.falkordb_password, "secret")
         self.assertEqual(settings.embedding_dimension, 1024)
-        self.assertEqual(settings.ollama_base_url, "http://ollama:11434")
+        self.assertEqual(settings.openai_base_url, "https://proxy.local/v1")
 
     def test_rejects_invalid_dimension(self) -> None:
         with (

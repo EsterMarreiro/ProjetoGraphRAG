@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True, slots=True)
@@ -14,11 +14,14 @@ class Settings:
     falkordb_port: int = 6379
     falkordb_password: str | None = None
     falkordb_graph: str = "trilhagraph_aprendizagem"
-    embedding_model: str = "nomic-embed-text"
+    embedding_model: str = "text-embedding-3-small"
     embedding_dimension: int = 768
-    chat_model: str = "qwen2.5:3b"
-    ollama_base_url: str = "http://localhost:11434"
-    ollama_timeout: int = 600
+    chat_model: str = "gpt-4.1"
+    extraction_model: str = "gpt-4o-mini"
+    verifier_model: str | None = "gpt-4.1"
+    openai_api_key: str | None = field(default=None, repr=False)
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_timeout: int = 120
     chunk_size: int = 1200
     chunk_overlap: int = 200
 
@@ -37,13 +40,18 @@ class Settings:
             falkordb_graph=os.getenv(
                 "FALKORDB_GRAPH", "trilhagraph_aprendizagem"
             ).strip(),
-            embedding_model=os.getenv("EMBEDDING_MODEL", "nomic-embed-text").strip(),
+            embedding_model=os.getenv(
+                "EMBEDDING_MODEL", "text-embedding-3-small"
+            ).strip(),
             embedding_dimension=_positive_int("EMBEDDING_DIMENSION", 768),
-            chat_model=os.getenv("CHAT_MODEL", "qwen2.5:3b").strip(),
-            ollama_base_url=os.getenv(
-                "OLLAMA_BASE_URL", "http://localhost:11434"
+            chat_model=os.getenv("CHAT_MODEL", "gpt-4.1").strip(),
+            verifier_model=_verifier(os.getenv("CHAT_MODEL", "gpt-4.1").strip()),
+            extraction_model=os.getenv("EXTRACTION_MODEL", "gpt-4o-mini").strip(),
+            openai_api_key=os.getenv("OPENAI_API_KEY", "").strip() or None,
+            openai_base_url=os.getenv(
+                "OPENAI_BASE_URL", "https://api.openai.com/v1"
             ).rstrip("/"),
-            ollama_timeout=_positive_int("OLLAMA_TIMEOUT", 600),
+            openai_timeout=_positive_int("OPENAI_TIMEOUT", 120),
             chunk_size=_positive_int("CHUNK_SIZE", 1200),
             chunk_overlap=_non_negative_int("CHUNK_OVERLAP", 200),
         )
@@ -56,7 +64,7 @@ class Settings:
             "FALKORDB_GRAPH": self.falkordb_graph,
             "EMBEDDING_MODEL": self.embedding_model,
             "CHAT_MODEL": self.chat_model,
-            "OLLAMA_BASE_URL": self.ollama_base_url,
+            "OPENAI_BASE_URL": self.openai_base_url,
         }
         empty = [name for name, value in required.items() if not value]
         if empty:
@@ -64,6 +72,14 @@ class Settings:
             raise ValueError(f"Configuracoes obrigatorias vazias: {names}")
         if self.chunk_overlap >= self.chunk_size:
             raise ValueError("CHUNK_OVERLAP deve ser menor que CHUNK_SIZE")
+
+
+def _verifier(chat_model: str) -> str | None:
+    """VERIFIER_MODEL vazio desliga a verificação; ausente usa o modelo de chat."""
+    value = os.getenv("VERIFIER_MODEL")
+    if value is None:
+        return chat_model
+    return value.strip() or None
 
 
 def _positive_int(name: str, default: int) -> int:

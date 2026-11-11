@@ -12,7 +12,7 @@ from trilhagraph.config import Settings
 from trilhagraph.evaluation import evaluate_service, load_cases, render_markdown
 from trilhagraph.graph import GraphConnection, SchemaManager
 from trilhagraph.ingestion.extraction import LearningExtractor
-from trilhagraph.ingestion.ollama import OllamaClient
+from trilhagraph.ingestion.llm import OpenAIClient
 from trilhagraph.ingestion.pipeline import IngestionPipeline
 from trilhagraph.ingestion.writer import GraphWriter
 from trilhagraph.retrieval.generation import AnswerGenerator
@@ -69,14 +69,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                     connection.graph,
                     embedding_dimension=settings.embedding_dimension,
                 ).ensure()
-                ollama = OllamaClient(
-                    settings.ollama_base_url, timeout=settings.ollama_timeout
-                )
+                llm = OpenAIClient.from_settings(settings)
                 payload = (
                     IngestionPipeline(
                         writer=GraphWriter(connection.graph),
-                        extractor=LearningExtractor(ollama, model=settings.chat_model),
-                        ollama=ollama,
+                        extractor=LearningExtractor(
+                            llm, model=settings.extraction_model
+                        ),
+                        llm=llm,
                         embedding_model=settings.embedding_model,
                         embedding_dimension=settings.embedding_dimension,
                         chunk_size=settings.chunk_size,
@@ -152,16 +152,20 @@ def main(argv: Sequence[str] | None = None) -> int:
 def _build_answering_service(
     settings: Settings, connection: GraphConnection
 ) -> QuestionAnsweringService:
-    ollama = OllamaClient(settings.ollama_base_url, timeout=settings.ollama_timeout)
+    llm = OpenAIClient.from_settings(settings)
     return QuestionAnsweringService(
         retriever=HybridRetriever(
             repository=RetrievalRepository(connection.graph),
-            ollama=ollama,
+            llm=llm,
             embedding_model=settings.embedding_model,
             embedding_dimension=settings.embedding_dimension,
-            planner=CypherPlanner(ollama, model=settings.chat_model),
+            planner=CypherPlanner(llm, model=settings.chat_model),
         ),
-        generator=AnswerGenerator(ollama, model=settings.chat_model),
+        generator=AnswerGenerator(
+            llm,
+            model=settings.chat_model,
+            verifier_model=settings.verifier_model,
+        ),
     )
 
 
