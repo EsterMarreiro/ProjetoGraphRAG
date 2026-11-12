@@ -74,7 +74,7 @@ ruff check src tests scripts
 
 ## Estado
 
-Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendentes a autoria e o envio ao GitHub. Resultado final, com o resolvedor: 41/42 nas positivas (baseline vetorial 23/42), 24/26 na fala coloquial (antes 12/26) e 6/10 nas negativas (antes 7/10; vetorial 5/10).
+Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendente o envio ao GitHub; a equipe consta em `docs/artigo/equipe.json`. Resultado final, com o resolvedor: 41/42 nas positivas (baseline vetorial 23/42), 24/26 na fala coloquial (antes 12/26) e 6/10 nas negativas (antes 7/10; vetorial 5/10).
 
 ## Limites
 

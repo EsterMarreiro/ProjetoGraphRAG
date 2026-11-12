@@ -63,13 +63,21 @@ def main() -> None:
     address = "Ciência da Computação"
     if args.authors_json:
         raw = json.loads(args.authors_json.read_text())
-        names = raw.get("authors", [])
+        people = raw.get("authors", [])
+        names = [p["name"] if isinstance(p, dict) else p for p in people]
         if not 2 <= len(names) <= 5 or not all(
             isinstance(n, str) and n.strip() for n in names
         ):
             raise ValueError("Informe de 2 a 5 autores reais")
-        authors = ", ".join(names)
-        address = raw["institution"]
+        emails = [p["email"] for p in people if isinstance(p, dict) and p.get("email")]
+        authors = " \\\\ ".join(
+            ", ".join(escape(n) for n in names[i : i + 2])
+            for i in range(0, len(names), 2)
+        )
+        address = escape(raw["institution"]) + "".join(
+            r"\email{" + escape(", ".join(emails[i : i + 2])) + "}"
+            for i in range(0, len(emails), 2)
+        )
     text = (ROOT / "docs/ARTIGO_TECNICO.md").read_text()
     lines = text.splitlines()
     title = lines[0].removeprefix("# ")
@@ -83,8 +91,8 @@ def main() -> None:
         r"\usepackage{graphicx}",
         r"\sloppy",
         r"\title{" + escape(title) + "}",
-        r"\author{" + escape(authors) + "}",
-        r"\address{" + escape(address) + "}",
+        r"\author{" + authors + "}",
+        r"\address{" + address + "}",
         r"\begin{document}",
         r"\maketitle",
     ]

@@ -51,7 +51,8 @@ def main():
     args = parser.parse_args()
     authors = "Autoria em confirmação"
     if args.authors_json:
-        authors = ", ".join(json.loads(args.authors_json.read_text())["authors"])
+        people = json.loads(args.authors_json.read_text())["authors"]
+        authors = ", ".join(p["name"] if isinstance(p, dict) else p for p in people)
     document = pymupdf.open()
 
     def slide(title, body):
