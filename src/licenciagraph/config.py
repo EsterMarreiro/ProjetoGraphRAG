@@ -37,9 +37,7 @@ class Settings:
             falkordb_host=os.getenv("FALKORDB_HOST", "localhost").strip(),
             falkordb_port=_positive_int("FALKORDB_PORT", 6379),
             falkordb_password=password,
-            falkordb_graph=os.getenv(
-                "FALKORDB_GRAPH", "licenciagraph"
-            ).strip(),
+            falkordb_graph=os.getenv("FALKORDB_GRAPH", "licenciagraph").strip(),
             embedding_model=os.getenv(
                 "EMBEDDING_MODEL", "text-embedding-3-small"
             ).strip(),
