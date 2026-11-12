@@ -7,16 +7,16 @@
    "documento:fichas-atividades:trecho:0011"
   ],
   "expected_concepts": [
-   "Anotação de Responsabilidade Técnica (ART)",
-   "Cadastro Ambiental Rural (CAR)",
-   "Autorização para Uso Alternativo do Solo",
-   "Cópia da Licença de Operação"
+   "Anotação de Responsabilidade",
+   "Cadastro Ambiental Rural",
+   "Cópia da autorização",
+   "Cópia da Licença"
   ],
   "expected_facts": [
-   "O checklist AG-02 exige Anotação de Responsabilidade Técnica (ART).",
-   "O checklist AG-02 exige Cadastro Ambiental Rural (CAR).",
-   "O checklist AG-02 exige Autorização para Uso Alternativo do Solo.",
-   "O checklist AG-02 exige Cópia da Licença de Operação."
+   "O checklist AG-02 exige: Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados.",
+   "O checklist AG-02 exige: Cadastro Ambiental Rural (CAR).",
+   "O checklist AG-02 exige: Cópia da autorização de uso alternativo do solo expedida pelo órgão ambiental competente, conforme Código.",
+   "O checklist AG-02 exige: Cópia da Licença anterior."
   ],
   "requires_multihop": true,
   "evidence": [
@@ -32,16 +32,16 @@
    "documento:fichas-atividades:trecho:0046"
   ],
   "expected_concepts": [
-   "Cadastro Ambiental Rural (CAR)",
-   "Certidão de uso e ocupação do solo",
-   "Comprovação de titularidade da área do empreendimento",
-   "Produto cartográfico georreferenciado em meio digital"
+   "Cadastro Ambiental Rural",
+   "Certidão de Uso",
+   "Comprovação de titularidade",
+   "Produto cartográfico georreferenciada"
   ],
   "expected_facts": [
-   "O checklist RS-04 exige Cadastro Ambiental Rural (CAR).",
-   "O checklist RS-04 exige Certidão de uso e ocupação do solo.",
-   "O checklist RS-04 exige Comprovação de titularidade da área do empreendimento.",
-   "O checklist RS-04 exige Produto cartográfico georreferenciado em meio digital."
+   "O checklist RS-04 exige: Cadastro Ambiental Rural (CAR).",
+   "O checklist RS-04 exige: Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação.",
+   "O checklist RS-04 exige: Comprovação de titularidade (propriedade, posse ou cessão de uso) da área do empreendimento ou carta de.",
+   "O checklist RS-04 exige: Produto cartográfico georreferenciada em meio analógico e digital (apresentados em extensão “*.kml” ou."
   ],
   "requires_multihop": true,
   "evidence": [
@@ -57,16 +57,16 @@
    "documento:fichas-atividades:trecho:0079"
   ],
   "expected_concepts": [
-   "Autorização para Uso Alternativo do Solo",
-   "Cópia da Licença de Operação",
-   "Produto cartográfico georreferenciado em meio digital",
-   "Projetos Executivo e Ambiental do empreendimento"
+   "Autorização para Uso",
+   "Cópia da Licença",
+   "Documentos cartográficos e",
+   "Projetos Executivo e"
   ],
   "expected_facts": [
-   "O checklist EN-07 exige Autorização para Uso Alternativo do Solo.",
-   "O checklist EN-07 exige Cópia da Licença de Operação.",
-   "O checklist EN-07 exige Produto cartográfico georreferenciado em meio digital.",
-   "O checklist EN-07 exige Projetos Executivo e Ambiental do empreendimento."
+   "O checklist EN-07 exige: Autorização para Uso Alternativo do Solo.",
+   "O checklist EN-07 exige: Cópia da Licença anterior.",
+   "O checklist EN-07 exige: Documentos cartográficos e dados geoespaciais em meio analógico e digital, de acordo com a Portaria SUDEMA Nº.",
+   "O checklist EN-07 exige: Projetos Executivo e Ambiental do empreendimento, contendo: Características geográficas, sociais e."
   ],
   "requires_multihop": true,
   "evidence": [
@@ -82,16 +82,16 @@
    "documento:fichas-atividades:trecho:0095"
   ],
   "expected_concepts": [
-   "Alvará de localização e funcionamento",
+   "Alvará de localização",
    "Certificado da ANP",
-   "Comprovante das instalações de água e esgoto",
-   "Cópia da Licença de Instalação"
+   "Comprovante de abastecimento",
+   "Cópia da Licença"
   ],
   "expected_facts": [
-   "O checklist CS-15 exige Alvará de localização e funcionamento.",
-   "O checklist CS-15 exige Certificado da ANP.",
-   "O checklist CS-15 exige Comprovante das instalações de água e esgoto.",
-   "O checklist CS-15 exige Cópia da Licença de Instalação."
+   "O checklist CS-15 exige: Alvará de localização e funcionamento fornecido pelo órgão municipal ou distrital onde a entidade tenha sede.",
+   "O checklist CS-15 exige: Certificado da ANP (para revendedores de GLP).",
+   "O checklist CS-15 exige: Comprovante de abastecimento de água e de ligação à rede de coleta de esgotos (Obs: caso o empreendimento.",
+   "O checklist CS-15 exige: Cópia da Licença de Instalação vigente."
   ],
   "requires_multihop": true,
   "evidence": [
@@ -107,16 +107,16 @@
    "documento:fichas-atividades:trecho:0314"
   ],
   "expected_concepts": [
-   "Anotação de Responsabilidade Técnica (ART)",
-   "Autorização para Uso Alternativo do Solo",
-   "Cópia da Licença de Operação",
-   "Cronograma de Execução da Obra"
+   "Anotação de Responsabilidade",
+   "Autorização para Uso",
+   "Cópia da Licença",
+   "Cronograma Físico de"
   ],
   "expected_facts": [
-   "O checklist OC-09 exige Anotação de Responsabilidade Técnica (ART).",
-   "O checklist OC-09 exige Autorização para Uso Alternativo do Solo.",
-   "O checklist OC-09 exige Cópia da Licença de Operação.",
-   "O checklist OC-09 exige Cronograma de Execução da Obra."
+   "O checklist OC-09 exige: Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados.",
+   "O checklist OC-09 exige: Autorização para Uso Alternativo do Solo.",
+   "O checklist OC-09 exige: Cópia da Licença anterior.",
+   "O checklist OC-09 exige: Cronograma Físico de Execução."
   ],
   "requires_multihop": true,
   "evidence": [
@@ -126,9 +126,59 @@
  },
  {
   "id": "D06",
-  "question": "Qual a validade e a letra de custo do licenciamento (Licença Ambiental Única (LAU)) para Bovinocultura e Bubalinocultura (Intensivo)?",
+  "question": "Que documentos específicos a Licença Prévia exige para Lavra Envasamento e Gaseificação de água mineral (Poço ou Surgência)?",
   "expected_sources": [
-   "documento:fichas-atividades:trecho:0014"
+   "documento:manual-checklists:trecho:0332",
+   "documento:fichas-atividades:trecho:0363"
+  ],
+  "expected_concepts": [
+   "Anotação de Responsabilidade",
+   "Requerimento de Autorização",
+   "Certidão de Registro",
+   "Certidão de Uso"
+  ],
+  "expected_facts": [
+   "O checklist LM-32 exige: Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados.",
+   "O checklist LM-32 exige: Requerimento de Autorização para Uso Alternativo do Solo, quando couber.",
+   "O checklist LM-32 exige: Certidão de Registro e Quitação emitida pelo CREA-PB, em caso de Pessoa Jurídica.",
+   "O checklist LM-32 exige: Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist LM-32: Licença Prévia (LP). Grupo de atividades: Lavra de minérios. LICENÇA PRÉVIA\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 469):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados\n6. Requerimento de Autorização para Uso Alternativo do Solo, quando couber\n7. Certidão de Registro e Quitação emitida pelo CREA-PB, em caso de Pessoa Jurídica\n8. Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação aplicável ao uso e ocupação do solo\n9. Comprovação de titularidade (propriedade, posse ou cessão de uso) da área do empreendimento ou carta de anuência do proprietário, com firma reconhecida,para áreas locadas, arrendadas, etc\n10. Cópia do extrato do processo ANM no Cadastro mineiro\n11. Declaração de viabilidade de abastecimento d’água e esgotamento sanitário emitida pela concessionária local\n12. Mapa de acesso ao local, com referências locacionais\n13. Planta Baixa atualizada do empreendimento\n14. Produto cartográfico georreferenciada em meio analógico e digital (apresentados em extensão “*.kml” ou “*.kmz”), devidamente assinado e acompanhada de documento de Responsabilidade Técnica, conforme Portaria SUDEMA 100/2022 de 27/12/2022\n15. Relatório de Controle Ambiental – RCA A depender do tipo, do porte, da localização e do potencial de impacto do empreendimento. A SUDEMA em qualquer momento da análise do processo poderá solicitar outras informações (estudos, projetos e documentos) caso julgue necessário melhor esclarecimento.",
+   "Atividade 64.16.499: Lavra Envasamento e Gaseificação de água mineral (Poço ou Surgência).\nGrupo 64 LAVRA DE MINÉRIOS. Subgrupo 64.16 LAVRA DE ÁGUA MINERAL.\nLicença de Alteração de Instalação (LAI): checklist LM-37.\nLicença de Alteração de Operação (LAO): checklist LM-38.\nLicença de Instalação (LI): checklist LM-33.\nLicença de Operação (LO): checklist LM-35.\nLicença de Operação Corretiva (LOC): checklist LM-29.\nLicença Prévia (LP): checklist LM-32.\nRenovação da Licença de Instalação (RLI): checklist LM-34.\nRenovação da Licença de Operação (RLO): checklist LM-36.\nPorte (critério: Capacidade de produção (L/H)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 2000, letra G, potencial poluidor ar M, água M, solo M.\n- Pequeno: > 2000 ≤ 2500, letra H, potencial poluidor ar M, água M, solo M.\n- Médio: > 2500 ≤ 3000, letra I, potencial poluidor ar M, água M, solo M.\n- Grande: > 3000 ≤ 6000, letra J, potencial poluidor ar M, água M, solo M.\n- Extraordinário: > 6000, letra K, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 429, NA-101 porte p. 159."
+  ]
+ },
+ {
+  "id": "D07",
+  "question": "Que documentos específicos a Licença de Instalação exige para Abate de reses e preparação de carne para terceiros?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0353",
+   "documento:fichas-atividades:trecho:0687"
+  ],
+  "expected_concepts": [
+   "Relatório de cumprimento",
+   "Autorização Ambiental para",
+   "Projeto do empreendimento",
+   "Projeto do sistema"
+  ],
+  "expected_facts": [
+   "O checklist AI-11 exige: Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da.",
+   "O checklist AI-11 exige: Autorização Ambiental para Uso Alternativo do Solo.",
+   "O checklist AI-11 exige: Projeto do empreendimento, layout das instalações e planta de locação, acompanhados do Memorial Descritivo do.",
+   "O checklist AI-11 exige: Projeto do sistema de abastecimento de água para consumo sanitário e industrial."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist AI-11: Licença de Instalação (LI). Grupo de atividades: Atividades industriais. ABATEDOURO/MATADOUROS LICENÇA DE INSTALAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 499):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal - Declaração de Faturamento ou Previsão anual emitido pelo contador\n4. Guia de Recolhimento devidamente quitada\n5. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior;\n6. Autorização Ambiental para Uso Alternativo do Solo;\n7. Projeto do empreendimento, layout das instalações e planta de locação, acompanhados do Memorial Descritivo do processo industrial, plantas, cortes e detalhes, conforme Instrução Normativa nº 02/2025/SUDEMA.\n8. Projeto do sistema de abastecimento de água para consumo sanitário e industrial.\n9. Projeto do sistema de tratamento e disposição final de efluentes sanitários.\n10. Projeto do sistema de tratamento e disposição final de efluentes industriais, conforme Instrução Normativa nº 02/2025/SUDEMA.\n11. Projeto de drenagem de águas pluviais\n12. Cronograma de execução das atividades\n13. Plano de Controle Ambiental.\n14. Plano de Gerenciamento de Resíduos da Construção Civil, conforme disposto na Resolução CONAMA nº 307/2002 e demais legislações aplicáveis.\n15. Certificado de Regularidade do Cadastro Técnico Federal (CTF/APP).\n16. Projeto e especificações técnicas de fontes térmicas, quando couber.\n17. Plano de Controle Ambiental – PCA, da fase de implantação, devidamente assinado;\n18. Relatório de Controle Ambiental – RCA, da fase de implantação, devidamente assinado;",
+   "Atividade 72.76.091: Abate de reses e preparação de carne para terceiros.\nGrupo 72 ATIVIDADES INDUSTRIAIS. Subgrupo 72.76 ABATE DE ANIMAIS E PREPARAÇÃO DE PESCADO, INCLUSIVE CONSERVAS E BANHA DE PORCO E OUTROS - CRIAÇÃO.\nLicença de Alteração de Instalação (LAI): checklist AI-05.\nLicença de Alteração de Operação (LAO): checklist AI-08.\nLicença de Instalação (LI): checklist AI-11.\nLicença de Operação (LO): checklist AI-12.\nLicença de Operação Corretiva (LOC): checklist AI-14.\nLicença Prévia (LP): checklist AI-10.\nRenovação da Licença de Instalação (RLI): checklist AI-04.\nRenovação da Licença de Operação (RLO): checklist AI-13.\nPorte (critério: CRITÉRIOS BASES I), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: sem faixa, letra F, potencial poluidor ar M, água G, solo G.\n- Pequeno: sem faixa, letra H, potencial poluidor ar M, água G, solo G.\n- Médio: sem faixa, letra L, potencial poluidor ar M, água G, solo G.\n- Grande: sem faixa, letra O, potencial poluidor ar M, água G, solo G.\n- Extraordinário: sem faixa, letra P, potencial poluidor ar M, água G, solo G.\nFontes: Manual p. 485, NA-101 porte p. 321."
+  ]
+ },
+ {
+  "id": "D08",
+  "question": "Qual a validade e a letra de custo de enquadramento do licenciamento (Licença Ambiental Única (LAU)) para Unidade de compostagem de resíduos orgânicos?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0047"
   ],
   "expected_concepts": [
    "5",
@@ -140,14 +190,14 @@
   ],
   "requires_multihop": false,
   "evidence": [
-   "Atividade 16.60.699: Bovinocultura e Bubalinocultura (Intensivo).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.60 BOVINOCULTURA E BUBALINOCULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Bovinocultura e Bubalinocultura (intensivo) superior a 650 e até 1.400 animais).\nLicença de Alteração de Instalação (LAI): checklist AG-12.\nLicença de Alteração de Operação (LAO): checklist AG-13.\nLicença de Instalação (LI): checklist AG-11.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-10.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de animais), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: sem faixa, potencial poluidor ar M, água M, solo M.\n- Pequeno: sem faixa, potencial poluidor ar M, água M, solo M.\n- Médio: >650 ≤1.400, letra I, potencial poluidor ar M, água M, solo M, (LAU).\n- Grande: >1.400 ≤ 3.000, letra J, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 78."
+   "Atividade 32.30.500: Unidade de compostagem de resíduos orgânicos.\nGrupo 32 COLETA, TRANSPORTE, ARMAZENAMENTO, DESTINAÇÃO E TRATAMENTO DE RESÍDUOS E PRODUTOS. Subgrupo 32.30 TRIAGEM DE RECICLÁVEIS E COMPOSTAGEM.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Unidade de triagem de produtos recicláveis orgânicos e inorgânicos, para até 10 ton (dez toneladas) por dia).\nLicença de Alteração de Instalação (LAI): checklist RS-06.\nLicença de Alteração de Operação (LAO): checklist RS-09.\nLicença de Instalação (LI): checklist RS-05.\nLicença de Operação (LO): checklist RS-07.\nLicença de Operação Corretiva (LOC): checklist RS-10.\nLicença Prévia (LP): checklist RS-04.\nRenovação da Licença de Instalação (RLI): checklist RS-05.1.\nRenovação da Licença de Operação (RLO): checklist RS-08.\nPorte (critério: TONELADA/DIA), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 10, letra F, potencial poluidor ar P, água P, solo P, (LAU).\n- Pequeno: > 10 ≤ 20, letra H, potencial poluidor ar P, água M, solo M.\n- Médio: > 20 ≤ 60, letra I, potencial poluidor ar P, água M, solo M.\n- Grande: > 60 ≤ 120, letra K, potencial poluidor ar P, água M, solo M.\n- Extraordinário: > 120, letra L, potencial poluidor ar P, água M, solo M.\nFontes: Manual p. 141, NA-101 porte p. 86."
   ]
  },
  {
-  "id": "D07",
-  "question": "Qual a validade e a letra de custo do licenciamento (Licença Ambiental por Adesão e Compromisso (LAC)) para Projeto de poços vazão até 2 m³/h (dois metros cúbicos) por hora?",
+  "id": "D09",
+  "question": "Qual a validade e a letra de custo de enquadramento do licenciamento (Licença Ambiental por Adesão e Compromisso (LAC)) para Sistema de Dessalinizadores de água para o abastecimento humano até 2 m³/h (dois metros cúbicos) por hora?",
   "expected_sources": [
-   "documento:fichas-atividades:trecho:0162"
+   "documento:fichas-atividades:trecho:0165"
   ],
   "expected_concepts": [
    "10",
@@ -159,22 +209,58 @@
   ],
   "requires_multihop": false,
   "evidence": [
-   "Atividade 49.14.429: Projeto de poços vazão até 2 m³/h (dois metros cúbicos) por hora.\nGrupo 49 ATIVIDADES PASSIVEIS DE LICENCIAMENTO POR ADESÃO E COMPROMISSO. Subgrupo 49.28 CAPTAÇÃO, TRATAMENTO E DISTRIBUIÇÃO DE ÁGUA.\nPode ser enquadrada em: Licença Ambiental por Adesão e Compromisso (LAC), com validade de 10 anos e letra de custo B.\nChecklist LAC-02 (Licença Ambiental por Adesão e Compromisso (LAC)).\nFontes: Manual p. 37, NA-101 lac p. 26."
+   "Atividade 49.14.715: Sistema de Dessalinizadores de água para o abastecimento humano até 2 m³/h (dois metros cúbicos) por hora.\nGrupo 49 ATIVIDADES PASSIVEIS DE LICENCIAMENTO POR ADESÃO E COMPROMISSO. Subgrupo 49.28 CAPTAÇÃO, TRATAMENTO E DISTRIBUIÇÃO DE ÁGUA.\nPode ser enquadrada em: Licença Ambiental por Adesão e Compromisso (LAC), com validade de 10 anos e letra de custo B.\nChecklist LAC-02 (Licença Ambiental por Adesão e Compromisso (LAC)).\nFontes: Manual p. 37, NA-101 lac p. 26."
   ]
  },
  {
-  "id": "D08",
+  "id": "D10",
+  "question": "Qual a validade e a letra de custo de enquadramento do licenciamento (Licença Ambiental por Adesão e Compromisso (LAC)) para Empreendimentos que tratam de aluguel de equipamentos recreativos e esportivos com área útil de 50 a 120m²?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0193"
+  ],
+  "expected_concepts": [
+   "5",
+   "B"
+  ],
+  "expected_facts": [
+   "A validade é de 5 anos.",
+   "A letra de custo é B."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 49.56.200: Empreendimentos que tratam de aluguel de equipamentos recreativos e esportivos com área útil de 50 a 120m².\nGrupo 49 ATIVIDADES PASSIVEIS DE LICENCIAMENTO POR ADESÃO E COMPROMISSO. Subgrupo 49.56 ATIVIDADES DE COMÉRCIO DE SERVIÇOS.\nPode ser enquadrada em: Licença Ambiental por Adesão e Compromisso (LAC), com validade de 5 anos e letra de custo B.\nChecklist LAC-04 (Licença Ambiental por Adesão e Compromisso (LAC)).\nFontes: Manual p. 37, NA-101 lac p. 27."
+  ]
+ },
+ {
+  "id": "D11",
+  "question": "Quanto custa, em UFR-PB, a análise da Licença Prévia para Autorização Para Uso Alternativo do Solo (AUS) de porte micro?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0001",
+   "documento:na101-custos:trecho:0001"
+  ],
+  "expected_concepts": [
+   "6 UFR-PB"
+  ],
+  "expected_facts": [
+   "A análise da Licença Prévia custa 6 UFR-PB."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Atividade 08.49.100: Autorização Para Uso Alternativo do Solo (AUS).\nGrupo 08 ATIVIDADES FLORESTAIS. Subgrupo 08.49 AUTORIZAÇÃO PARA ATIVIDADES FLORESTAIS.\nPode ser enquadrada em: Autorização Ambiental (AA), com validade de 1 ano.\nPode ser enquadrada em: Autorização Ambiental (AA).\nChecklist AF-01 (Autorização Ambiental (AA)).\nPorte (critério: Área do empreendimento (HA)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤3, letra C, potencial poluidor ar P, água P, solo P.\n- Pequeno: >3 ≤20, letra D, potencial poluidor ar P, água M, solo M.\n- Médio: >20 <50, letra E, potencial poluidor ar P, água G, solo G.\n- Grande: ≤50 ≤100, letra G, potencial poluidor ar P, água G, solo G, (EVA).\n- Extraordinário: >100, letra H, potencial poluidor ar P, água G, solo G, (*) (EIA /RIMA).\nFontes: Manual p. 69, NA-101 aa p. 35, NA-101 porte p. 72.",
+   "Custos de análise (NA-101, 5ª edição, Anexo B, p. 19). Cada letra de custo corresponde a um valor em UFR-PB conforme a modalidade:\nLetra A: LP 4 UFR-PB; LI 5 UFR-PB; LO 4 UFR-PB; LOP 7 UFR-PB; LAU 4 UFR-PB; LAC 4 UFR-PB; LAI 4 UFR-PB; LAO 4 UFR-PB; AA 4 UFR-PB; LTE 4 UFR-PB; LVPE 4 UFR-PB; REGISTRO isento.\nLetra B: LP 5 UFR-PB; LI 6 UFR-PB; LO 5 UFR-PB; LOP 14 UFR-PB; LAU 5 UFR-PB; LAC 5 UFR-PB; LAI 5 UFR-PB; LAO 5 UFR-PB; AA 5 UFR-PB; LTE 5 UFR-PB; LVPE 5 UFR-PB; REGISTRO 1 UFR-PB.\nLetra C: LP 6 UFR-PB; LI 7 UFR-PB; LO 6 UFR-PB; LOP 21 UFR-PB; LAU 6 UFR-PB; LAC 6 UFR-PB; LAI 6 UFR-PB; LAO 6 UFR-PB; AA 6 UFR-PB; LTE 6 UFR-PB; LVPE 6 UFR-PB; REGISTRO 2 UFR-PB.\nLetra D: LP 7 UFR-PB; LI 8 UFR-PB; LO 7 UFR-PB; LOP 35 UFR-PB; LAU 7 UFR-PB; LAC 7 UFR-PB; LAI 7 UFR-PB; LAO 7 UFR-PB; AA 7 UFR-PB; LTE 7 UFR-PB; LVPE 7 UFR-PB; REGISTRO 3 UFR-PB.\nLetra E: LP 8 UFR-PB; LI 11 UFR-PB; LO 8 UFR-PB; LOP 70 UFR-PB; LAU 8 UFR-PB; LAC 8 UFR-PB; LAI 8 UFR-PB; LAO 8 UFR-PB; AA 8 UFR-PB; LTE 8 UFR-PB; LVPE 8 UFR-PB; REGISTRO 4 UFR-PB.\nLetra F: LP 12 UFR-PB; LI 19 UFR-PB; LO 14 UFR-PB; LOP 140 UFR-PB; LAU 10 UFR-PB; LAC 10 UFR-PB; LAI 13 UFR-PB; LAO 13 UFR-PB; AA 13 UFR-PB; LTE 13 UFR-PB; LVPE 14 UFR-PB; REGISTRO 5 UFR-PB.\nLetra G: LP 17 UFR-PB; LI 25 UFR-PB; LO 21 UFR-PB; LOP 210 UFR-PB; LAU 12 UFR-PB; LAC 12 UFR-PB; LAI 15 UFR-PB; LAO 15 UFR-PB; AA 17 UFR-PB; LTE 17 UFR-PB; LVPE 21 UFR-PB; REGISTRO 6 UFR-PB.\nLetra H: LP 21 UFR-PB; LI 38 UFR-PB; LO 30 UFR-PB; LOP 280 UFR-PB; LAU 16 UFR-PB; LAC 14 UFR-PB; LAI 17 UFR-PB; LAO 17 UFR-PB; AA 21 UFR-PB; LTE 21 UFR-PB; LVPE 30 UFR-PB; REGISTRO 8 UFR-PB.\nLetra I: LP 30 UFR-PB; LI 55 UFR-PB; LO 42 UFR-PB; LOP 350 UFR-PB; LAU 20 UFR-PB; LAC 16 UFR-PB; LAI 25 UFR-PB; LAO 25 UFR-PB; AA 25 UFR-PB; LTE 25 UFR-PB; LVPE 42 UFR-PB; REGISTRO 10 UFR-PB."
+  ]
+ },
+ {
+  "id": "D12",
   "question": "Quanto custa, em UFR-PB, a análise da Licença de Instalação para Avicultura industrial (postura e corte) de porte médio?",
   "expected_sources": [
    "documento:fichas-atividades:trecho:0011",
    "documento:na101-custos:trecho:0001"
   ],
   "expected_concepts": [
-   "H",
    "38 UFR-PB"
   ],
   "expected_facts": [
-   "O porte médio usa a letra H.",
    "A análise da Licença de Instalação custa 38 UFR-PB."
   ],
   "requires_multihop": true,
@@ -184,45 +270,130 @@
   ]
  },
  {
-  "id": "D09",
-  "question": "Qual o porte de Avicultura industrial (postura e corte) com 920000 (número de cabeças)?",
+  "id": "D13",
+  "question": "Quanto custa, em UFR-PB, a análise da Licença de Operação para Estrutura para instalação de sistemas de telecomunicações e equipamentos afins instaladas em área de preservação de porte pequeno?",
   "expected_sources": [
-   "documento:fichas-atividades:trecho:0011"
+   "documento:fichas-atividades:trecho:0019",
+   "documento:na101-custos:trecho:0002"
   ],
   "expected_concepts": [
-   "Grande",
-   "I"
+   "95 UFR-PB"
   ],
   "expected_facts": [
-   "O porte é grande.",
-   "A letra de custo é I."
+   "A análise da Licença de Operação custa 95 UFR-PB."
   ],
-  "requires_multihop": false,
+  "requires_multihop": true,
   "evidence": [
-   "Atividade 16.15.599: Avicultura industrial (postura e corte).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.15 AVICULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Avicultura industrial (postura e corte) superior a 210.000 e até 840.000 animais em sistemas de criação de pressão negativa).\nLicença de Alteração de Instalação (LAI): checklist AG-04.\nLicença de Alteração de Operação (LAO): checklist AG-06.\nLicença de Instalação (LI): checklist AG-02.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-01.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de cabeças), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -, potencial poluidor ar P, água P, solo P.\n- Pequeno: -, potencial poluidor ar M, água M, solo M.\n- Médio: >210.000 ≤ 840.000, letra H, potencial poluidor ar M, água M, solo M, (LAU).\n- Grande: >840.000 ≤ 1.000.000, letra I, potencial poluidor ar M, água M, solo M.\n- Extraordinário: >1.000.000, letra J, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 77."
+   "Atividade 24.33.666: Estrutura para instalação de sistemas de telecomunicações e equipamentos afins instaladas em área de preservação.\nGrupo 24 SISTEMA DE TELECOMUNICAÇÕES. Subgrupo 24.33 ESTRUTURA.\nEncerramento: checklist ST-11.\nLicença de Alteração de Instalação (LAI): checklist ST-08.\nLicença de Alteração de Operação (LAO): checklist ST-09.\nLicença de Instalação (LI): checklist ST-02.\nLicença de Operação (LO): checklist ST-03.\nLicença de Operação Corretiva (LOC): checklist ST-06.\nLicença Prévia (LP): checklist ST-01.\nRenovação da Licença de Instalação (RLI): checklist ST-10.\nRenovação da Licença de Operação (RLO): checklist ST-04.\nPorte (critério: Área efetiva para implantação da estrutura (m²)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -.\n- Pequeno: ≤ 50, letra K, potencial poluidor ar P, água M, solo G.\n- Médio: >50 ≤ 300, letra L, potencial poluidor ar P, água M, solo G.\n- Grande: > 300, letra M, potencial poluidor ar P, água M, solo G.\n- Extraordinário: -.\nFontes: Manual p. 128, NA-101 porte p. 81.",
+   "Letra J: LP 38 UFR-PB; LI 80 UFR-PB; LO 64 UFR-PB; LOP 420 UFR-PB; LAU 25 UFR-PB; LAC 18 UFR-PB; LAI 38 UFR-PB; LAO 38 UFR-PB; AA 30 UFR-PB; LTE 30 UFR-PB; LVPE 64 UFR-PB; REGISTRO 14 UFR-PB.\nLetra K: LP 64 UFR-PB; LI 127 UFR-PB; LO 95 UFR-PB; LAU 30 UFR-PB; LAC 20 UFR-PB; LAI 52 UFR-PB; LAO 52 UFR-PB; AA 39 UFR-PB; LTE 39 UFR-PB; LVPE 95 UFR-PB; REGISTRO 16 UFR-PB.\nLetra L: LP 90 UFR-PB; LI 174 UFR-PB; LO 126 UFR-PB; LAU 35 UFR-PB; LAI 66 UFR-PB; LAO 66 UFR-PB; AA 48 UFR-PB; LTE 48 UFR-PB; LVPE 126 UFR-PB; REGISTRO 20 UFR-PB.\nLetra M: LP 120 UFR-PB; LI 234 UFR-PB; LO 180 UFR-PB; LAU 40 UFR-PB; LAI 90 UFR-PB; LAO 90 UFR-PB; AA 54 UFR-PB; LTE 54 UFR-PB; LVPE 180 UFR-PB; REGISTRO 25 UFR-PB.\nLetra N: LP 192 UFR-PB; LI 360 UFR-PB; LO 276 UFR-PB; LAU 50 UFR-PB; LAI 138 UFR-PB; LAO 138 UFR-PB; AA 60 UFR-PB; LTE 60 UFR-PB; LVPE 276 UFR-PB; REGISTRO 30 UFR-PB.\nLetra O: LP 240 UFR-PB; LI 474 UFR-PB; LO 360 UFR-PB; LAU 60 UFR-PB; LAI 180 UFR-PB; LAO 180 UFR-PB; AA 66 UFR-PB; LTE 66 UFR-PB; LVPE 360 UFR-PB; REGISTRO 40 UFR-PB.\nLetra P: LP 312 UFR-PB; LI 612 UFR-PB; LO 480 UFR-PB; LAU 90 UFR-PB; LAI 240 UFR-PB; LAO 240 UFR-PB; AA 72 UFR-PB; LTE 72 UFR-PB; LVPE 480 UFR-PB; REGISTRO 50 UFR-PB.\nLetra Q: LP 384 UFR-PB; LI 750 UFR-PB; LO 600 UFR-PB; LAU 120 UFR-PB; LAI 300 UFR-PB; LAO 300 UFR-PB; AA 78 UFR-PB; LTE 78 UFR-PB; LVPE 600 UFR-PB.\nLetra R: LP 456 UFR-PB; LI 888 UFR-PB; LO 720 UFR-PB; LAU 150 UFR-PB; AA 125 UFR-PB; LTE 125 UFR-PB.\nLetra S: AA 150 UFR-PB; LTE 150 UFR-PB.\nLicença Prévia e Instalação em conjunto somam LP + LI; Licença Prévia, Instalação e Operação em conjunto somam LP + LI + LO acrescidos de 10%."
   ]
  },
  {
-  "id": "D10",
-  "question": "Qual o porte de Autorização Para Uso Alternativo do Solo (AUS) com 11,5 (área do empreendimento (ha))?",
+  "id": "D14",
+  "question": "Quanto custa, em UFR-PB, a análise da Licença de Instalação para Autorização para Coleta e Transporte de Resíduos Classe I – Perigosos (atividade de caráter temporário) de porte pequeno?",
   "expected_sources": [
-   "documento:fichas-atividades:trecho:0001"
+   "documento:fichas-atividades:trecho:0040",
+   "documento:na101-custos:trecho:0002"
   ],
   "expected_concepts": [
-   "Pequeno",
-   "D"
+   "80 UFR-PB"
   ],
   "expected_facts": [
-   "O porte é pequeno.",
-   "A letra de custo é D."
+   "A análise da Licença de Instalação custa 80 UFR-PB."
   ],
-  "requires_multihop": false,
+  "requires_multihop": true,
   "evidence": [
-   "Atividade 08.49.100: Autorização Para Uso Alternativo do Solo (AUS).\nGrupo 08 ATIVIDADES FLORESTAIS. Subgrupo 08.49 AUTORIZAÇÃO PARA ATIVIDADES FLORESTAIS.\nPode ser enquadrada em: Autorização Ambiental (AA), com validade de 1 ano.\nPode ser enquadrada em: Autorização Ambiental (AA).\nChecklist AF-01 (Autorização Ambiental (AA)).\nPorte (critério: Área do empreendimento (HA)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤3, letra C, potencial poluidor ar P, água P, solo P.\n- Pequeno: >3 ≤20, letra D, potencial poluidor ar P, água M, solo M.\n- Médio: >20 <50, letra E, potencial poluidor ar P, água G, solo G.\n- Grande: ≤50 ≤100, letra G, potencial poluidor ar P, água G, solo G, (EVA).\n- Extraordinário: >100, letra H, potencial poluidor ar P, água G, solo G, (*) (EIA /RIMA).\nFontes: Manual p. 69, NA-101 aa p. 35, NA-101 porte p. 72."
+   "Atividade 32.15.143: Autorização para Coleta e Transporte de Resíduos Classe I – Perigosos (atividade de caráter temporário).\nGrupo 32 COLETA, TRANSPORTE, ARMAZENAMENTO, DESTINAÇÃO E TRATAMENTO DE RESÍDUOS E PRODUTOS. Subgrupo 32.15 COLETA E TRANSPORTE.\nPode ser enquadrada em: Autorização Ambiental (AA), com validade de 1 ano.\nPode ser enquadrada em: Licença de Transporte Estadual (LTE), com validade de 1 ano.\nAutorização Ambiental (AA): checklist RS-01.\nLicença de Transporte Estadual (LTE): checklist RS-01.\nPorte (critério: Nº VEÍCULOS), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -.\n- Pequeno: ≤ 5, letra J, potencial poluidor ar P, água G, solo G.\n- Médio: > 5 ≤ 10, letra L, potencial poluidor ar P, água G, solo G.\n- Grande: > 10 ≤ 15, letra M, potencial poluidor ar P, água G, solo G.\n- Extraordinário: > 15 ≤ 20, letra N, potencial poluidor ar P, água G, solo G.\nFontes: Manual p. 69, NA-101 aa p. 35, NA-101 lte p. 38, NA-101 porte p. 83.",
+   "Letra J: LP 38 UFR-PB; LI 80 UFR-PB; LO 64 UFR-PB; LOP 420 UFR-PB; LAU 25 UFR-PB; LAC 18 UFR-PB; LAI 38 UFR-PB; LAO 38 UFR-PB; AA 30 UFR-PB; LTE 30 UFR-PB; LVPE 64 UFR-PB; REGISTRO 14 UFR-PB.\nLetra K: LP 64 UFR-PB; LI 127 UFR-PB; LO 95 UFR-PB; LAU 30 UFR-PB; LAC 20 UFR-PB; LAI 52 UFR-PB; LAO 52 UFR-PB; AA 39 UFR-PB; LTE 39 UFR-PB; LVPE 95 UFR-PB; REGISTRO 16 UFR-PB.\nLetra L: LP 90 UFR-PB; LI 174 UFR-PB; LO 126 UFR-PB; LAU 35 UFR-PB; LAI 66 UFR-PB; LAO 66 UFR-PB; AA 48 UFR-PB; LTE 48 UFR-PB; LVPE 126 UFR-PB; REGISTRO 20 UFR-PB.\nLetra M: LP 120 UFR-PB; LI 234 UFR-PB; LO 180 UFR-PB; LAU 40 UFR-PB; LAI 90 UFR-PB; LAO 90 UFR-PB; AA 54 UFR-PB; LTE 54 UFR-PB; LVPE 180 UFR-PB; REGISTRO 25 UFR-PB.\nLetra N: LP 192 UFR-PB; LI 360 UFR-PB; LO 276 UFR-PB; LAU 50 UFR-PB; LAI 138 UFR-PB; LAO 138 UFR-PB; AA 60 UFR-PB; LTE 60 UFR-PB; LVPE 276 UFR-PB; REGISTRO 30 UFR-PB.\nLetra O: LP 240 UFR-PB; LI 474 UFR-PB; LO 360 UFR-PB; LAU 60 UFR-PB; LAI 180 UFR-PB; LAO 180 UFR-PB; AA 66 UFR-PB; LTE 66 UFR-PB; LVPE 360 UFR-PB; REGISTRO 40 UFR-PB.\nLetra P: LP 312 UFR-PB; LI 612 UFR-PB; LO 480 UFR-PB; LAU 90 UFR-PB; LAI 240 UFR-PB; LAO 240 UFR-PB; AA 72 UFR-PB; LTE 72 UFR-PB; LVPE 480 UFR-PB; REGISTRO 50 UFR-PB.\nLetra Q: LP 384 UFR-PB; LI 750 UFR-PB; LO 600 UFR-PB; LAU 120 UFR-PB; LAI 300 UFR-PB; LAO 300 UFR-PB; AA 78 UFR-PB; LTE 78 UFR-PB; LVPE 600 UFR-PB.\nLetra R: LP 456 UFR-PB; LI 888 UFR-PB; LO 720 UFR-PB; LAU 150 UFR-PB; AA 125 UFR-PB; LTE 125 UFR-PB.\nLetra S: AA 150 UFR-PB; LTE 150 UFR-PB.\nLicença Prévia e Instalação em conjunto somam LP + LI; Licença Prévia, Instalação e Operação em conjunto somam LP + LI + LO acrescidos de 10%."
   ]
  },
  {
-  "id": "D11",
+  "id": "D15",
+  "question": "Qual o porte de Autorização para uso do fogo Controlado com 19 (área do empreendimento (ha))?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0002"
+  ],
+  "expected_concepts": [
+   "Pequeno"
+  ],
+  "expected_facts": [
+   "O porte é pequeno."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 08.49.200: Autorização para uso do fogo Controlado.\nGrupo 08 ATIVIDADES FLORESTAIS. Subgrupo 08.49 AUTORIZAÇÃO PARA ATIVIDADES FLORESTAIS.\nPode ser enquadrada em: Autorização Ambiental (AA), com validade de 1 ano.\nPode ser enquadrada em: Autorização Ambiental (AA).\nChecklist AF-02 (Autorização Ambiental (AA)).\nPorte (critério: Área do empreendimento (HA)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤3, letra A, potencial poluidor ar G, água G, solo G.\n- Pequeno: >3 ≤35, letra B, potencial poluidor ar G, água G, solo G.\n- Médio: >35 ≤50, letra D, potencial poluidor ar G, água G, solo G.\n- Grande: >50 <100, letra F, potencial poluidor ar G, água G, solo G.\n- Extraordinário: ≥100, letra F, potencial poluidor ar G, água G, solo G, (*).\nFontes: Manual p. 69, NA-101 aa p. 35, NA-101 porte p. 72."
+  ]
+ },
+ {
+  "id": "D16",
+  "question": "Qual o porte de Ovinocaprinocultura (Intensivo) com 1100 (número de animais)?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0013"
+  ],
+  "expected_concepts": [
+   "Médio"
+  ],
+  "expected_facts": [
+   "O porte é médio."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 16.45.599: Ovinocaprinocultura (Intensivo).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.45 OVINOCAPRINOCULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Ovinocaprinocultura (intensivo) superior a 700 e até 1500 animais).\nLicença de Alteração de Instalação (LAI): checklist AG-12.\nLicença de Alteração de Operação (LAO): checklist AG-13.\nLicença de Instalação (LI): checklist AG-11.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-10.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de animais), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: sem faixa, potencial poluidor ar P, água P, solo P.\n- Pequeno: sem faixa, potencial poluidor ar P, água M, solo M.\n- Médio: >700 ≤1.500, letra G, potencial poluidor ar P, água M, solo M, (LAU).\n- Grande: >1.500 ≤3.500, letra H, potencial poluidor ar P, água M, solo M.\n- Extraordinário: >3.500, letra I, potencial poluidor ar P, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 78."
+  ]
+ },
+ {
+  "id": "D17",
+  "question": "Qual o porte de Ligação de cabeamento óptico de Telecomunicações, aéreo ou subterrâneo pelo Método não destrutivo com 75 ()?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0020"
+  ],
+  "expected_concepts": [
+   "Grande"
+  ],
+  "expected_facts": [
+   "O porte é grande."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 24.66.333: Ligação de cabeamento óptico de Telecomunicações, aéreo ou subterrâneo pelo Método não destrutivo.\nGrupo 24 SISTEMA DE TELECOMUNICAÇÕES. Subgrupo 24.66 CABEAMENTO ÓPTICO.\nChecklist ST-02 (Licença de Instalação (LI)).\nChecklist ST-03 (Licença de Operação (LO)).\nChecklist ST-04 (Renovação da Licença de Operação (RLO)).\nChecklist ST-05 (Licença Prévia (LP)).\nChecklist ST-07 (Licença de Operação Corretiva (LOC)).\nChecklist ST-08 (Licença de Alteração de Instalação (LAI)).\nChecklist ST-09 (Licença de Alteração de Operação (LAO)).\nChecklist ST-10 (Renovação da Licença de Instalação (RLI)).\nPorte (critério: não informado), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 5, letra E, potencial poluidor ar P, água P, solo P.\n- Pequeno: > 5 ≤ 10, letra G, potencial poluidor ar P, água P, solo P.\n- Médio: > 10 ≤ 50, letra J, potencial poluidor ar M, água P, solo M.\n- Grande: > 50 ≤ 100, letra K, potencial poluidor ar M, água P, solo M.\n- Extraordinário: > 100, letra L, potencial poluidor ar M, água P, solo M.\nFontes: Manual p. 128, NA-101 porte p. 81."
+  ]
+ },
+ {
+  "id": "D18",
+  "question": "A atividade \"Ovinocaprinocultura (extensivo e semi-intensivo)\" é passível de dispensa de licenciamento ambiental?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0026"
+  ],
+  "expected_concepts": [
+   "dispensa"
+  ],
+  "expected_facts": [
+   "A atividade está na lista de atividades passíveis de dispensa de licenciamento."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 25.272: Ovinocaprinocultura (extensivo e semi-intensivo).\nGrupo 25 AGROPECUÁRIA.\nPode ser enquadrada em: Dispensa de Licenciamento Ambiental.\nFontes: Manual p. 32, NA-101 dispensa p. 20."
+  ]
+ },
+ {
+  "id": "D19",
+  "question": "A atividade \"Meliponicultura\" é passível de dispensa de licenciamento ambiental?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0037"
+  ],
+  "expected_concepts": [
+   "dispensa"
+  ],
+  "expected_facts": [
+   "A atividade está na lista de atividades passíveis de dispensa de licenciamento."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 25.930: Meliponicultura.\nGrupo 25 AGROPECUÁRIA.\nPode ser enquadrada em: Dispensa de Licenciamento Ambiental.\nFontes: Manual p. 32, NA-101 dispensa p. 20."
+  ]
+ },
+ {
+  "id": "D20",
   "question": "Em que ordem se obtêm a Licença Prévia, a de Instalação e a de Operação?",
   "expected_sources": [
    "documento:fluxo-licencas:trecho:0001"
@@ -242,74 +413,7 @@
   ]
  },
  {
-  "id": "D12",
-  "question": "A atividade \"Ovinocaprinocultura (extensivo e semi-intensivo)\" é passível de dispensa de licenciamento ambiental?",
-  "expected_sources": [
-   "documento:fichas-atividades:trecho:0026"
-  ],
-  "expected_concepts": [
-   "dispensa"
-  ],
-  "expected_facts": [
-   "A atividade está na lista de atividades passíveis de dispensa de licenciamento."
-  ],
-  "requires_multihop": false,
-  "evidence": [
-   "Atividade 25.272: Ovinocaprinocultura (extensivo e semi-intensivo).\nGrupo 25 AGROPECUÁRIA.\nPode ser enquadrada em: Dispensa de Licenciamento Ambiental.\nFontes: Manual p. 32, NA-101 dispensa p. 20."
-  ]
- },
- {
-  "id": "D13",
-  "question": "Que documentos específicos a Licença de Operação exige para Avicultura industrial (postura e corte)?",
-  "expected_sources": [
-   "documento:manual-checklists:trecho:0035",
-   "documento:fichas-atividades:trecho:0011"
-  ],
-  "expected_concepts": [
-   "Anotação de Responsabilidade Técnica (ART)",
-   "Cópia da Licença de Operação",
-   "Relatório de cumprimento de condicionantes",
-   "Memorial Descritivo"
-  ],
-  "expected_facts": [
-   "O checklist AG-03 exige Anotação de Responsabilidade Técnica (ART).",
-   "O checklist AG-03 exige Cópia da Licença de Operação.",
-   "O checklist AG-03 exige Relatório de cumprimento de condicionantes.",
-   "O checklist AG-03 exige Memorial Descritivo."
-  ],
-  "requires_multihop": true,
-  "evidence": [
-   "Checklist AG-03: Licença de Operação (LO). Grupo de atividades: Agropecuária. LICENÇA DE OPERAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 102):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados\n6. Cópia da Licença anterior\n7. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior;\n8. Memorial Descritivo: Descrição detalhada da atividade, incluindo informações sobre a capacidade de produção, manejo, infraestrutura e práticas adotadas\n9. Plano de Gestão de Resíduos: Detalhes sobre como os resíduos gerados serão gerenciados e descartados, incluindo a destinação adequada.\n10. Relatório Fotografico\n11. Certificações de Bem-Estar Animal: Documentos que garantam que as práticas de manejo atendem aos padrões de bem-estar animal\n12. Declaração de Responsabilidade: Documento assinado pelo responsável técnico ou proprietário, assumindo a responsabilidade pela conformidade com a legislação ambiental.\n13. Plano de Controle Ambiental – PCA, da fase de operação, devidamente assinado;\n14. Relatório de Controle Ambiental – RCA, da fase de operação, devidamente assinado;",
-   "Atividade 16.15.599: Avicultura industrial (postura e corte).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.15 AVICULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Avicultura industrial (postura e corte) superior a 210.000 e até 840.000 animais em sistemas de criação de pressão negativa).\nLicença de Alteração de Instalação (LAI): checklist AG-04.\nLicença de Alteração de Operação (LAO): checklist AG-06.\nLicença de Instalação (LI): checklist AG-02.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-01.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de cabeças), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -, potencial poluidor ar P, água P, solo P.\n- Pequeno: -, potencial poluidor ar M, água M, solo M.\n- Médio: >210.000 ≤ 840.000, letra H, potencial poluidor ar M, água M, solo M, (LAU).\n- Grande: >840.000 ≤ 1.000.000, letra I, potencial poluidor ar M, água M, solo M.\n- Extraordinário: >1.000.000, letra J, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 77."
-  ]
- },
- {
-  "id": "D14",
-  "question": "Que documentos específicos a Licença Prévia exige para Abate de reses e preparação de carne para terceiros?",
-  "expected_sources": [
-   "documento:manual-checklists:trecho:0352",
-   "documento:fichas-atividades:trecho:0687"
-  ],
-  "expected_concepts": [
-   "Comprovação de titularidade da área do empreendimento",
-   "Certidão de uso e ocupação do solo",
-   "Memorial Descritivo",
-   "Anteprojeto do empreendimento"
-  ],
-  "expected_facts": [
-   "O checklist AI-10 exige Comprovação de titularidade da área do empreendimento.",
-   "O checklist AI-10 exige Certidão de uso e ocupação do solo.",
-   "O checklist AI-10 exige Memorial Descritivo.",
-   "O checklist AI-10 exige Anteprojeto do empreendimento."
-  ],
-  "requires_multihop": true,
-  "evidence": [
-   "Checklist AI-10: Licença Prévia (LP). Grupo de atividades: Atividades industriais. ABATEDOURO/MATADOUROS LICENÇA PRÉVIA\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 498):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal - Declaração de Faturamento ou Previsão anual emitido pelo contador\n4. Guia de Recolhimento devidamente quitada\n5. Comprovação de titularidade (propriedade, posse ou cessão de uso) da área do empreendimento ou carta de anuência do proprietário (para áreas locadas, arrendadas etc.)\n6. Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade do local e do tipo de empreendimento ou atividade com a legislação aplicável ao uso e ocupação do solo, no nome do requerente, expedida há, no máximo, 12 meses da data de abertura do processo;\n7. Memorial Descritivo contendo informações da área pretendida para implantação do empreendimento e descrição das atividades que serão exercidas.\n8. Anteprojeto ou Projeto Básico.\n9. Declaração de viabilidade técnica para abastecimento de água, emitida pela concessionária, ou descrição de solução alternativa que atenda à demanda do projeto apresentado.\n10. Planta de situação e locação do empreendimento georreferenciada em meio analógico (impresso) e digital (apresentados em extensão \"*.kml\" ou \"*.kmz\"), devidamente assinada e acompanhada de documento de Responsabilidade Técnica, conforme Portaria SUDEMA 100/2022 de 27/12/2022.\n11. Documentos de responsabilidade técnica referentes aos projetos e planos elaborados.",
-   "Atividade 72.76.091: Abate de reses e preparação de carne para terceiros.\nGrupo 72 ATIVIDADES INDUSTRIAIS. Subgrupo 72.76 ABATE DE ANIMAIS E PREPARAÇÃO DE PESCADO, INCLUSIVE CONSERVAS E BANHA DE PORCO E OUTROS - CRIAÇÃO.\nLicença de Alteração de Instalação (LAI): checklist AI-05.\nLicença de Alteração de Operação (LAO): checklist AI-08.\nLicença de Instalação (LI): checklist AI-11.\nLicença de Operação (LO): checklist AI-12.\nLicença de Operação Corretiva (LOC): checklist AI-14.\nLicença Prévia (LP): checklist AI-10.\nRenovação da Licença de Instalação (RLI): checklist AI-04.\nRenovação da Licença de Operação (RLO): checklist AI-13.\nPorte (critério: CRITÉRIOS BASES I), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: sem faixa, letra F, potencial poluidor ar M, água G, solo G.\n- Pequeno: sem faixa, letra H, potencial poluidor ar M, água G, solo G.\n- Médio: sem faixa, letra L, potencial poluidor ar M, água G, solo G.\n- Grande: sem faixa, letra O, potencial poluidor ar M, água G, solo G.\n- Extraordinário: sem faixa, letra P, potencial poluidor ar M, água G, solo G.\nFontes: Manual p. 485, NA-101 porte p. 321."
-  ]
- },
- {
-  "id": "D15",
+  "id": "D21",
   "question": "Qual o endereço do núcleo regional da SUDEMA em Campina Grande?",
   "expected_sources": [
    "documento:site-unidades-regionais:trecho:0001"

@@ -37,6 +37,29 @@ from licenciagraph.retrieval.retriever import HybridRetriever
 from licenciagraph.retrieval.service import QuestionAnsweringService
 
 ROOT = Path(__file__).resolve().parents[1]
+PRICES_USD_PER_MILLION = {
+    "gpt-4.1": (2.0, 8.0),
+    "gpt-4o": (2.5, 10.0),
+    "gpt-4o-mini": (0.15, 0.6),
+    "text-embedding-3-small": (0.02, 0.0),
+}
+
+
+def cost_usd(*clients) -> tuple[float, dict]:
+    totals: dict[str, dict[str, int]] = {}
+    for client in clients:
+        for model, usage in client.usage.items():
+            entry = totals.setdefault(model, {"input": 0, "output": 0, "calls": 0})
+            for key in entry:
+                entry[key] += usage[key]
+    total = 0.0
+    for model, usage in totals.items():
+        price_in, price_out = PRICES_USD_PER_MILLION.get(model, (0.0, 0.0))
+        usage["usd"] = round(
+            (usage["input"] * price_in + usage["output"] * price_out) / 1e6, 4
+        )
+        total += usage["usd"]
+    return round(total, 4), totals
 
 
 def write_json(path: Path, value):
@@ -102,6 +125,7 @@ def main():
     parser.add_argument("--limit", type=int)
     parser.add_argument("--case-ids", nargs="+")
     parser.add_argument("--skip-negatives", action="store_true")
+    parser.add_argument("--skip-positives", action="store_true")
     parser.add_argument(
         "--modes", nargs="+", choices=["hybrid", "vector"], default=["hybrid", "vector"]
     )
@@ -114,6 +138,7 @@ def main():
         default=ROOT / "data/evaluation/negative_questions.json",
     )
     parser.add_argument("--judge-model", default="gpt-4o")
+    parser.add_argument("--max-usd", type=float, default=0.0)
     parser.add_argument("--no-judge", action="store_true")
     parser.add_argument("--tag", default="")
     parser.add_argument("--output", type=Path)
@@ -129,6 +154,8 @@ def main():
         cases = [case for case in cases if case.id in args.case_ids]
     if args.limit:
         cases = cases[: args.limit]
+    if args.skip_positives:
+        cases = []
     directory = args.output or ROOT / "artifacts" / datetime.now(UTC).strftime(
         "run-%Y%m%dT%H%M%SZ"
     )
@@ -136,11 +163,15 @@ def main():
     capture(directory)
     settings = Settings.from_env()
     llm = AuditedLLM(settings, directory)
-    judge = (
-        None
-        if args.no_judge
-        else Judge(OpenAIClient.from_settings(settings), model=args.judge_model)
-    )
+    judge_client = OpenAIClient.from_settings(settings)
+    judge = None if args.no_judge else Judge(judge_client, model=args.judge_model)
+
+    def check_budget() -> None:
+        spent, usage = cost_usd(llm, judge_client)
+        write_json(directory / "usage.json", {"usd": spent, "models": usage})
+        if args.max_usd and spent > args.max_usd:
+            raise SystemExit(f"Orçamento excedido: US$ {spent:.2f} > {args.max_usd}")
+
     metadata = {
         "started_at": datetime.now(UTC).isoformat(),
         "python": platform.python_version(),
@@ -221,6 +252,7 @@ def main():
             facts = {item["id"]: item["expected_facts"] for item in raw_cases}
             for case in cases:
                 print(f"{mode}: {case.id}", flush=True)
+                check_budget()
                 results.extend(evaluate_service(service, [case]).cases)
                 summary = _summarize(results)
                 write_json(directory / f"{mode}-report.json", summary.as_dict())
@@ -250,6 +282,7 @@ def main():
             neg_verdicts = []
             for case in negatives:
                 print(f"{mode}: {case['id']}", flush=True)
+                check_budget()
                 try:
                     answer = service.answer(case["question"])
                     entry = {
@@ -263,6 +296,7 @@ def main():
                             case["question"],
                             answer.answer,
                             case["expected_behavior"],
+                            case.get("evidence", ()),
                         )
                         neg_verdicts.append(verdict)
                         entry["judge"] = asdict(verdict)
@@ -280,6 +314,8 @@ def main():
                         "cases": [asdict(v) for v in neg_verdicts],
                     },
                 )
+    check_budget()
+    metadata["usd"] = cost_usd(llm, judge_client)[0]
     metadata["completed_at"] = datetime.now(UTC).isoformat()
     write_json(directory / "metadata.json", metadata)
     print("Experimento concluído", flush=True)

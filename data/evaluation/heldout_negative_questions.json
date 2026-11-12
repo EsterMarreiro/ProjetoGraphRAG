@@ -7,21 +7,30 @@
  {
   "id": "HN02",
   "question": "O IBAMA emite a Licença de Instalação de uma granja de aves na Paraíba?",
-  "expected_behavior": "As normas tratam do licenciamento estadual pela SUDEMA; licenciamento federal não consta."
+  "expected_behavior": "As normas tratam do licenciamento estadual pela SUDEMA; licenciamento federal não consta.",
+  "evidence": [
+   "Manual de Licenciamento Ambiental, 5ª edição: capítulos I a IV. 140/2011 – respeitadas a repartição da competência comum para as questõe ambientais entre todos os entes federados – as fontes efetivas ou potencialmente poluidoras em âmbito estadual devem realizar o seu respectivo licenciamento ambiental na SUDEMA: “As fontes efetivas ou potencialmente poluidoras, ficam obrigadas a se registrar na SUDEMA e a requererem autorização da mesma ou do COPAM, conforme o caso, para a construção, instalação, ampliação e funcionamento das atividades consideradas efetivas ou potencialmente poluidoras”. É nesse sentido que se encontram listados no Anexo 1 da Resolução CONAMA n° 237/1997, na Norma Administrativa (NA) n° 101 do Conselho de Proteção Ambiental (COPAM) de 13 de janeiro de 1998 (dispõe sobre remuneração de análise de projetos para expedição de Licença), no Manual de Controle Ambiental: Licenciamento/Fiscalização/Automonitoramento publicado pela SUDEMA e no Art. 18 do Decreto Estadual nº 21.120/2000, todos os empreendimentos e/ou atividades passíveis de licenciamento ambiental. Com a publicação do Decreto Estadual nº 41.560 de 27 de agosto de 2021 que revogou o Decreto Estadual nº 28.951, de 19 de dezembro de 2007, e o artigo 17 do Decreto Estadual nº 21.120, de 20 de junho de 2000, todo o processo de licenciamento ambiental, bem como suas tipologias de licenças ambientais, seus prazos de validade e estudos foram revisados e"
+  ]
  },
  {
   "id": "HN03",
   "question": "Quanto custa em reais a análise da Licença Prévia da avicultura industrial de porte médio?",
-  "expected_behavior": "O custo consta em UFR-PB; a conversão em reais não consta."
+  "expected_behavior": "O custo consta em UFR-PB; a conversão em reais não consta.",
+  "evidence": [
+   "Custos de análise (NA-101, 5ª edição, Anexo B, p. 19). Cada letra de custo corresponde a um valor em UFR-PB conforme a modalidade:\nLetra A: LP 4 UFR-PB; LI 5 UFR-PB; LO 4 UFR-PB; LOP 7 UFR-PB; LAU 4 UFR-PB; LAC 4 UFR-PB; LAI 4 UFR-PB; LAO 4 UFR-PB; AA 4 UFR-PB; LTE 4 UFR-PB; LVPE 4 UFR-PB; REGISTRO isento.\nLetra B: LP 5 UFR-PB; LI 6 UFR-PB; LO 5 UFR-PB; LOP 14 UFR-PB; LAU 5 UFR-PB; LAC 5 UFR-PB; LAI 5 UFR-PB; LAO 5 UFR-PB; AA 5 UFR-PB; LTE 5 UFR-PB; LVPE 5 UFR-PB; REGISTRO 1 UFR-PB.\nLetra C: LP 6 UFR-PB; LI 7 UFR-PB; LO 6 UFR-PB; LOP 21 UFR-PB; LAU 6 UFR-PB; LAC 6 UFR-PB; LAI 6 UFR-PB; LAO 6 UFR-PB; AA 6 UFR-PB; LTE 6 UFR-PB; LVPE 6 UFR-PB; REGISTRO 2 UFR-PB.\nLetra D: LP 7 UFR-PB; LI 8 UFR-PB; LO 7 UFR-PB; LOP 35 UFR-PB; LAU 7 UFR-PB; LAC 7 UFR-PB; LAI 7 UFR-PB; LAO 7 UFR-PB; AA 7 UFR-PB; LTE 7 UFR-PB; LVPE 7 UFR-PB; REGISTRO 3 UFR-PB.\nLetra E: LP 8 UFR-PB; LI 11 UFR-PB; LO 8 UFR-PB; LOP 70 UFR-PB; LAU 8 UFR-PB; LAC 8 UFR-PB; LAI 8 UFR-PB; LAO 8 UFR-PB; AA 8 UFR-PB; LTE 8 UFR-PB; LVPE 8 UFR-PB; REGISTRO 4 UFR-PB.\nLetra F: LP 12 UFR-PB; LI 19 UFR-PB; LO 14 UFR-PB; LOP 140 UFR-PB; LAU 10 UFR-PB; LAC 10 UFR-PB; LAI 13 UFR-PB; LAO 13 UFR-PB; AA 13 UFR-PB; LTE 13 UFR-PB; LVPE 14 UFR-PB; REGISTRO 5 UFR-PB.\nLetra G: LP 17 UFR-PB; LI 25 UFR-PB; LO 21 UFR-PB; LOP 210 UFR-PB; LAU 12 UFR-PB; LAC 12 UFR-PB; LAI 15 UFR-PB; LAO 15 UFR-PB; AA 17 UFR-PB; LTE 17 UFR-PB; LVPE 21 UFR-PB; REGISTRO 6 UFR-PB.\nLetra H: LP 21 UFR-PB; LI 38 UFR-PB; LO 30 UFR-PB; LOP 280 UFR-PB; LAU 16 UFR-PB; LAC 14 UFR-PB; LAI 17 UFR-PB; LAO 17 UFR-PB; AA 21 UFR-PB; LTE 21 UFR-PB; LVPE 30 UFR-PB; REGISTRO 8 UFR-PB.\nLetra I: LP 30 UFR-PB; LI 55 UFR-PB; LO 42 UFR-PB; LOP 350 UFR-PB; LAU 20 UFR-PB; LAC 16 UFR-PB; LAI 25 UFR-PB; LAO 25 UFR-PB; AA 25 UFR-PB; LTE 25 UFR-PB; LVPE 42 UFR-PB; REGISTRO 10 UFR-PB."
+  ]
  },
  {
   "id": "HN04",
-  "question": "A Licença de Operação da avicultura industrial dispensa o Cadastro Ambiental Rural?",
-  "expected_behavior": "Premissa falsa ou não confirmada; as normas devem ser consultadas e a premissa não confirmada."
+  "question": "Qual o telefone do núcleo regional da SUDEMA em Sousa?",
+  "expected_behavior": "Não existe núcleo regional em Sousa nas fontes; há núcleos em Campina Grande e Patos.",
+  "evidence": [
+   "Unidades regionais da SUDEMA. Unidades Regionais Atualmente, a SUDEMA possui 3 unidades físicas distribuídas estrategicamente pelo Estado na Paraíba. SUDEMA UNIDADE SEDE JOÃO PESSOA (SEDE PROVISÓRIA) Av. Monsenhor Walfredo Leal, 560 - Tambiá - João Pessoa-PB CEP 58.020-540 - CGC 08.329.849/0001-15 Telefone: (83) 3690-1993 Localização SUDEMA - Núcleo Regional de Campina Grande Av. Rio Branco, 60 - Centro - Campina Grande - PB - CEP 58.400-058 Telefone: (83) 3690-1997 Localização SUDEMA - Núcleo Regional de Patos R. Vidal de Negreiros, número 529 - bairro Brasília - Patos - PB - CEP 58.700-330 Telefone: (83) 3690-1998 E-mail: nrpatos@sudema.pb.gov.br Localização Uso de cookies OK"
+  ]
  },
  {
   "id": "HN05",
-  "question": "Qual o telefone do núcleo regional da SUDEMA em Sousa?",
-  "expected_behavior": "Não existe núcleo regional em Sousa nas fontes; há núcleos em Campina Grande e Patos."
+  "question": "Que documentos a SUDEMA exige para licenciar uma plataforma de petróleo offshore?",
+  "expected_behavior": "Essa atividade não consta da lista de atividades das normas."
  }
 ]

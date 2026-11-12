@@ -8,7 +8,6 @@ from dataclasses import asdict
 from pathlib import Path
 
 from licenciagraph.config import Settings
-from licenciagraph.evaluation.evaluator import load_cases
 from licenciagraph.evaluation.judge import Judge, summarize
 from licenciagraph.ingestion.llm import OpenAIClient
 
@@ -20,40 +19,45 @@ def main() -> None:
     parser.add_argument("run", type=Path)
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--negatives", type=Path, required=True)
-    parser.add_argument("--judge-model", default="gpt-4.1")
+    parser.add_argument("--judge-model", default="gpt-4o")
+    parser.add_argument("--negatives-only", action="store_true")
     parser.add_argument("--modes", nargs="+", default=["hybrid", "vector"])
     args = parser.parse_args()
     settings = Settings.from_env()
-    judge = Judge.from_directory(
-        OpenAIClient.from_settings(settings),
-        model=args.judge_model,
-        directory=ROOT / "data/raw",
-    )
-    cases = {case.id: case for case in load_cases(args.dataset)}
+    client = OpenAIClient.from_settings(settings)
+    judge = Judge(client, model=args.judge_model)
+    cases = {c["id"]: c for c in json.loads(args.dataset.read_text())}
     negatives = {n["id"]: n for n in json.loads(args.negatives.read_text())}
     for mode in args.modes:
         report = args.run / f"{mode}-report.json"
         if not report.exists():
             continue
         verdicts = []
-        for item in json.loads(report.read_text())["cases"]:
+        for item in (
+            [] if args.negatives_only else json.loads(report.read_text())["cases"]
+        ):
             case = cases.get(item["id"])
             if case and not item.get("error"):
                 verdicts.append(
                     judge.judge_positive(
-                        case.id, case.question, item["answer"], case.expected_concepts
+                        case["id"],
+                        case["question"],
+                        item["answer"],
+                        case["expected_facts"],
+                        case["evidence"],
                     )
                 )
-        (args.run / f"{mode}-judge.json").write_text(
-            json.dumps(
-                {
-                    "summary": summarize(verdicts),
-                    "cases": [asdict(v) for v in verdicts],
-                },
-                ensure_ascii=False,
-                indent=2,
+        if not args.negatives_only:
+            (args.run / f"{mode}-judge.json").write_text(
+                json.dumps(
+                    {
+                        "summary": summarize(verdicts),
+                        "cases": [asdict(v) for v in verdicts],
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
             )
-        )
         neg = []
         for nid, case in negatives.items():
             path = args.run / f"{mode}-{nid}.json"
@@ -67,6 +71,7 @@ def main() -> None:
                         case["question"],
                         data["result"]["answer"],
                         case["expected_behavior"],
+                        case.get("evidence", ()),
                     )
                 )
         (args.run / f"{mode}-judge-negatives.json").write_text(

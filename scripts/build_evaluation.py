@@ -37,6 +37,9 @@ MODALITY_QUESTION = {
 }
 
 
+TEXT_BY_CHUNK: dict[str, str] = {}
+
+
 class Builder:
     def __init__(self, curated: Path) -> None:
         self.data = load_curated(curated)
@@ -50,6 +53,7 @@ class Builder:
                 first = planned.chunk.text.split("\n", 1)[0]
                 self.chunk_ids[first] = planned.chunk.id
                 self.chunk_text[planned.chunk.id] = planned.chunk.text
+        TEXT_BY_CHUNK.update(self.chunk_text)
         self.letters = self.data["na101"]["cost_letters_ufr"]
 
     def activity_chunk(self, code: str) -> str:
@@ -69,16 +73,21 @@ class Builder:
     def _lookup(self, first_line: str) -> str:
         return self.chunk_ids[first_line]
 
-    def distinctive_documents(self, key: str, limit: int = 4) -> list[str]:
-        names = []
+    def distinctive_documents(self, key: str, limit: int = 4) -> list[tuple[str, str]]:
+        """(trecho do texto original, termo curto) dos itens específicos."""
+        found: list[tuple[str, str]] = []
         for entry in self.checklists[key]["items"]:
-            text = entry["text"].lower()
-            if text.startswith(GENERIC_ITEMS):
+            text = re.sub(r"\s+", " ", entry["text"]).strip().rstrip(";.")
+            if text.lower().startswith(GENERIC_ITEMS) or len(text) < 12:
                 continue
             record = self.documents.get(_item_key(entry["text"]))
-            if record and record["name"] not in names:
-                names.append(record["name"])
-        return names[:limit]
+            if record is None:
+                continue
+            short = text[:110].rsplit(" ", 1)[0] if len(text) > 110 else text
+            term = " ".join(text.split()[:3]).strip(",;:()")
+            if all(short != other for other, _ in found):
+                found.append((short, term))
+        return found[:limit]
 
     def pick(self, group: str, modality: str, offset: int = 0) -> tuple[str, str]:
         found = []
@@ -120,7 +129,7 @@ def case(
 def documents_case(builder: Builder, case_id: str, group: str, modality: str, nth=0):
     code, key = builder.pick(group, modality, nth)
     activity = builder.activities[code]
-    names = builder.distinctive_documents(key)
+    items = builder.distinctive_documents(key)
     modality_name = MODALITY_QUESTION.get(modality, modality)
     checklist = builder.checklists[key]
     return case(
@@ -129,8 +138,8 @@ def documents_case(builder: Builder, case_id: str, group: str, modality: str, nt
         f"Que documentos específicos a {modality_name} exige para "
         f"{activity['name'].rstrip('.')}?",
         [builder.checklist_chunk(key), builder.activity_chunk(code)],
-        [f"O checklist {checklist['code']} exige {name}." for name in names],
-        names,
+        [f"O checklist {checklist['code']} exige: {text}." for text, _ in items],
+        [term for _, term in items],
         multihop=True,
     )
 
@@ -148,7 +157,7 @@ def validity_case(builder: Builder, case_id: str, regime: str, offset: int = 0):
     return case(
         builder,
         case_id,
-        f"Qual a validade e a letra de custo do licenciamento "
+        f"Qual a validade e a letra de custo de enquadramento do licenciamento "
         f"({modality}) para {activity['name'][:110].rstrip('.;')}?",
         [builder.activity_chunk(code)],
         [
@@ -168,12 +177,9 @@ def cost_case(builder: Builder, case_id: str, code: str, porte: str, modality: s
         case_id,
         f"Quanto custa, em UFR-PB, a análise da {MODALITY_QUESTION[modality]} para "
         f"{activity['name'].rstrip('.')} de porte {PORTE_LABELS[porte].lower()}?",
-        [builder.activity_chunk(code), _cost_chunk(builder)],
-        [
-            f"O porte {PORTE_LABELS[porte].lower()} usa a letra {row['letter']}.",
-            f"A análise da {MODALITY_QUESTION[modality]} custa {value} UFR-PB.",
-        ],
-        [row["letter"], f"{value} UFR-PB"],
+        [builder.activity_chunk(code), _cost_chunk(builder, row["letter"])],
+        [f"A análise da {MODALITY_QUESTION[modality]} custa {value} UFR-PB."],
+        [f"{value} UFR-PB"],
         multihop=True,
     )
 
@@ -190,11 +196,8 @@ def porte_case(builder: Builder, case_id: str, code: str, porte: str):
         f"Qual o porte de {activity['name'].rstrip('.')} com {_format(value)} "
         f"({unit.lower()})?",
         [builder.activity_chunk(code)],
-        [
-            f"O porte é {PORTE_LABELS[porte].lower()}.",
-            f"A letra de custo é {row['letter']}.",
-        ],
-        [PORTE_LABELS[porte], row["letter"]],
+        [f"O porte é {PORTE_LABELS[porte].lower()}."],
+        [PORTE_LABELS[porte]],
     )
 
 
@@ -213,11 +216,12 @@ def _format(value: float) -> str:
     return text.replace(".", ",")
 
 
-def _cost_chunk(builder: Builder) -> str:
+def _cost_chunk(builder: Builder, letter: str = "A") -> str:
     return next(
-        c
-        for first, c in builder.chunk_ids.items()
-        if first.startswith("Custos de análise")
+        chunk_id
+        for chunk_id, text in builder.chunk_text.items()
+        if chunk_id.startswith("documento:na101-custos")
+        and f"\nLetra {letter}:" in f"\n{text}"
     )
 
 
@@ -225,12 +229,25 @@ def _cost_column(modality: str) -> str:
     return {"LAI": "LAI_LAO", "LAO": "LAI_LAO"}.get(modality, modality)
 
 
-def sequence_case(builder: Builder, case_id: str):
+def sequence_case(builder: Builder, case_id: str, variant: bool = False):
     chunk = next(
         c
         for first, c in builder.chunk_ids.items()
         if first.startswith("Sequência das licenças")
     )
+    if variant:
+        return case(
+            builder,
+            case_id,
+            "Quais licenças de alteração dependem de uma licença anterior válida e de qual?",
+            [chunk],
+            [
+                "A Licença de Alteração de Instalação (LAI) depende da validade da Licença de Instalação (LI).",
+                "A Licença de Alteração de Operação (LAO) depende da validade da Licença de Operação (LO).",
+            ],
+            ["LAI", "LAO"],
+            multihop=True,
+        )
     return case(
         builder,
         case_id,
@@ -282,117 +299,166 @@ def site_case(
     return case(builder, case_id, question, [chunk_id], facts, concepts)
 
 
-def negative(case_id: str, question: str, expected: str) -> dict[str, Any]:
-    return {"id": case_id, "question": question, "expected_behavior": expected}
+def prose_text(curated: Path, *needles: str) -> list[str]:
+    found = []
+    prose = json.loads((curated / "prosa.json").read_text(encoding="utf-8"))
+    for document in prose["documents"]:
+        for chunk in document["chunks"]:
+            if any(needle in chunk["text"] for needle in needles):
+                found.append(f"{document['title']}. {chunk['text']}")
+    return found
+
+
+def site_text(curated: Path, doc: str) -> list[str]:
+    site = json.loads((curated / "site.json").read_text(encoding="utf-8"))
+    document = next(d for d in site["documents"] if d["id"] == doc)
+    return [f"{document['title']}. {c['text']}" for c in document["chunks"]]
+
+
+def negative(
+    case_id: str,
+    question: str,
+    expected: str,
+    chunks: list[str] | None = None,
+    texts: list[str] | None = None,
+) -> dict[str, Any]:
+    entry = {"id": case_id, "question": question, "expected_behavior": expected}
+    evidence = [TEXT_BY_CHUNK[c] for c in chunks or []] + list(texts or [])
+    if evidence:
+        entry["evidence"] = evidence
+    return entry
+
+
+def usable_bands(builder: Builder) -> dict[str, list[tuple[str, str]]]:
+    """(atividade, porte) com faixa numérica e letra de custo, por grupo."""
+    by_group: dict[str, list[tuple[str, str]]] = {}
+    for code, activity in sorted(builder.activities.items()):
+        table = activity["table"]
+        if not table or not activity["name"]:
+            continue
+        for row in table["rows"]:
+            if (
+                row["letter"]
+                and row["porte"] in PORTE_LABELS
+                and parse_interval(row["criterion"])
+            ):
+                by_group.setdefault(code[:2], []).append((code, row["porte"]))
+    return by_group
+
+
+def round_robin(groups: dict[str, list], start: int, count: int) -> list:
+    """Intercala os grupos para a amostra cobrir áreas diferentes."""
+    order = sorted(groups)
+    picked, round_ = [], start
+    while len(picked) < count and round_ < start + 50:
+        for group in order:
+            items = groups[group]
+            if round_ < len(items) and len(picked) < count:
+                picked.append(items[round_])
+        round_ += 1
+    return picked
+
+
+def valid_documents(builder: Builder, group: str, modality: str, nth: int):
+    found = []
+    for offset in range(80):
+        try:
+            _, key = builder.pick(group, modality, offset)
+        except IndexError:
+            break
+        if len(builder.distinctive_documents(key)) >= 3:
+            found.append(offset)
+    if not found:
+        raise IndexError(f"sem checklist com 3 documentos em {group}/{modality}")
+    return found[min(nth, len(found) - 1)]
+
+
+DOC_PLAN = [
+    ("16", "LI"), ("32", "LP"), ("40", "LI"), ("48", "LO"),
+    ("56", "LI"), ("64", "LP"), ("72", "LI"), ("64", "LO"),
+    ("32", "LO"), ("48", "LP"), ("56", "LO"), ("40", "LO"),
+]  # fmt: skip
+HELDOUT_DOC_PLAN = [
+    ("16", "LO"), ("32", "LI"), ("40", "LP"), ("48", "LI"),
+    ("56", "LP"), ("64", "LI"), ("72", "LO"), ("64", "LAI"),
+    ("32", "LOC"), ("48", "RLO"), ("56", "RLO"), ("40", "LOC"),
+]  # fmt: skip
+
+
+def split(builder: Builder, prefix: str, held: bool) -> list[dict[str, Any]]:
+    cases: list[dict[str, Any]] = []
+    plan = HELDOUT_DOC_PLAN if held else DOC_PLAN
+    nth = 1 if held else 0
+    for group, modality in plan[:7]:
+        offset = valid_documents(builder, group, modality, nth)
+        cases.append(
+            documents_case(
+                builder, f"{prefix}{len(cases) + 1:02d}", group, modality, offset
+            )
+        )
+    lau = 8 if not held else 22
+    lac = 5 if not held else 30
+    cases.append(validity_case(builder, f"{prefix}{len(cases) + 1:02d}", "lau", lau))
+    for k in range(2):
+        cases.append(
+            validity_case(builder, f"{prefix}{len(cases) + 1:02d}", "lac", lac + 6 * k)
+        )
+    bands = usable_bands(builder)
+    start = 1 if held else 0
+    modalities = ["LP", "LI", "LO", "LI", "LO"]
+    for k, (code, porte) in enumerate(round_robin(bands, start, 4)):
+        modality = modalities[k % len(modalities)]
+        cases.append(
+            cost_case(builder, f"{prefix}{len(cases) + 1:02d}", code, porte, modality)
+        )
+    for code, porte in round_robin(bands, start + 6, 3):
+        cases.append(porte_case(builder, f"{prefix}{len(cases) + 1:02d}", code, porte))
+    base = 4 if not held else 40
+    for k in range(2):
+        cases.append(
+            dispensa_case(builder, f"{prefix}{len(cases) + 1:02d}", base + 11 * k)
+        )
+    cases.append(sequence_case(builder, f"{prefix}{len(cases) + 1:02d}", variant=held))
+    return cases
 
 
 def build(curated: Path) -> dict[str, list[dict[str, Any]]]:
     b = Builder(curated)
-    dev = [
-        documents_case(b, "D01", "16", "LI"),
-        documents_case(b, "D02", "32", "LP"),
-        documents_case(b, "D03", "40", "LI"),
-        documents_case(b, "D04", "48", "LO"),
-        documents_case(b, "D05", "56", "LI"),
-        validity_case(b, "D06", "lau", 3),
-        validity_case(b, "D07", "lac", 2),
-        cost_case(b, "D08", "16.15.599", "MEDIO", "LI"),
-        cost_case(b, "D09", "08.49.100", "PEQUENO", "LI")
-        if False
-        else porte_case(b, "D09", "16.15.599", "GRANDE"),
-        porte_case(b, "D10", "08.49.100", "PEQUENO"),
-        sequence_case(b, "D11"),
-        dispensa_case(b, "D12", 4),
-        documents_case(b, "D13", "16", "LO"),
-        documents_case(b, "D14", "72", "LP"),
+    dev = split(b, "D", held=False)
+    heldout = split(b, "H", held=True)
+    dev.append(
         site_case(
-            b,
-            "D15",
-            curated,
-            "site-unidades-regionais",
+            b, f"D{len(dev) + 1:02d}", curated, "site-unidades-regionais",
             "Qual o endereço do núcleo regional da SUDEMA em Campina Grande?",
             ["O núcleo regional de Campina Grande fica na Av. Rio Branco, 60, Centro."],
             ["Rio Branco", "60"],
-        ),
-    ]
-    heldout = [
-        documents_case(b, "H01", "24", "LP"),
-        documents_case(b, "H02", "64", "LI"),
-        documents_case(b, "H03", "32", "LO", 2),
-        documents_case(b, "H04", "48", "LP", 3),
-        documents_case(b, "H05", "56", "LO", 4),
-        validity_case(b, "H06", "lau", 10),
-        validity_case(b, "H07", "lac", 20),
-        cost_case(b, "H08", "16.15.599", "GRANDE", "LO"),
-        cost_case(b, "H09", "08.49.100", "GRANDE", "LP")
-        if False
-        else porte_case(b, "H09", "08.49.100", "MEDIO"),
-        porte_case(b, "H10", "16.15.599", "MEDIO"),
-        dispensa_case(b, "H11", 30),
-        documents_case(b, "H12", "32", "LI", 5),
-        documents_case(b, "H13", "48", "LI", 7),
-        documents_case(b, "H14", "40", "LO", 3),
+        )
+    )  # fmt: skip
+    heldout.append(
         site_case(
-            b,
-            "H15",
-            curated,
-            "site-copam",
+            b, f"H{len(heldout) + 1:02d}", curated, "site-copam",
             "A qual secretaria o COPAM está vinculado atualmente?",
-            [
-                "O COPAM está vinculado à Secretaria de Estado do Meio Ambiente e Sustentabilidade (SEMAS)."
-            ],
+            ["O COPAM está vinculado à Secretaria de Estado do Meio Ambiente e Sustentabilidade (SEMAS)."],
             ["SEMAS", "Meio Ambiente e Sustentabilidade"],
-        ),
-    ]
+        )
+    )  # fmt: skip
+    cost_chunk = _cost_chunk(b, "H")
     dev_negative = [
-        negative(
-            "DN01",
-            "Qual o valor, em reais, da UFR-PB em vigor para converter o custo da licença?",
-            "A informação não consta das normas; o valor da UFR-PB em reais não é informado.",
-        ),
-        negative(
-            "DN02",
-            "Quais documentos a CETESB exige para licenciar uma fábrica em São Paulo?",
-            "Licenciamento de outro estado não consta das normas da SUDEMA.",
-        ),
-        negative(
-            "DN03",
-            "A SUDEMA garante a aprovação da licença em 30 dias?",
-            "As normas não garantem aprovação em 30 dias; o prazo de análise é outro.",
-        ),
-        negative(
-            "DN04",
-            "Que documentos são exigidos para licenciar uma fábrica de foguetes espaciais?",
-            "Essa atividade não consta da lista de atividades das normas.",
-        ),
-    ]
+        negative("DN01", "Qual o valor, em reais, da UFR-PB em vigor para converter o custo da licença?", "A informação não consta das normas; o valor da UFR-PB em reais não é informado."),
+        negative("DN02", "Quais documentos a CETESB exige para licenciar uma fábrica em São Paulo?", "Licenciamento de outro estado não consta das normas da SUDEMA."),
+        negative("DN03", "A SUDEMA garante a aprovação da licença em 30 dias?", "As normas não garantem aprovação em 30 dias; os prazos de análise são de 3 a 6 meses conforme a licença.", None, prose_text(
+            curated, "6 (seis) meses", "prazo de até 06 (seis) meses", "trinta (30) dias úteis"
+        )),
+        negative("DN04", "Que documentos são exigidos para licenciar uma fábrica de foguetes espaciais?", "Essa atividade não consta da lista de atividades das normas."),
+        negative("DN05", "Posso pagar a taxa de análise da licença em 12 parcelas?", "O parcelamento da taxa não consta das normas consultadas."),
+    ]  # fmt: skip
     heldout_negative = [
-        negative(
-            "HN01",
-            "Qual a multa em reais por operar uma avicultura sem licença?",
-            "Valores de multa não constam das fontes consultadas.",
-        ),
-        negative(
-            "HN02",
-            "O IBAMA emite a Licença de Instalação de uma granja de aves na Paraíba?",
-            "As normas tratam do licenciamento estadual pela SUDEMA; licenciamento federal não consta.",
-        ),
-        negative(
-            "HN03",
-            "Quanto custa em reais a análise da Licença Prévia da avicultura industrial de porte médio?",
-            "O custo consta em UFR-PB; a conversão em reais não consta.",
-        ),
-        negative(
-            "HN04",
-            "A Licença de Operação da avicultura industrial dispensa o Cadastro Ambiental Rural?",
-            "Premissa falsa ou não confirmada; as normas devem ser consultadas e a premissa não confirmada.",
-        ),
-        negative(
-            "HN05",
-            "Qual o telefone do núcleo regional da SUDEMA em Sousa?",
-            "Não existe núcleo regional em Sousa nas fontes; há núcleos em Campina Grande e Patos.",
-        ),
-    ]
+        negative("HN01", "Qual a multa em reais por operar uma avicultura sem licença?", "Valores de multa não constam das fontes consultadas."),
+        negative("HN02", "O IBAMA emite a Licença de Instalação de uma granja de aves na Paraíba?", "As normas tratam do licenciamento estadual pela SUDEMA; licenciamento federal não consta.", None, prose_text(curated, "licenciamento ambiental na SUDEMA")),
+        negative("HN03", "Quanto custa em reais a análise da Licença Prévia da avicultura industrial de porte médio?", "O custo consta em UFR-PB; a conversão em reais não consta.", [cost_chunk]),
+        negative("HN04", "Qual o telefone do núcleo regional da SUDEMA em Sousa?", "Não existe núcleo regional em Sousa nas fontes; há núcleos em Campina Grande e Patos.", None, site_text(curated, "site-unidades-regionais")),
+        negative("HN05", "Que documentos a SUDEMA exige para licenciar uma plataforma de petróleo offshore?", "Essa atividade não consta da lista de atividades das normas."),
+    ]  # fmt: skip
     return {
         "questions": dev,
         "heldout_questions": heldout,

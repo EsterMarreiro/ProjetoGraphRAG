@@ -23,6 +23,7 @@ class OpenAIClient:
         if not api_key:
             raise ValueError("OPENAI_API_KEY nao configurada")
         self._api_key = api_key
+        self.usage: dict[str, dict[str, int]] = {}
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.max_retries = max_retries
@@ -95,6 +96,16 @@ class OpenAIClient:
         response = self._request("GET", "/models", None, timeout=10)
         return [str(item["id"]) for item in response.get("data", []) if "id" in item]
 
+    def _count_usage(self, payload: dict[str, Any] | None, result: dict[str, Any]):
+        usage = result.get("usage") or {}
+        model = str((payload or {}).get("model", "?"))
+        entry = self.usage.setdefault(model, {"input": 0, "output": 0, "calls": 0})
+        entry["input"] += int(
+            usage.get("prompt_tokens") or usage.get("total_tokens") or 0
+        )
+        entry["output"] += int(usage.get("completion_tokens") or 0)
+        entry["calls"] += 1
+
     def _request(
         self,
         method: str,
@@ -134,5 +145,6 @@ class OpenAIClient:
                 ) from exc
             if not isinstance(result, dict):
                 raise ValueError("OpenAI retornou um JSON inesperado")
+            self._count_usage(payload, result)
             return result
         raise AssertionError("Fluxo de requisicao inesperado")

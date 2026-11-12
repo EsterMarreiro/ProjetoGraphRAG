@@ -101,6 +101,20 @@ class Judge:
         self.client = client
         self.model = model
 
+    def _chat(self, **kwargs) -> dict[str, Any]:
+        try:
+            return self.client.chat_json(**kwargs)
+        except ValueError as exc:
+            if "truncada" not in str(exc):
+                raise
+        options = self.client.chat_options
+        previous = options["max_tokens"]
+        options["max_tokens"] = 8192
+        try:
+            return self.client.chat_json(**kwargs)
+        finally:
+            options["max_tokens"] = previous
+
     @staticmethod
     def _problems(claims, *, strict: bool) -> tuple[str, ...]:
         bad = {"contradicted"} if not strict else {"contradicted", "unverifiable"}
@@ -109,7 +123,7 @@ class Judge:
     def judge_positive(
         self, case_id: str, question: str, answer: str, facts, evidence
     ) -> Verdict:
-        raw = self.client.chat_json(
+        raw = self._chat(
             model=self.model,
             system=POSITIVE_SYSTEM,
             prompt=(
@@ -137,7 +151,7 @@ class Judge:
     def judge_negative(
         self, case_id: str, question: str, answer: str, expected, evidence=()
     ) -> Verdict:
-        raw = self.client.chat_json(
+        raw = self._chat(
             model=self.model,
             system=NEGATIVE_SYSTEM,
             prompt=(

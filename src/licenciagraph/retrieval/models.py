@@ -46,6 +46,8 @@ class RetrievalResult:
     warnings: list[str] = field(default_factory=list)
     paths: list[list[str]] = field(default_factory=list)
     communities: list[list[str]] = field(default_factory=list)
+    similar: list[str] = field(default_factory=list)
+    linked_activities: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True, slots=True)

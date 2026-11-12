@@ -20,6 +20,8 @@ PATH_QUERY = (
     "RETURN shortestPath((a)-[:PRECEDE*..6]-(b))"
 )
 COMMUNITY_LIMIT = 8
+MAX_EDGES = 80
+EXTRA_SOURCE_CHARS = 30000
 
 
 class HybridRetriever:
@@ -102,13 +104,21 @@ class HybridRetriever:
             seeds=[*linked, *similar],
             seed_ids=[node_id for path in path_ids for node_id in path],
         )
-        # Every graph fact provided to the generator must have its actual
-        # textual evidence available as an F-numbered source.
         known = {hit.chunk_id for hit in hits}
-        missing = [edge.chunk_id for edge in edges if edge.chunk_id not in known]
-        if any(missing):
-            hits.extend(self.repository.sources([item for item in missing if item]))
+        edges = _unique_edges(edges, known)[:MAX_EDGES]
+        missing = list(
+            dict.fromkeys(e.chunk_id for e in edges if e.chunk_id not in known)
+        )
+        if missing:
+            extra = self.repository.sources(missing)
+            budget = EXTRA_SOURCE_CHARS
+            for hit in extra:
+                if budget - len(hit.text) < 0 and budget < EXTRA_SOURCE_CHARS:
+                    continue
+                budget -= len(hit.text)
+                hits.append(hit)
             queries.append(SOURCE_QUERY)
+        # Todo fato do grafo entregue ao gerador precisa de uma fonte F numerada.
         known = {hit.chunk_id for hit in hits}
         edges = [edge for edge in edges if edge.chunk_id in known]
         names = {node.id: node for node in nodes}
@@ -128,6 +138,8 @@ class HybridRetriever:
             warnings=list(warnings) if isinstance(warnings, list) else [],
             paths=paths,
             communities=self._activity_communities(nodes),
+            similar=[node.name for node in similar],
+            linked_activities=[n.name for n in linked if n.label == "Atividade"],
         )
 
     def _modality_paths(self, linked: list[GraphNode]) -> list[list[str]]:
@@ -150,6 +162,19 @@ class HybridRetriever:
             if any(activity in ids for activity in activities) and len(ids) > 1:
                 groups.append([member.name for member in community][:COMMUNITY_LIMIT])
         return groups[:3]
+
+
+def _unique_edges(edges, known):
+    """Uma aresta por (origem, tipo, destino), preferindo fontes já recuperadas."""
+    chosen: dict[tuple[str, str, str], object] = {}
+    for edge in edges:
+        key = (edge.source, edge.relationship_type, edge.target)
+        current = chosen.get(key)
+        if current is None or (
+            current.chunk_id not in known and edge.chunk_id in known
+        ):
+            chosen[key] = edge
+    return list(chosen.values())
 
 
 def _retrieval_confidence(hits, edge_count: int) -> float:
