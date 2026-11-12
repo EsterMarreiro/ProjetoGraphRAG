@@ -1,0 +1,8 @@
+[
+  {"id": "G1", "question": "O que significa LAC?", "expect": "Licença Ambiental por Adesão e Compromisso"},
+  {"id": "G2", "question": "Qual a diferença entre LP, LI e LO?", "expect": "LP antes de LI antes de LO"},
+  {"id": "G3", "question": "O que é UFR-PB?", "expect": "unidade em que o custo de análise é expresso"},
+  {"id": "G4", "question": "Onde fica a SUDEMA em Campina Grande?", "expect": "Av. Rio Branco, 60"},
+  {"id": "G5", "question": "Preciso de licença ambiental para uma loja de roupas de 30 m²?", "expect": "dispensa (comércio varejista do vestuário até 50 m²)"},
+  {"id": "G6", "question": "oi", "expect": "boas-vindas sem custo de busca"}
+]

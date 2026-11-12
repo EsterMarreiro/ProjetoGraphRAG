@@ -72,12 +72,61 @@ class StreamlitAppTests(unittest.TestCase):
         with patch("licenciagraph.ui.app.get_runtime", return_value=runtime):
             app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=30)
             app.run()
+            next(b for b in app.button if b.key == "nav_guide").click().run()
             app.text_input(key="guide_query").set_value("avicultura").run()
         self.assertFalse(app.exception)
         runtime.guide.search_activities.assert_called_with("avicultura")
         self.assertTrue(
             any("Nenhuma atividade tem esse termo" in i.value for i in app.info)
         )
+
+    def test_home_shows_purpose_examples_and_brand(self) -> None:
+        runtime = fake_runtime(sample_answer())
+        with patch("licenciagraph.ui.app.get_runtime", return_value=runtime):
+            app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=30)
+            app.run()
+        self.assertFalse(app.exception)
+        text = " ".join(item.value for item in app.markdown)
+        self.assertIn("Como posso ajudar com o seu licenciamento ambiental?", text)
+        self.assertIn("SUDEMA", text)
+        self.assertGreaterEqual(len(app.button), 6)
+
+    def test_example_button_sends_the_question(self) -> None:
+        runtime = fake_runtime(sample_answer())
+        with patch("licenciagraph.ui.app.get_runtime", return_value=runtime):
+            app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=30)
+            app.run()
+            next(b for b in app.button if b.key == "example-0").click().run()
+        self.assertFalse(app.exception)
+        self.assertEqual(runtime.service.answer.call_count, 1)
+
+    def test_conversations_are_listed_and_new_chat_starts_empty(self) -> None:
+        app = self._run(sample_answer())
+        keys = {b.key for b in app.sidebar.button}
+        self.assertIn("conv_c1", keys)
+        self.assertIn("del_c1", keys)
+        next(b for b in app.sidebar.button if b.key == "new_chat").click().run()
+        self.assertFalse(app.exception)
+        self.assertEqual(len(app.chat_message), 0)
+        self.assertIn("conv_c1", {b.key for b in app.sidebar.button})
+        next(b for b in app.sidebar.button if b.key == "conv_c1").click().run()
+        self.assertEqual(len(app.chat_message), 2)
+
+    def test_deleting_a_conversation_removes_it(self) -> None:
+        app = self._run(sample_answer())
+        next(b for b in app.sidebar.button if b.key == "del_c1").click().run()
+        self.assertFalse(app.exception)
+        self.assertNotIn("conv_c1", {b.key for b in app.sidebar.button})
+
+    def test_settings_dialog_opens(self) -> None:
+        runtime = fake_runtime(sample_answer())
+        with patch("licenciagraph.ui.app.get_runtime", return_value=runtime):
+            app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=30)
+            app.run()
+            next(
+                b for b in app.sidebar.button if b.key == "open_settings"
+            ).click().run()
+        self.assertFalse(app.exception)
 
     def test_follow_up_receives_previous_turns(self) -> None:
         from licenciagraph.ui.app import conversation_history

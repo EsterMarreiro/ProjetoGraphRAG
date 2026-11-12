@@ -100,6 +100,12 @@ class ExpansionGraph:
 
 
 class RepositoryTests(unittest.TestCase):
+    def test_fulltext_query_drops_question_words(self) -> None:
+        self.assertEqual(
+            _fulltext_query("Onde fica a SUDEMA em Campina Grande?"),
+            "SUDEMA | Campina | Grande",
+        )
+
     def test_sanitizes_fulltext_query(self) -> None:
         self.assertEqual(
             _fulltext_query('"licença" de (Instalação)?'), "licença | Instalação"

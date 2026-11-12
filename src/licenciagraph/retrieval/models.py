@@ -45,6 +45,7 @@ class Resolution:
     missing: tuple[str, ...] = ()
     terms: tuple[str, ...] = ()
     standalone: str = ""
+    informed: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

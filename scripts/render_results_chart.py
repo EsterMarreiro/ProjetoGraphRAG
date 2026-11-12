@@ -10,7 +10,7 @@ import pymupdf
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
 CONFIGS = [
-    ("LicenciaGraph\n(híbrido)", "dev-hybrid-v1", "heldout-hybrid", "hybrid"),
+    ("LicenciaGraph\n(híbrido)", "dev-hybrid-v3", "heldout-hybrid-v3", "hybrid"),
     ("Baseline vetorial", "dev-vector", "heldout-vector", "vector"),
 ]
 
@@ -23,7 +23,7 @@ def accuracy(run: str, mode: str) -> float:
 def resolution_chart() -> None:
     """Barras da identificação da atividade em fala coloquial (média de 3 rodadas)."""
     runs = [
-        json.loads((ART / f"resolution-run{i}.json").read_text()) for i in (1, 2, 3)
+        json.loads((ART / f"resolution-v3-run{i}.json").read_text()) for i in (1, 2, 3)
     ]
     total = len(runs[0])
     values = [

@@ -64,6 +64,16 @@ class HybridRetriever:
         if self.mode == "hybrid" and self.resolver:
             resolution = self.resolver.resolve(question, history)
             question = resolution.standalone or question
+            if resolution.match == "saudacao":
+                return RetrievalResult(
+                    question=question,
+                    hits=[],
+                    nodes=[],
+                    edges=[],
+                    queries=[],
+                    confidence=1.0,
+                    resolution=resolution,
+                )
         embedding = self.llm.embed(
             model=self.embedding_model,
             texts=[question],

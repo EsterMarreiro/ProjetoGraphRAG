@@ -119,6 +119,34 @@ class ResolverTests(unittest.TestCase):
         self.assertEqual(result.activities, ())
         self.assertEqual(len(llm.prompts), 1)
 
+    def test_greeting_skips_search_and_gets_the_welcome(self) -> None:
+        from licenciagraph.retrieval.generation import WELCOME, AnswerGenerator
+
+        r, llm = resolver(
+            {"pergunta_autonoma": "oi", "saudacao": True, "termos": []}, {}
+        )
+        result = r.resolve("oi")
+        self.assertEqual(result.match, "saudacao")
+        self.assertEqual(len(llm.prompts), 1)
+        retrieval = RetrievalResult("oi", [], [], [], [], 1.0, resolution=result)
+        answer = AnswerGenerator(llm, model="m").generate(retrieval)
+        self.assertEqual(answer.answer, WELCOME)
+        self.assertEqual(len(llm.prompts), 1)
+
+    def test_informed_data_reaches_the_choice_step(self) -> None:
+        r, llm = resolver(
+            {
+                "pergunta_autonoma": "2000 porcos",
+                "tem_atividade": True,
+                "dados_informados": ["2.000 animais"],
+                "termos": ["suinocultura"],
+            },
+            {"tipo": "exata", "escolhidas": [1], "motivo": "", "faltam": []},
+        )
+        result = r.resolve("2000 porcos")
+        self.assertEqual(result.informed, ("2.000 animais",))
+        self.assertIn("2.000 animais", llm.prompts[-1])
+
     def test_history_is_sent_to_the_interpreter(self) -> None:
         r, llm = resolver(
             {"pergunta_autonoma": "custo", "tem_atividade": False, "termos": []}, {}
@@ -156,6 +184,13 @@ class ResolutionNotesTests(unittest.TestCase):
     def test_exact_match_only_asks_for_missing_data(self) -> None:
         node = GraphNode("a", "Atividade", "A")
         answer = self._answer(Resolution("exata", (node,), "", ()))
+        self.assertEqual(
+            _with_resolution_notes(answer, answer.retrieval).answer, answer.answer
+        )
+
+    def test_single_exact_activity_does_not_ask_for_more_data(self) -> None:
+        node = GraphNode("a", "Atividade", "A")
+        answer = self._answer(Resolution("exata", (node,), "", ("quantidade",)))
         self.assertEqual(
             _with_resolution_notes(answer, answer.retrieval).answer, answer.answer
         )

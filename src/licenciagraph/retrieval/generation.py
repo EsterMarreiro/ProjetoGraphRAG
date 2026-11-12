@@ -48,11 +48,16 @@ tipo=nenhuma:
 use abstained=true, diga que a atividade não consta e que não há atividade
 parecida nas fontes, sem aplicar exigências de outra atividade (por exemplo,
 fábrica de foguetes). tipo=fora_do_escopo: a pergunta trata de outro estado,
-esfera ou órgão; use abstained=true e diga que isso não consta das normas da
-SUDEMA;
+esfera ou órgão; use abstained=true e diga apenas que isso não consta das normas
+consultadas da SUDEMA, sem explicar a competência de outro órgão;
 (7) a letra de custo de enquadramento (LAC, LAU) e a letra por porte são
 informações distintas: diga qual é qual e informe a de enquadramento quando a
 pergunta pedir a letra de custo.
+Use linguagem simples, para quem não conhece o jargão: explique a sigla (LP, LAC,
+LAU, UFR-PB) na primeira vez em que a usar, quando o contexto a define. Se o
+empreendedor já informou dados (bloco ENQUADRAMENTO), use-os para dizer qual
+variação se aplica e peça só o que falta. Perguntas gerais, sem atividade (o que é
+uma licença, prazos, etapas, órgãos), responda com as fontes, de forma direta.
 Responda a todas as partes da pergunta. Para perguntas do tipo "quais", liste todos
 os itens do contexto que atendem. Afirme apenas fatos escritos nas fontes ou nas
 relações; não acrescente justificativas, importância ou consequências. Se a
@@ -79,6 +84,17 @@ NO_EVIDENCE = (
 SIMILARITY_NOTICE = (
     "Essa atividade não consta nominalmente nas normas; as atividades acima foram "
     "indicadas por semelhança. Confirme o enquadramento com a SUDEMA."
+)
+
+WELCOME = (
+    "Olá! Sou o assistente do LicenciaGraph e ajudo a entender o licenciamento "
+    "ambiental da SUDEMA na Paraíba, com base no Manual de Licenciamento Ambiental "
+    "e na NA-101.\n\nPosso: (1) descobrir de que tipo de licença a sua atividade "
+    "precisa, a partir da sua descrição; (2) dizer quais documentos levar, o porte, "
+    "o custo de análise em UFR-PB e a validade; (3) explicar termos como LP, LI, LO, "
+    "LAC, LAU e dispensa, prazos e etapas.\n\nÉ só contar o que você quer "
+    'licenciar, por exemplo "vou abrir uma padaria" ou "tenho uma criação de '
+    'porcos". Esta é uma ferramenta de apoio: não substitui a análise da SUDEMA.'
 )
 
 UFR_NOTICE = (
@@ -199,6 +215,13 @@ class AnswerGenerator:
         self.verifier_model = verifier_model
 
     def generate(self, retrieval: RetrievalResult) -> GroundedAnswer:
+        if retrieval.resolution and retrieval.resolution.match == "saudacao":
+            return GroundedAnswer(
+                answer=WELCOME,
+                citations=[],
+                caveats=[],
+                retrieval=retrieval,
+            )
         if not retrieval.hits:
             return GroundedAnswer(
                 answer=NO_EVIDENCE,
@@ -270,7 +293,9 @@ def _with_resolution_notes(answer: GroundedAnswer, retrieval) -> GroundedAnswer:
     notes = []
     if resolution.match == "proxima":
         notes.append(SIMILARITY_NOTICE)
-    if resolution.missing:
+    if resolution.missing and (
+        resolution.match == "proxima" or len(resolution.activities) > 1
+    ):
         notes.append(
             "Para fechar o enquadramento, informe: " + "; ".join(resolution.missing)
         )
@@ -406,6 +431,11 @@ def _resolution_block(retrieval: RetrievalResult) -> list[str]:
         f"ENQUADRAMENTO: tipo={resolution.match}; atividades="
         + ("; ".join(n.name for n in resolution.activities) or "nenhuma")
     ]
+    if resolution.informed:
+        lines.append(
+            "ENQUADRAMENTO, dados já informados pelo empreendedor: "
+            + "; ".join(resolution.informed)
+        )
     if resolution.missing:
         lines.append(
             "ENQUADRAMENTO, dados que faltam: " + "; ".join(resolution.missing)

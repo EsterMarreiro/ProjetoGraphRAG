@@ -464,7 +464,19 @@ def _edge_properties(raw: Any) -> tuple[tuple[str, str], ...]:
     )
 
 
+STOPWORDS = frozenset(
+    "que qual quais quando onde como fica ficam quero preciso precisa posso "
+    "pode para por com sem uma uns umas dos das nos nas num numa isso esse essa "
+    "este esta aos ser ter tem tenho vou vai sobre entre mais muito pela pelo "
+    "pelas pelos seu sua seus suas".split()
+)
+
+
 def _fulltext_query(question: str) -> str:
     tokens = re.findall(r"[\wÀ-ÿ]+", question, flags=re.UNICODE)
-    meaningful = [token for token in tokens if len(token) >= 3]
+    meaningful = [
+        token
+        for token in tokens
+        if len(token) >= 3 and normalize_text(token) not in STOPWORDS
+    ]
     return " | ".join(meaningful[:20])

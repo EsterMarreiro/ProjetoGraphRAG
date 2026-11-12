@@ -18,11 +18,20 @@ HISTORY_TURNS = 3
 
 INTERPRET_SCHEMA = {
     "type": "object",
-    "required": ["pergunta_autonoma", "fora_do_escopo", "tem_atividade", "termos"],
+    "required": [
+        "pergunta_autonoma",
+        "saudacao",
+        "fora_do_escopo",
+        "tem_atividade",
+        "dados_informados",
+        "termos",
+    ],
     "properties": {
         "pergunta_autonoma": {"type": "string"},
+        "saudacao": {"type": "boolean"},
         "fora_do_escopo": {"type": "boolean"},
         "tem_atividade": {"type": "boolean"},
+        "dados_informados": {"type": "array", "items": {"type": "string"}},
         "termos": {"type": "array", "items": {"type": "string"}},
     },
     "additionalProperties": False,
@@ -33,15 +42,21 @@ Licenciamento Ambiental e na NA-101 da SUDEMA, a atividade que eles querem licen
 Eles falam de forma coloquial; as normas usam nomes formais.
 1. pergunta_autonoma: reescreva a pergunta atual de modo que seja entendida sem o
    histórico (resolva "e quanto custa?", "isso", "esse caso" usando as mensagens
-   anteriores, inclusive números e dados já informados). Sem histórico, repita a
-   pergunta. Não responda nada.
-2. fora_do_escopo: true se a pergunta trata do licenciamento de outro estado, da
+   anteriores, inclusive números e dados já informados). Seja breve e conserve as
+   palavras da pergunta: não expanda siglas nem acrescente palavras. Sem histórico,
+   repita a pergunta. Não responda nada.
+2. saudacao: true se a mensagem é só um cumprimento, agradecimento ou pedido de
+   ajuda sobre o uso da ferramenta ("oi", "obrigado", "o que você faz?").
+   fora_do_escopo: true se a pergunta trata do licenciamento de outro estado, da
    esfera federal ou municipal, ou de outro órgão que não a SUDEMA (por exemplo
    órgãos ambientais de outros estados e o IBAMA).
 3. tem_atividade: true se a pergunta trata de uma atividade, empreendimento ou
    negócio concreto a licenciar; false para perguntas gerais (o que é uma licença,
    quais órgãos existem, o que é UFR-PB).
-4. termos: de 3 a 6 nomes formais, curtos, de como a norma poderia listar essa
+4. dados_informados: fatos sobre o negócio que a pessoa já deu, com número e
+   unidade quando houver (por exemplo "2.000 animais", "área útil de 40 m²",
+   "gera resíduos de saúde"), incluindo os do histórico; vazio se nenhum.
+5. termos: de 3 a 6 nomes formais, curtos, de como a norma poderia listar essa
    atividade, do mais específico ao mais amplo, incluindo a categoria em que ela
    caberia e a atividade ambientalmente relevante por trás do negócio (o que ele
    cria, queima, lava, armazena, descarta ou gera de resíduo). Troque a fala
@@ -61,17 +76,24 @@ tipo:
   candidatas que cobrem o caso, inclusive as variações por porte ou quantidade
   (por exemplo, faixas de número de animais ou de área útil), pois o porte decide
   o regime. Se a fala é ambígua (por exemplo, "vender" um produto pode ser produzi-lo
-  ou apenas revendê-lo), escolha as candidatas de cada leitura plausível, use exata
+  ou apenas revendê-lo), escolha as candidatas de cada leitura plausível (as de
+  criação ou produção do que é vendido e as de revenda), use exata
   quando alguma delas for do mesmo tipo de atividade e liste em faltam o dado que
-  decide qual leitura vale.
+  decide qual leitura vale. Se os DADOS JÁ INFORMADOS permitem saber qual variação
+  por porte, quantidade ou área se aplica (por exemplo, 2.000 animais cai numa
+  faixa de 1.000 a 3.000), escolha só as variações em que esses dados cabem e não
+  liste em faltam o que já foi informado.
 - proxima: nenhuma candidata é a atividade, mas algumas têm natureza, impacto ou
   função parecidos e podem servir de referência. Escolha só as mais parecidas.
 - nenhuma: nenhuma candidata guarda relação razoável com a atividade.
-Use apenas números da lista. Não invente candidatas. motivo: uma frase, em
+Use apenas números da lista. Não invente candidatas. No motivo, cite as atividades
+pelo nome, nunca pelo número. motivo: uma frase, em
 português, dizendo por que as escolhidas se aplicam e, em proxima, por que a
 atividade não consta nominalmente. faltam: de 0 a 3 informações curtas que o
-empreendedor precisa dar para fechar o enquadramento (por exemplo, quantidade,
-área útil, se gera determinado resíduo); vazio se nada falta ou se nenhuma."""
+empreendedor precisa dar para decidir ENTRE as candidatas escolhidas (por exemplo,
+quantidade, área útil, se gera determinado resíduo). Use só categorias que
+aparecem nos nomes das candidatas; vazio se há uma só candidata escolhida, se a
+pergunta já traz o porte e a modalidade, se nada falta ou se nenhuma."""
 
 
 def _choose_schema(count: int) -> dict[str, Any]:
@@ -142,6 +164,11 @@ class ActivityResolver:
         terms = tuple(
             dict.fromkeys(t.strip() for t in raw.get("termos", []) if str(t).strip())
         )[:MAX_TERMS]
+        informed = tuple(
+            d.strip() for d in raw.get("dados_informados", []) if str(d).strip()
+        )
+        if raw.get("saudacao"):
+            return Resolution("saudacao", standalone=standalone)
         if raw.get("fora_do_escopo"):
             return Resolution("fora_do_escopo", standalone=standalone)
         if not raw.get("tem_atividade") or not terms:
@@ -149,7 +176,7 @@ class ActivityResolver:
         candidates = self._candidates(standalone, terms)
         if not candidates:
             return Resolution("nenhuma", standalone=standalone, terms=terms)
-        return self._choose(standalone, terms, candidates)
+        return self._choose(standalone, terms, candidates, informed)
 
     def _candidates(self, question: str, terms: tuple[str, ...]) -> list[Candidate]:
         texts = [question, *terms]
@@ -180,14 +207,19 @@ class ActivityResolver:
         ]
 
     def _choose(
-        self, standalone: str, terms: tuple[str, ...], candidates: list[Candidate]
+        self,
+        standalone: str,
+        terms: tuple[str, ...],
+        candidates: list[Candidate],
+        informed: tuple[str, ...] = (),
     ) -> Resolution:
         listing = "\n".join(c.line(i) for i, c in enumerate(candidates, 1))
         raw = self.llm.chat_json(
             model=self.model,
             system=CHOOSE_SYSTEM,
             prompt=(
-                f"PERGUNTA: {standalone}\nTERMOS FORMAIS: {', '.join(terms)}\n\n"
+                f"PERGUNTA: {standalone}\nTERMOS FORMAIS: {', '.join(terms)}\n"
+                f"DADOS JÁ INFORMADOS: {'; '.join(informed) or 'nenhum'}\n\n"
                 f"CANDIDATAS:\n{listing}"
             ),
             schema=_choose_schema(len(candidates)),
@@ -211,6 +243,7 @@ class ActivityResolver:
             missing if picked else (),
             terms,
             standalone,
+            informed,
         )
 
 
