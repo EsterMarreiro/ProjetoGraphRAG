@@ -111,6 +111,12 @@ CALL db.idx.vector.queryNodes(
 RETURN node.id, 'Atividade', node.nome, (1.0 - score) AS similarity
 ORDER BY similarity DESC
 """
+ACTIVITY_DETAILS_QUERY = """
+UNWIND $ids AS activity_id
+MATCH (a:Atividade {id: activity_id})
+OPTIONAL MATCH (a)-[:ENQUADRADA_EM]->(m:Modalidade)
+RETURN a.id, a.codigo, a.nome, a.grupo, collect(DISTINCT m.sigla)
+"""
 LISTING_QUERY = """
 MATCH (activity:Atividade)-[relationship:ENQUADRADA_EM]->(modality:Modalidade)
 WHERE modality.id IN $modality_ids
@@ -232,6 +238,43 @@ class RetrievalRepository:
             for row in rows
             if float(row[3]) >= minimum and float(row[3]) >= best - 0.08
         ]
+
+    def activity_scores(
+        self, embedding: list[float], *, limit: int = 6
+    ) -> list[tuple[str, float]]:
+        rows = self.graph.ro_query(
+            ACTIVITY_VECTOR_QUERY, params={"embedding": embedding, "limit": limit}
+        ).result_set
+        return [(str(row[0]), float(row[3])) for row in rows]
+
+    def activity_ids_by_stem(self, stems: list[str], *, per_stem: int = 6) -> list[str]:
+        """Atividades com o radical no nome; radicais comuns demais são ignorados."""
+        found: list[str] = []
+        for stem in stems:
+            matches = [
+                node.id
+                for node in self.entities()
+                if node.label == "Atividade" and stem in normalize_text(node.name)
+            ]
+            if len(matches) <= per_stem:
+                found.extend(matches)
+        return list(dict.fromkeys(found))
+
+    def activity_details(self, ids: list[str]) -> dict[str, dict[str, Any]]:
+        if not ids:
+            return {}
+        rows = self.graph.ro_query(
+            ACTIVITY_DETAILS_QUERY, params={"ids": ids}
+        ).result_set
+        return {
+            str(row[0]): {
+                "code": str(row[1] or ""),
+                "name": str(row[2] or ""),
+                "group": str(row[3] or ""),
+                "regimes": [str(r) for r in sorted(row[4]) if r],
+            }
+            for row in rows
+        }
 
     def activity_communities(self) -> list[list[GraphNode]]:
         """Comunidades de Louvain: atividades que compartilham checklists."""

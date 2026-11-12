@@ -14,5 +14,7 @@ class QuestionAnsweringService:
         self.retriever = retriever
         self.generator = generator
 
-    def answer(self, question: str) -> GroundedAnswer:
-        return self.generator.generate(self.retriever.retrieve(question))
+    def answer(
+        self, question: str, history: list[tuple[str, str]] | None = None
+    ) -> GroundedAnswer:
+        return self.generator.generate(self.retriever.retrieve(question, history))

@@ -76,7 +76,20 @@ class StreamlitAppTests(unittest.TestCase):
         self.assertFalse(app.exception)
         runtime.guide.search_activities.assert_called_with("avicultura")
         self.assertTrue(
-            any("Nenhuma atividade encontrada" in i.value for i in app.info)
+            any("Nenhuma atividade tem esse termo" in i.value for i in app.info)
+        )
+
+    def test_follow_up_receives_previous_turns(self) -> None:
+        from licenciagraph.ui.app import conversation_history
+
+        messages = [
+            {"role": "user", "content": "Vou criar porcos"},
+            {"role": "assistant", "content": "Depende do número de animais."},
+            {"role": "user", "content": "e quanto custa?"},
+        ]
+        self.assertEqual(
+            conversation_history(messages),
+            [("Vou criar porcos", "Depende do número de animais.")],
         )
 
     def test_service_failure_is_shown_to_the_user(self) -> None:

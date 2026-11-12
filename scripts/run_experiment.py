@@ -31,9 +31,7 @@ from licenciagraph.ingestion.llm import OpenAIClient
 from licenciagraph.ingestion.pipeline import IngestionPipeline
 from licenciagraph.ingestion.writer import GraphWriter
 from licenciagraph.retrieval.generation import AnswerGenerator
-from licenciagraph.retrieval.planning import CypherPlanner
-from licenciagraph.retrieval.repository import RetrievalRepository
-from licenciagraph.retrieval.retriever import HybridRetriever
+from licenciagraph.retrieval.retriever import build_retriever
 from licenciagraph.retrieval.service import QuestionAnsweringService
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -230,14 +228,7 @@ def main():
         for mode in args.modes:
             service = RecordedService(
                 QuestionAnsweringService(
-                    retriever=HybridRetriever(
-                        repository=RetrievalRepository(connection.graph),
-                        llm=llm,
-                        embedding_model=settings.embedding_model,
-                        embedding_dimension=settings.embedding_dimension,
-                        planner=CypherPlanner(llm, model=settings.chat_model),
-                        mode=mode,
-                    ),
+                    retriever=build_retriever(connection.graph, llm, settings, mode),
                     generator=AnswerGenerator(
                         llm,
                         model=settings.chat_model,

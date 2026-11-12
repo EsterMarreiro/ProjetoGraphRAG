@@ -37,8 +37,10 @@ def _evaluation_text(runs: Path) -> str:
     return (
         "Acertos segundo o juiz (gpt-4o):\n"
         + "\n".join(rows)
-        + "\n\nCusto por pergunta híbrida: US$ 0,034. Negativas: híbrido 7/10, "
-        "vetorial 5/10 (juiz estrito)."
+        + "\n\nSoma das positivas: híbrido 41/42, vetorial 23/42. Fala coloquial "
+        "(26 perguntas): resolvedor 24 a 25, método anterior 12.\nNegativas (juiz "
+        "estrito): resolvedor 6/10, antes 7/10, vetorial 5/10. Custo: US$ 0,03 a "
+        "0,05 por pergunta."
     )
 
 
@@ -126,12 +128,22 @@ def main():
         fontname="helv",
     )
     slide(
+        "Resolvedor de atividades",
+        'O empreendedor diz "vender porcos"; a norma diz "Suinocultura '
+        '(industrial) até 1000 animais".\n\n1. Um LLM traduz a fala em termos '
+        "formais e reescreve perguntas de seguimento.\n2. O índice vetorial traz "
+        "24 atividades candidatas do grafo.\n3. Um segundo LLM escolhe só entre "
+        "elas: exata, próxima ou nenhuma, e diz o que falta informar.\n\n"
+        "Não consta? Mostra as mais próximas, com aviso de semelhança.",
+    )
+    slide(
         "Geração e salvaguardas",
         "Cada afirmação declara fontes F e relações G; a aplicação valida os IDs.\n\n"
         "Afirmação sem fonte é descartada; um verificador descarta o que não está "
-        "escrito no contexto.\n\nCustos sempre em UFR-PB, sem conversão para "
-        "reais; aviso de caráter orientativo em toda resposta; abstenção quando "
-        "a norma não informa.",
+        "escrito no contexto, inclusive afirmações sobre o negócio do "
+        "empreendedor.\n\nCustos sempre em UFR-PB, sem conversão para reais; "
+        "aviso de caráter orientativo em toda resposta; abstenção quando a norma "
+        "não informa ou a pergunta é de outro estado.",
     )
     page = slide("Interface", "")
     page.insert_image(
@@ -144,7 +156,8 @@ def main():
     )
     page.insert_textbox(
         pymupdf.Rect(630, 120, 908, 480),
-        "Chat: resposta com fontes, subgrafo interativo e consultas.\n\n"
+        "Chat: resposta com fontes, subgrafo, consultas e a atividade "
+        "interpretada; entende perguntas de seguimento.\n\n"
         "Assistente de enquadramento: atividade, porte, custo em UFR-PB, "
         "validade e checklist, direto do grafo, sem modelo de linguagem.",
         fontsize=15,
@@ -157,7 +170,9 @@ def main():
         "arquivos curados.\nValor da UFR-PB em reais, licenciamento federal e "
         "municipal fora da base não constam.\nDocumentos canônicos e fatos do texto "
         "vêm de um LLM, amostrados.\nPerguntas geradas das tabelas: faltam "
-        "perguntas escritas por pessoas de fora do projeto.",
+        "perguntas escritas por pessoas de fora do projeto.\nAs positivas não foram "
+        "reexecutadas após o resolvedor; com ele, as negativas caíram de 7 para "
+        "6 de 10 por mostrarem atividade próxima.",
     )
     output = ROOT / "docs/APRESENTACAO.pdf"
     document.save(output, garbage=4, deflate=True)

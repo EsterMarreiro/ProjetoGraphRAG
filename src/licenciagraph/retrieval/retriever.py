@@ -14,6 +14,7 @@ from licenciagraph.retrieval.repository import (
     VECTOR_QUERY,
     RetrievalRepository,
 )
+from licenciagraph.retrieval.resolver import ActivityResolver
 
 PATH_QUERY = (
     "MATCH (a {id: $source}), (b {id: $target}) "
@@ -35,6 +36,7 @@ class HybridRetriever:
         candidate_limit: int = 8,
         result_limit: int = 5,
         planner: CypherPlanner | None = None,
+        resolver: ActivityResolver | None = None,
         mode: str = "hybrid",
     ) -> None:
         self.repository = repository
@@ -44,17 +46,24 @@ class HybridRetriever:
         self.candidate_limit = candidate_limit
         self.result_limit = result_limit
         self.planner = planner
+        self.resolver = resolver
         if mode not in {"hybrid", "vector"}:
             raise ValueError("Modo deve ser hybrid ou vector")
         self.mode = mode
 
-    def retrieve(self, question: str) -> RetrievalResult:
+    def retrieve(
+        self, question: str, history: list[tuple[str, str]] | None = None
+    ) -> RetrievalResult:
         warnings = getattr(self.repository, "warnings", None)
         if isinstance(warnings, list):
             warnings.clear()
         question = question.strip()
         if not question:
             raise ValueError("A pergunta nao pode ser vazia")
+        resolution = None
+        if self.mode == "hybrid" and self.resolver:
+            resolution = self.resolver.resolve(question, history)
+            question = resolution.standalone or question
         embedding = self.llm.embed(
             model=self.embedding_model,
             texts=[question],
@@ -92,11 +101,15 @@ class HybridRetriever:
             reserve_top=1,
         )
         linked = self.repository.linked_entities(question)
-        similar = (
-            []
-            if any(node.label == "Atividade" for node in linked)
-            else self.repository.similar_activities(embedding)
-        )
+        similar = []
+        if resolution and resolution.activities:
+            chosen = list(resolution.activities)
+            if resolution.match == "exata":
+                linked = [*linked, *(n for n in chosen if n not in linked)]
+            else:
+                similar = chosen
+        elif not any(node.label == "Atividade" for node in linked):
+            similar = self.repository.similar_activities(embedding)
         path_ids = self._modality_paths(linked)
         nodes, edges = self.repository.expand(
             [hit.chunk_id for hit in hits],
@@ -140,6 +153,7 @@ class HybridRetriever:
             communities=self._activity_communities(nodes),
             similar=[node.name for node in similar],
             linked_activities=[n.name for n in linked if n.label == "Atividade"],
+            resolution=resolution,
         )
 
     def _modality_paths(self, linked: list[GraphNode]) -> list[list[str]]:
@@ -185,3 +199,24 @@ def _retrieval_confidence(hits, edge_count: int) -> float:
     graph_signal = min(edge_count / 5, 1.0)
     confidence = 0.15 + 0.5 * top_score + 0.2 * channel_coverage + 0.15 * graph_signal
     return round(min(max(confidence, 0.0), 0.99), 3)
+
+
+def build_retriever(graph, llm: OpenAIClient, settings, mode: str = "hybrid"):
+    """Monta o recuperador com planejador de Cypher e resolvedor de atividades."""
+    repository = RetrievalRepository(graph)
+    resolver = ActivityResolver(
+        llm,
+        repository,
+        model=settings.chat_model,
+        embedding_model=settings.embedding_model,
+        embedding_dimension=settings.embedding_dimension,
+    )
+    return HybridRetriever(
+        repository=repository,
+        llm=llm,
+        embedding_model=settings.embedding_model,
+        embedding_dimension=settings.embedding_dimension,
+        planner=CypherPlanner(llm, model=settings.chat_model),
+        resolver=resolver,
+        mode=mode,
+    )

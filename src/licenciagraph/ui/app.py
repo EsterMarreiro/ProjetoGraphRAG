@@ -5,6 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from licenciagraph.guide import (
+    ActivityOption,
     ActivityProfile,
     Band,
     LicensingGuide,
@@ -41,6 +42,8 @@ EXAMPLES = (
     "Qual a sequência entre Licença Prévia, de Instalação e de Operação?",
     "Quais atividades de comércio e serviços de saúde são dispensadas de "
     "licenciamento?",
+    "Vou abrir um estúdio de tatuagem. Preciso de licença ambiental?",
+    "Quero criar e vender porcos. Qual licença preciso?",
 )
 
 
@@ -77,7 +80,7 @@ def main() -> None:
     with chat_tab:
         render_chat(runtime, filters, services_ready)
     with guide_tab:
-        render_guide(runtime.guide)
+        render_guide(runtime.guide, runtime.service.retriever.resolver)
 
 
 def render_chat(
@@ -91,6 +94,7 @@ def render_chat(
     )
     if not prompt:
         return
+    history = conversation_history(st.session_state.messages)
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -99,7 +103,7 @@ def render_chat(
     with st.chat_message("assistant"):
         try:
             with st.spinner("Buscando evidências e percorrendo o grafo..."):
-                answer = runtime.service.answer(augmented_question)
+                answer = runtime.service.answer(augmented_question, history)
             render_answer(answer)
             st.session_state.messages.append(
                 {"role": "assistant", "content": answer.answer, "answer": answer}
@@ -137,17 +141,18 @@ def render_sidebar(runtime: UIRuntime) -> tuple[ProcessFilters, bool]:
     )
 
 
-def render_guide(guide: LicensingGuide) -> None:
+def render_guide(guide: LicensingGuide, resolver=None) -> None:
     st.markdown(
         "Informe a atividade e o porte para ver a modalidade, o custo de análise "
-        "(em UFR-PB), a validade e a lista de documentos. Esta aba consulta o grafo "
-        "diretamente, sem modelo de linguagem."
+        "(em UFR-PB), a validade e a lista de documentos. A busca por nome consulta "
+        "o grafo diretamente, sem modelo de linguagem."
     )
     query = st.text_input("Atividade (nome ou código)", key="guide_query")
     options = guide.search_activities(query) if query.strip() else []
     if query.strip() and not options:
-        st.info("Nenhuma atividade encontrada. Tente outro termo, como 'avicultura'.")
-        return
+        options = suggest_by_description(guide, resolver, query)
+        if not options:
+            return
     if not options:
         return
     chosen = st.selectbox(
@@ -167,6 +172,38 @@ def render_guide(guide: LicensingGuide) -> None:
     render_band(guide, profile, band)
     render_checklists(guide, profile)
     st.caption(SCOPE_CAVEAT)
+
+
+def suggest_by_description(guide, resolver, text: str) -> list:
+    """Sem nome correspondente, oferece interpretar a descrição com a IA."""
+    st.info(
+        "Nenhuma atividade tem esse termo no nome. Você pode descrever o negócio com "
+        "suas palavras e deixar a IA indicar as atividades do Manual mais próximas."
+    )
+    if resolver is None:
+        return []
+    cached = st.session_state.get("guide_ai")
+    if st.button("Interpretar com IA (usa a API)", key="guide_ai_button"):
+        with st.spinner("Procurando as atividades mais próximas..."):
+            resolution = resolver.resolve(text)
+        profiles = [guide.profile(node.id) for node in resolution.activities]
+        options = [ActivityOption(p.id, p.code, p.name, p.group) for p in profiles if p]
+        cached = (text, resolution.match, options, resolution.missing)
+        st.session_state["guide_ai"] = cached
+    if not cached or cached[0] != text:
+        return []
+    _, match, options, missing = cached
+    if not options:
+        st.warning("Nenhuma atividade parecida foi encontrada nas normas.")
+        return []
+    if match == "proxima":
+        st.warning(
+            "A atividade não consta nominalmente; estas são as mais próximas. "
+            "Confirme o enquadramento com a SUDEMA."
+        )
+    if missing:
+        st.caption("Para fechar o enquadramento: " + "; ".join(missing))
+    return options
 
 
 def render_regimes(profile: ActivityProfile) -> None:
@@ -301,6 +338,15 @@ def _llm_status(runtime: UIRuntime) -> bool:
     return True
 
 
+def conversation_history(messages: list[dict]) -> list[tuple[str, str]]:
+    """Pares (pergunta, resposta) já trocados, para entender perguntas de seguimento."""
+    pairs = []
+    for user, assistant in zip(messages[::2], messages[1::2], strict=False):
+        if user["role"] == "user" and assistant["role"] == "assistant":
+            pairs.append((str(user["content"]), str(assistant["content"])))
+    return pairs
+
+
 def initialize_history() -> None:
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -329,6 +375,7 @@ def render_answer(answer: GroundedAnswer) -> None:
     if answer.caveats:
         st.warning(SCOPE_CAVEAT)
 
+    render_resolution(answer)
     metric_col, evidence_col, graph_col = st.columns(3)
     metric_col.metric("Confiança da recuperação", f"{answer.retrieval.confidence:.0%}")
     evidence_col.metric("Trechos usados", len(answer.retrieval.hits))
@@ -343,6 +390,15 @@ def render_answer(answer: GroundedAnswer) -> None:
         render_graph(answer)
     with trace_tab:
         render_trace(answer)
+
+
+def render_resolution(answer: GroundedAnswer) -> None:
+    resolution = answer.retrieval.resolution
+    if resolution is None or not resolution.activities:
+        return
+    kind = "mesma atividade" if resolution.match == "exata" else "atividade próxima"
+    names = "; ".join(node.name for node in resolution.activities)
+    st.info(f"**Enquadramento interpretado ({kind}):** {names}", icon="🧭")
 
 
 def render_sources(answer: GroundedAnswer) -> None:
@@ -416,6 +472,9 @@ def render_trace(answer: GroundedAnswer) -> None:
         hide_index=True,
     )
     retrieval = answer.retrieval
+    if retrieval.resolution and retrieval.resolution.terms:
+        st.markdown("**Termos formais derivados da pergunta**")
+        st.write(", ".join(retrieval.resolution.terms))
     if retrieval.paths:
         st.markdown("**Sequência de licenças (caminho mais curto)**")
         for path in retrieval.paths:

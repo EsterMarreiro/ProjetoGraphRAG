@@ -36,6 +36,18 @@ class GraphEdge:
 
 
 @dataclass(frozen=True, slots=True)
+class Resolution:
+    """Atividade descrita pelo empreendedor, conferida contra as atividades do grafo."""
+
+    match: str
+    activities: tuple[GraphNode, ...] = ()
+    reason: str = ""
+    missing: tuple[str, ...] = ()
+    terms: tuple[str, ...] = ()
+    standalone: str = ""
+
+
+@dataclass(frozen=True, slots=True)
 class RetrievalResult:
     question: str
     hits: list[SearchHit]
@@ -48,6 +60,7 @@ class RetrievalResult:
     communities: list[list[str]] = field(default_factory=list)
     similar: list[str] = field(default_factory=list)
     linked_activities: list[str] = field(default_factory=list)
+    resolution: Resolution | None = None
 
 
 @dataclass(frozen=True, slots=True)

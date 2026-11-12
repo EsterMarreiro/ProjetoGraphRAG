@@ -17,9 +17,7 @@ from licenciagraph.ingestion.llm import OpenAIClient
 from licenciagraph.ingestion.pipeline import IngestionPipeline
 from licenciagraph.ingestion.writer import GraphWriter
 from licenciagraph.retrieval.generation import AnswerGenerator
-from licenciagraph.retrieval.planning import CypherPlanner
-from licenciagraph.retrieval.repository import RetrievalRepository
-from licenciagraph.retrieval.retriever import HybridRetriever
+from licenciagraph.retrieval.retriever import build_retriever
 from licenciagraph.retrieval.service import QuestionAnsweringService
 
 
@@ -159,13 +157,7 @@ def _build_answering_service(
 ) -> QuestionAnsweringService:
     llm = OpenAIClient.from_settings(settings)
     return QuestionAnsweringService(
-        retriever=HybridRetriever(
-            repository=RetrievalRepository(connection.graph),
-            llm=llm,
-            embedding_model=settings.embedding_model,
-            embedding_dimension=settings.embedding_dimension,
-            planner=CypherPlanner(llm, model=settings.chat_model),
-        ),
+        retriever=build_retriever(connection.graph, llm, settings),
         generator=AnswerGenerator(
             llm,
             model=settings.chat_model,
