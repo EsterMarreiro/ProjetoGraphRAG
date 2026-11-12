@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def _evaluation_text(runs: Path) -> str:
     rows = []
     for label, name in (
-        ("Híbrido, desenvolvimento", "run-dev-hybrid/hybrid"),
+        ("Híbrido, desenvolvimento", "run-dev-hybrid-v1/hybrid"),
         ("Híbrido, retido", "run-heldout-hybrid/hybrid"),
         ("Vetorial, desenvolvimento", "run-dev-vector/vector"),
         ("Vetorial, retido", "run-heldout-vector/vector"),
@@ -30,12 +30,16 @@ def _evaluation_text(runs: Path) -> str:
             )
     if not rows:
         return (
-            "Execução pendente: a conta da API ficou sem créditos antes do "
-            "experimento.\n\nProtocolo: 30 perguntas positivas e 9 negativas, "
+            "Execução pendente.\n\nProtocolo: 42 perguntas positivas e 10 negativas, "
             "gabarito calculado nas tabelas curadas, juiz LLM com evidências "
             "oficiais, baseline vetorial com o mesmo modelo."
         )
-    return "Acertos segundo o juiz:\n" + "\n".join(rows)
+    return (
+        "Acertos segundo o juiz (gpt-4o):\n"
+        + "\n".join(rows)
+        + "\n\nCusto por pergunta híbrida: US$ 0,034. Negativas: híbrido 7/10, "
+        "vetorial 5/10 (juiz estrito)."
+    )
 
 
 def main():

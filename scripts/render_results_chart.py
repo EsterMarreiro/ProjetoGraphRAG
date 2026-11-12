@@ -10,7 +10,7 @@ import pymupdf
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
 CONFIGS = [
-    ("LicenciaGraph\n(híbrido)", "dev-hybrid", "heldout-hybrid", "hybrid"),
+    ("LicenciaGraph\n(híbrido)", "dev-hybrid-v1", "heldout-hybrid", "hybrid"),
     ("Baseline vetorial", "dev-vector", "heldout-vector", "vector"),
 ]
 

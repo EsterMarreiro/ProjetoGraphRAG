@@ -58,7 +58,7 @@ ruff check src tests scripts
 
 ## Estado
 
-Produto e dados prontos e testados. **Avaliação experimental, artigo e guias pendentes**: a conta da API ficou sem créditos antes do experimento (ver `docs/07-avaliacao.md` e `docs/AUDITORIA_REQUISITOS.md`).
+Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas) e artigo prontos em `docs/07-avaliacao.md` e `docs/artigo/`; pendentes a autoria e os guias de apresentação.
 
 ## Limites
 
