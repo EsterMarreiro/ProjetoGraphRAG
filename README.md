@@ -20,8 +20,9 @@ Os PDFs não são versionados: o Manual vem do portal da SUDEMA e a NA-101 de `s
 2. **Itens dos checklists**: um LLM normaliza os 706 textos distintos em 317 documentos canônicos, com categoria e órgão emissor (`scripts/normalize_documents.py`, resultado em `data/curated/documentos.json`).
 3. **Texto corrido** (capítulos, NA-101, portal): um LLM extrai fatos institucionais (órgão emite modalidade, órgão opera sistema, vínculo entre órgãos) com vocabulário controlado; o que foge do vocabulário é descartado.
 4. **Grafo** no FalkorDB: `Atividade`, `Grupo`, `Subgrupo`, `Modalidade`, `Checklist`, `DocumentoExigido`, `Estudo`, `Orgao`, `Sistema`, `Norma`, `Porte`, `Faixa`, `LetraCusto`, com proveniência por trecho (`Documento` e `Trecho`).
-5. **Recuperação híbrida**: vetor, texto e Cypher planejado por LLM em gramática finita, fundidos por RRF; ligação de entidades pela pergunta (por nome, sigla e vetor de atividades); expansão em até três saltos pelas arestas de saída, restrita à modalidade e ao porte citados; caminho mais curto entre modalidades (`PRECEDE`), comunidades de Louvain entre atividades que compartilham checklists e PageRank.
-6. **Geração** com afirmações citadas, verificador, regra de custo em UFR-PB (sem conversão para reais) e aviso de caráter orientativo.
+5. **Resolvedor de atividades**: traduz a fala do empreendedor ("vender porcos", "estúdio de tatuagem") em termos formais, busca candidatas no grafo e um LLM escolhe só entre elas (exata, próxima ou nenhuma); atividade que não consta recebe as mais próximas com aviso de semelhança e a lista do que falta informar. Também entende perguntas de seguimento.
+6. **Recuperação híbrida**: vetor, texto e Cypher planejado por LLM em gramática finita, fundidos por RRF; ligação de entidades pela pergunta (por nome, sigla e vetor de atividades); expansão em até três saltos pelas arestas de saída, restrita à modalidade e ao porte citados; caminho mais curto entre modalidades (`PRECEDE`), comunidades de Louvain entre atividades que compartilham checklists e PageRank.
+7. **Geração** com afirmações citadas, verificador, regra de custo em UFR-PB (sem conversão para reais) e aviso de caráter orientativo.
 
 ## Reprodução local
 
@@ -58,7 +59,7 @@ ruff check src tests scripts
 
 ## Estado
 
-Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas) e artigo prontos em `docs/07-avaliacao.md` e `docs/artigo/`; pendentes a autoria e os guias de apresentação.
+Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendentes a autoria e o envio ao GitHub. As positivas não foram reexecutadas após o resolvedor e a última regra para atividade próxima não foi reavaliada (créditos da API esgotados).
 
 ## Limites
 
