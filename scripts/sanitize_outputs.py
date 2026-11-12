@@ -7,7 +7,7 @@ import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from trilhagraph.retrieval.generation import SCOPE_CAVEAT
+from licenciagraph.retrieval.generation import SCOPE_CAVEAT
 
 
 def main():

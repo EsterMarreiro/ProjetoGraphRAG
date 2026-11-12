@@ -4,7 +4,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from trilhagraph.config import Settings
+from licenciagraph.config import Settings
 
 
 class SettingsTests(unittest.TestCase):
@@ -13,7 +13,7 @@ class SettingsTests(unittest.TestCase):
             settings = Settings.from_env(load_file=False)
 
         self.assertEqual(settings.falkordb_port, 6379)
-        self.assertEqual(settings.falkordb_graph, "trilhagraph_aprendizagem")
+        self.assertEqual(settings.falkordb_graph, "licenciagraph")
         self.assertEqual(settings.embedding_dimension, 768)
         self.assertIsNone(settings.falkordb_password)
 

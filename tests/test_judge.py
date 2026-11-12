@@ -3,7 +3,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import Mock
 
-from trilhagraph.evaluation.judge import Judge, summarize
+from licenciagraph.evaluation.judge import Judge, summarize
 
 
 def claim(text, verdict="supported"):

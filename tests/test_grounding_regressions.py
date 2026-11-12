@@ -6,17 +6,17 @@ import unittest
 from dataclasses import replace
 from unittest.mock import Mock
 
-from trilhagraph.evaluation.evaluator import EvaluationCase, evaluate_answer
-from trilhagraph.retrieval.generation import AnswerGenerator, _build_context, _schema
-from trilhagraph.retrieval.models import (
+from licenciagraph.evaluation.evaluator import EvaluationCase, evaluate_answer
+from licenciagraph.retrieval.generation import AnswerGenerator, _build_context, _schema
+from licenciagraph.retrieval.models import (
     GraphEdge,
     GraphNode,
     GroundedAnswer,
     RetrievalResult,
     SearchHit,
 )
-from trilhagraph.retrieval.planning import CYPHER_CHOICES, CypherPlan, CypherPlanner
-from trilhagraph.retrieval.repository import RetrievalRepository
+from licenciagraph.retrieval.planning import CYPHER_CHOICES, CypherPlan, CypherPlanner
+from licenciagraph.retrieval.repository import RetrievalRepository
 
 
 def context():
@@ -115,7 +115,7 @@ class GroundingRegressions(unittest.TestCase):
 
 class HybridPlanRegression(unittest.TestCase):
     def test_cypher_and_graph_evidence_reach_generator(self):
-        from trilhagraph.retrieval.retriever import HybridRetriever
+        from licenciagraph.retrieval.retriever import HybridRetriever
 
         repository, planner, embedding = Mock(), Mock(), Mock()
         plan = CypherPlan(CYPHER_CHOICES[0], "Salvador")
@@ -148,7 +148,7 @@ class HybridPlanRegression(unittest.TestCase):
 
 class BaselineIsolationTests(unittest.TestCase):
     def test_vector_baseline_does_not_consult_graph_or_planner(self):
-        from trilhagraph.retrieval.retriever import HybridRetriever
+        from licenciagraph.retrieval.retriever import HybridRetriever
 
         repository, planner, embedding = Mock(), Mock(), Mock()
         embedding.embed.return_value = [[0.1, 0.2]]
@@ -170,7 +170,7 @@ class BaselineIsolationTests(unittest.TestCase):
 
 class AlgorithmCompatibilityTests(unittest.TestCase):
     def test_bfs_fallback_respects_hop_limit_and_reverse_edges(self):
-        from trilhagraph.retrieval.algorithms import GraphAlgorithms
+        from licenciagraph.retrieval.algorithms import GraphAlgorithms
 
         graph = Mock()
 
@@ -215,13 +215,13 @@ class ExtractionDirectionTests(unittest.TestCase):
         }
 
     def test_rejects_reversed_typed_relationship(self):
-        from trilhagraph.ingestion.extraction import parse_extraction
+        from licenciagraph.ingestion.extraction import parse_extraction
 
         with self.assertRaisesRegex(ValueError, "INCLUI exige Trilha -> Curso"):
             parse_extraction(self.raw(True))
 
     def test_retries_invalid_extraction_with_feedback(self):
-        from trilhagraph.ingestion.extraction import LearningExtractor
+        from licenciagraph.ingestion.extraction import LearningExtractor
 
         client = Mock()
         valid = {

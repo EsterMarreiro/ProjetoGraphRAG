@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
 
-from trilhagraph.ingestion.llm import OpenAIClient
+from licenciagraph.ingestion.llm import OpenAIClient
 
 
 class FakeResponse(io.BytesIO):
@@ -34,7 +34,7 @@ class OpenAIClientTests(unittest.TestCase):
             captured["auth"] = request.headers["Authorization"]
             return reply({"choices": [{"message": {"content": '{"r": "ok"}'}}]})
 
-        with patch("trilhagraph.ingestion.llm.urlopen", fake):
+        with patch("licenciagraph.ingestion.llm.urlopen", fake):
             result = OpenAIClient("k").chat_json(
                 model="m", system="s", prompt="p", schema={"type": "object"}
             )
@@ -50,7 +50,7 @@ class OpenAIClientTests(unittest.TestCase):
     def test_truncated_response_is_rejected(self) -> None:
         body = {"choices": [{"message": {"content": "{}"}, "finish_reason": "length"}]}
         with (
-            patch("trilhagraph.ingestion.llm.urlopen", lambda *a, **k: reply(body)),
+            patch("licenciagraph.ingestion.llm.urlopen", lambda *a, **k: reply(body)),
             self.assertRaisesRegex(ValueError, "truncada"),
         ):
             OpenAIClient("k").chat_json(model="m", system="s", prompt="p", schema={})
@@ -62,7 +62,7 @@ class OpenAIClientTests(unittest.TestCase):
                 {"index": 0, "embedding": [1.0, 0.0]},
             ]
         }
-        with patch("trilhagraph.ingestion.llm.urlopen", lambda *a, **k: reply(body)):
+        with patch("licenciagraph.ingestion.llm.urlopen", lambda *a, **k: reply(body)):
             vectors = OpenAIClient("k").embed(model="m", texts=["a", "b"], dimensions=2)
             self.assertEqual(vectors, [[1.0, 0.0], [0.0, 1.0]])
             with self.assertRaisesRegex(ValueError, "Dimensao"):
@@ -78,8 +78,8 @@ class OpenAIClientTests(unittest.TestCase):
             return reply({"data": []})
 
         with (
-            patch("trilhagraph.ingestion.llm.urlopen", fake),
-            patch("trilhagraph.ingestion.llm.time.sleep"),
+            patch("licenciagraph.ingestion.llm.urlopen", fake),
+            patch("licenciagraph.ingestion.llm.time.sleep"),
         ):
             self.assertEqual(OpenAIClient("k").list_models(), [])
         self.assertEqual(len(calls), 2)
@@ -89,7 +89,7 @@ class OpenAIClientTests(unittest.TestCase):
             raise HTTPError(request.full_url, 401, "no", {}, io.BytesIO(b"denied"))
 
         with (
-            patch("trilhagraph.ingestion.llm.urlopen", fake),
+            patch("licenciagraph.ingestion.llm.urlopen", fake),
             self.assertRaises(RuntimeError) as ctx,
         ):
             OpenAIClient("segredo").list_models()

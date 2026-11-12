@@ -5,7 +5,7 @@ import re
 import unittest
 from pathlib import Path
 
-from trilhagraph.ingestion.loader import load_documents
+from licenciagraph.ingestion.loader import load_documents
 
 ROOT = Path(__file__).resolve().parents[1]
 

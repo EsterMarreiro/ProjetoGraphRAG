@@ -6,15 +6,15 @@ from unittest.mock import Mock, patch
 
 from streamlit.testing.v1 import AppTest
 
-from trilhagraph.config import Settings
-from trilhagraph.retrieval.models import (
+from licenciagraph.config import Settings
+from licenciagraph.retrieval.models import (
     GraphEdge,
     GraphNode,
     GroundedAnswer,
     RetrievalResult,
     SearchHit,
 )
-from trilhagraph.ui.runtime import UIRuntime
+from licenciagraph.ui.runtime import UIRuntime
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -47,7 +47,8 @@ def sample_answer() -> GroundedAnswer:
 
 class StreamlitAppTests(unittest.TestCase):
     def _run(self, answer):
-        with patch("trilhagraph.ui.app.get_runtime", return_value=fake_runtime(answer)):
+        runtime = fake_runtime(answer)
+        with patch("licenciagraph.ui.app.get_runtime", return_value=runtime):
             app = AppTest.from_file(str(ROOT / "streamlit_app.py"), default_timeout=30)
             app.run()
             app.chat_input[0].set_value("Quem exige B?").run()

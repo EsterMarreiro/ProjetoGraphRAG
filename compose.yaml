@@ -1,7 +1,7 @@
 services:
   falkordb:
     image: falkordb/falkordb:latest
-    container_name: rotagraph-falkordb
+    container_name: licenciagraph-falkordb
     restart: unless-stopped
     ports:
       - "127.0.0.1:${FALKORDB_PORT:-6379}:6379"

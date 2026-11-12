@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from trilhagraph.graph.schema import ENTITY_LABELS, SchemaManager
+from licenciagraph.graph.schema import ENTITY_LABELS, SchemaManager
 
 
 class FakeGraph:

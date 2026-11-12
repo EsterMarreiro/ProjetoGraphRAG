@@ -7,10 +7,10 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from trilhagraph.config import Settings
-from trilhagraph.evaluation.evaluator import load_cases
-from trilhagraph.evaluation.judge import Judge, summarize
-from trilhagraph.ingestion.llm import OpenAIClient
+from licenciagraph.config import Settings
+from licenciagraph.evaluation.evaluator import load_cases
+from licenciagraph.evaluation.judge import Judge, summarize
+from licenciagraph.ingestion.llm import OpenAIClient
 
 ROOT = Path(__file__).resolve().parents[1]
 

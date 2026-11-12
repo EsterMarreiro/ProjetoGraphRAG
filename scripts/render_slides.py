@@ -43,7 +43,7 @@ def main():
             raise ValueError(f"Texto excedeu slide: {title}")
         page.insert_text(
             (52, 514),
-            "TrilhaGraph | Tendências em Ciência da Computação",
+            "LicenciaGraph | Tendências em Ciência da Computação",
             fontsize=10,
             color=(0.35, 0.39, 0.42),
         )
@@ -51,7 +51,7 @@ def main():
         return page
 
     slide(
-        "TrilhaGraph\nPercursos de aprendizagem explicáveis",
+        "LicenciaGraph\nPercursos de aprendizagem explicáveis",
         f"{authors}\n\nGraphRAG com FalkorDB, API OpenAI e fontes auditáveis.\n"
         "Catálogo didático fictício e autoral: não representa ofertas reais.",
     )

@@ -8,9 +8,9 @@ from pathlib import Path
 
 from build_catalog import COURSES
 
-from trilhagraph.config import Settings
-from trilhagraph.graph import GraphConnection
-from trilhagraph.ingestion.canonicalization import normalize_text
+from licenciagraph.config import Settings
+from licenciagraph.graph import GraphConnection
+from licenciagraph.ingestion.canonicalization import normalize_text
 
 
 def fact(filename, source, relation, target):

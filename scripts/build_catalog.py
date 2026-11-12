@@ -152,7 +152,7 @@ def main():
     for code, name, area, skill, level, profile, hours, prerequisites, trail in COURSES:
         sentences = [
             f"Título: {name}",
-            "Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.",
+            "Origem: catálogo didático fictício e autoral do projeto LicenciaGraph.",
             "Versão do catálogo: 1.0, 11 de novembro de 2026.",
             f"O curso {name} aborda a área {area} e desenvolve a competência {skill}.",
             f"O curso {name} é classificado no nível {level} "

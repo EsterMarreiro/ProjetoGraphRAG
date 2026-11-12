@@ -5,13 +5,13 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from trilhagraph.evaluation.evaluator import (
+from licenciagraph.evaluation.evaluator import (
     EvaluationCase,
     evaluate_service,
     load_cases,
     render_markdown,
 )
-from trilhagraph.retrieval.models import (
+from licenciagraph.retrieval.models import (
     GraphEdge,
     GroundedAnswer,
     RetrievalResult,

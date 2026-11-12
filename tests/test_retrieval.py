@@ -2,17 +2,17 @@ from __future__ import annotations
 
 import unittest
 
-from trilhagraph.retrieval.algorithms import GraphAlgorithms, _calculate_pagerank
-from trilhagraph.retrieval.fusion import reciprocal_rank_fusion
-from trilhagraph.retrieval.generation import AnswerGenerator
-from trilhagraph.retrieval.models import (
+from licenciagraph.retrieval.algorithms import GraphAlgorithms, _calculate_pagerank
+from licenciagraph.retrieval.fusion import reciprocal_rank_fusion
+from licenciagraph.retrieval.generation import AnswerGenerator
+from licenciagraph.retrieval.models import (
     GraphEdge,
     GraphNode,
     RetrievalResult,
     SearchHit,
 )
-from trilhagraph.retrieval.repository import RetrievalRepository, _fulltext_query
-from trilhagraph.retrieval.retriever import HybridRetriever
+from licenciagraph.retrieval.repository import RetrievalRepository, _fulltext_query
+from licenciagraph.retrieval.retriever import HybridRetriever
 
 
 def hit(chunk_id: str, score: float, channel: str) -> SearchHit:
@@ -237,7 +237,7 @@ class EntityLinkingAndAlgorithmsTests(unittest.TestCase):
         )
 
     def test_louvain_groups_connected_courses_deterministically(self):
-        from trilhagraph.retrieval.algorithms import louvain_communities
+        from licenciagraph.retrieval.algorithms import louvain_communities
 
         edges = [("a", "b"), ("b", "c"), ("a", "c"), ("x", "y")]
         groups = louvain_communities(edges)
@@ -246,7 +246,7 @@ class EntityLinkingAndAlgorithmsTests(unittest.TestCase):
         self.assertIn(["x", "y"], groups)
 
     def test_typed_shortest_path_rejects_unsafe_relationship(self):
-        from trilhagraph.retrieval.algorithms import GraphAlgorithms
+        from licenciagraph.retrieval.algorithms import GraphAlgorithms
 
         with self.assertRaises(ValueError):
             GraphAlgorithms(unittest.mock.Mock()).shortest_path(

@@ -4,16 +4,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from trilhagraph.ingestion.canonicalization import (
+from licenciagraph.ingestion.canonicalization import (
     EntityCanonicalizer,
     normalize_text,
     slugify,
 )
-from trilhagraph.ingestion.chunking import split_document
-from trilhagraph.ingestion.extraction import parse_extraction
-from trilhagraph.ingestion.loader import load_documents
-from trilhagraph.ingestion.models import Document, ExtractedEntity, ExtractionResult
-from trilhagraph.ingestion.pipeline import IngestionPipeline
+from licenciagraph.ingestion.chunking import split_document
+from licenciagraph.ingestion.extraction import parse_extraction
+from licenciagraph.ingestion.loader import load_documents
+from licenciagraph.ingestion.models import Document, ExtractedEntity, ExtractionResult
+from licenciagraph.ingestion.pipeline import IngestionPipeline
 
 
 class LoaderAndChunkingTests(unittest.TestCase):

@@ -10,19 +10,19 @@ import uuid
 from dataclasses import replace
 from pathlib import Path
 
-from trilhagraph.config import Settings
-from trilhagraph.graph import GraphConnection, SchemaManager
-from trilhagraph.ingestion.loader import load_documents
-from trilhagraph.ingestion.models import (
+from licenciagraph.config import Settings
+from licenciagraph.graph import GraphConnection, SchemaManager
+from licenciagraph.ingestion.loader import load_documents
+from licenciagraph.ingestion.models import (
     ExtractedEntity,
     ExtractedRelationship,
     ExtractionResult,
 )
-from trilhagraph.ingestion.pipeline import IngestionPipeline
-from trilhagraph.ingestion.writer import GraphWriter
-from trilhagraph.retrieval.algorithms import GraphAlgorithms
-from trilhagraph.retrieval.planning import CYPHER_CHOICES, CypherPlan
-from trilhagraph.retrieval.repository import RetrievalRepository
+from licenciagraph.ingestion.pipeline import IngestionPipeline
+from licenciagraph.ingestion.writer import GraphWriter
+from licenciagraph.retrieval.algorithms import GraphAlgorithms
+from licenciagraph.retrieval.planning import CYPHER_CHOICES, CypherPlan
+from licenciagraph.retrieval.repository import RetrievalRepository
 
 
 class SmokeExtractor:
@@ -55,7 +55,7 @@ class SmokeEmbeddings:
 
 def main() -> None:
     settings = replace(
-        Settings.from_env(), falkordb_graph=f"trilhagraph_smoke_{uuid.uuid4().hex}"
+        Settings.from_env(), falkordb_graph=f"licenciagraph_smoke_{uuid.uuid4().hex}"
     )
     with GraphConnection(settings) as connection:
         try:

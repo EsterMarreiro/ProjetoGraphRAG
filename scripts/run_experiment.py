@@ -15,25 +15,25 @@ from pathlib import Path
 
 from capture_sources import capture
 
-from trilhagraph.config import Settings
-from trilhagraph.evaluation.evaluator import (
+from licenciagraph.config import Settings
+from licenciagraph.evaluation.evaluator import (
     _summarize,
     evaluate_service,
     load_cases,
     render_markdown,
 )
-from trilhagraph.evaluation.judge import Judge, summarize
-from trilhagraph.graph import GraphConnection, SchemaManager
-from trilhagraph.ingestion.extraction import LearningExtractor
-from trilhagraph.ingestion.llm import OpenAIClient
-from trilhagraph.ingestion.loader import load_documents
-from trilhagraph.ingestion.pipeline import IngestionPipeline
-from trilhagraph.ingestion.writer import GraphWriter
-from trilhagraph.retrieval.generation import AnswerGenerator
-from trilhagraph.retrieval.planning import CypherPlanner
-from trilhagraph.retrieval.repository import RetrievalRepository
-from trilhagraph.retrieval.retriever import HybridRetriever
-from trilhagraph.retrieval.service import QuestionAnsweringService
+from licenciagraph.evaluation.judge import Judge, summarize
+from licenciagraph.graph import GraphConnection, SchemaManager
+from licenciagraph.ingestion.extraction import LearningExtractor
+from licenciagraph.ingestion.llm import OpenAIClient
+from licenciagraph.ingestion.loader import load_documents
+from licenciagraph.ingestion.pipeline import IngestionPipeline
+from licenciagraph.ingestion.writer import GraphWriter
+from licenciagraph.retrieval.generation import AnswerGenerator
+from licenciagraph.retrieval.planning import CypherPlanner
+from licenciagraph.retrieval.repository import RetrievalRepository
+from licenciagraph.retrieval.retriever import HybridRetriever
+from licenciagraph.retrieval.service import QuestionAnsweringService
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -157,7 +157,7 @@ def main():
             if "password" not in k and "api_key" not in k
         },
         "packages": {
-            name: version(name) for name in ["falkordb", "streamlit", "trilhagraph"]
+            name: version(name) for name in ["falkordb", "streamlit", "licenciagraph"]
         },
         "models": {"chat": settings.chat_model, "embedding": settings.embedding_model},
         "chat_options": llm.chat_options,

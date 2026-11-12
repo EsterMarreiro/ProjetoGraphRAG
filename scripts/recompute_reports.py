@@ -6,14 +6,14 @@ import json
 import sys
 from pathlib import Path
 
-from trilhagraph.evaluation.evaluator import (
+from licenciagraph.evaluation.evaluator import (
     CaseResult,
     _summarize,
     evaluate_answer,
     load_cases,
     render_markdown,
 )
-from trilhagraph.retrieval.models import (
+from licenciagraph.retrieval.models import (
     GraphEdge,
     GraphNode,
     GroundedAnswer,

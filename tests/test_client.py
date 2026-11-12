@@ -5,8 +5,8 @@ import types
 import unittest
 from unittest.mock import patch
 
-from trilhagraph.config import Settings
-from trilhagraph.graph.client import GraphConnection
+from licenciagraph.config import Settings
+from licenciagraph.graph.client import GraphConnection
 
 
 class FakeGraph:

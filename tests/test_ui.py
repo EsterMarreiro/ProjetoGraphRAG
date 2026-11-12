@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import unittest
 
-from trilhagraph.retrieval.models import GraphEdge, GraphNode
-from trilhagraph.ui.filters import LearningFilters
-from trilhagraph.ui.graph_view import build_graph_view_data
+from licenciagraph.retrieval.models import GraphEdge, GraphNode
+from licenciagraph.ui.filters import LearningFilters
+from licenciagraph.ui.graph_view import build_graph_view_data
 
 
 class FilterTests(unittest.TestCase):
