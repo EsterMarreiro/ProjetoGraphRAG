@@ -39,6 +39,7 @@ O smoke test usa FalkorDB real em um grafo temporário próprio, com extrator e 
 - [Auditoria dos requisitos](docs/AUDITORIA_REQUISITOS.md), [avaliação e entrega](docs/07-avaliacao-entrega.md).
 - [Texto do artigo](docs/ARTIGO_TECNICO.md), [PDF SBC](docs/artigo/main.pdf), [fontes LaTeX](docs/artigo/) e [apresentação PDF](docs/APRESENTACAO.pdf); falta apenas a autoria.
 - [Roteiro da defesa](docs/APRESENTACAO.md) e [evidências de execução](artifacts/README.md).
+- Guias para a apresentação: [completo](docs/guia/TrilhaGraph-guia-completo.pdf) e [resumido](docs/guia/TrilhaGraph-guia-resumo.pdf), com fontes LaTeX em `docs/guia/`.
 
 A implementação é independente do ZIP do professor. O novo domínio substitui o turismo da versão anterior; o namespace `trilhagraph_aprendizagem` mantém o grafo separado. Os materiais da Aula 08 e os modelos de TCC foram analisados e estão identificados em [referências da atividade](docs/referencias/README.md). FalkorDB substitui Neo4j (a atividade cita Neo4j) com autorização presencial do professor, informada pela equipe.
 
@@ -58,4 +59,4 @@ A extração reproduziu 76 de 76 relações esperadas. A ablação mostra que o 
 
 ## Pendências fora do código
 
-Nomes da equipe (2 a 5 alunos) para o artigo e a defesa; publicação do repositório com acesso do docente.
+Nomes da equipe (2 a 5 alunos) para o artigo e a defesa; acesso do docente ao repositório.
