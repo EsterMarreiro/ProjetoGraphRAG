@@ -134,6 +134,7 @@ def curate_na101(
     base_criteria: dict[str, list[dict[str, str]]],
     listed: list,
     manual: dict[str, Any],
+    master: list,
 ) -> dict[str, Any]:
     tables = [t.to_dict() for t in pdf_tables]
     table_codes = {c for t in tables for c in t["codes"]}
@@ -144,6 +145,17 @@ def curate_na101(
         "cost_letters_ufr": letters,
         "base_criteria": base_criteria,
         "porte_tables": tables,
+        "master": [
+            {
+                "code": a.code,
+                "name": a.name,
+                "group_code": a.group_code,
+                "group_name": a.group_name,
+                "subgroup_code": a.subgroup_code,
+                "subgroup_name": a.subgroup_name,
+            }
+            for a in master
+        ],
         "listed_activities": [
             {
                 "regime": a.regime,

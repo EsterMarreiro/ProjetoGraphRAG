@@ -8,12 +8,19 @@ from dataclasses import dataclass
 from licenciagraph.retrieval.models import GraphEdge, GraphNode
 
 LABEL_COLORS = {
-    "Area": "#0F766E",
-    "Curso": "#EA580C",
-    "Competencia": "#2563EB",
-    "Perfil": "#7C3AED",
-    "Nivel": "#CA8A04",
-    "Trilha": "#DC2626",
+    "Atividade": "#EA580C",
+    "Grupo": "#A16207",
+    "Subgrupo": "#CA8A04",
+    "Modalidade": "#2563EB",
+    "Checklist": "#0F766E",
+    "DocumentoExigido": "#059669",
+    "Estudo": "#7C3AED",
+    "Orgao": "#DC2626",
+    "Sistema": "#DB2777",
+    "Norma": "#475569",
+    "Porte": "#0891B2",
+    "Faixa": "#0E7490",
+    "LetraCusto": "#65A30D",
 }
 
 

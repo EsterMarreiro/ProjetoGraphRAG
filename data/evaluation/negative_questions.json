@@ -1,17 +1,22 @@
 [
-  {
-    "id": "N01",
-    "question": "Qual é o preço de inscrição em Recuperação Híbrida?",
-    "expected_behavior": "Informar que o catálogo não informa preços; não inventar valor."
-  },
-  {
-    "id": "N02",
-    "question": "Qual certificado é emitido em APIs Web e em que data abrem as inscrições?",
-    "expected_behavior": "Declarar ausência de informações sobre certificados e inscrições."
-  },
-  {
-    "id": "N03",
-    "question": "Qual curso de medicina deste catálogo ensina cardiologia?",
-    "expected_behavior": "Abster-se; o catálogo não contém medicina nem cardiologia."
-  }
+ {
+  "id": "DN01",
+  "question": "Qual o valor, em reais, da UFR-PB em vigor para converter o custo da licença?",
+  "expected_behavior": "A informação não consta das normas; o valor da UFR-PB em reais não é informado."
+ },
+ {
+  "id": "DN02",
+  "question": "Quais documentos a CETESB exige para licenciar uma fábrica em São Paulo?",
+  "expected_behavior": "Licenciamento de outro estado não consta das normas da SUDEMA."
+ },
+ {
+  "id": "DN03",
+  "question": "A SUDEMA garante a aprovação da licença em 30 dias?",
+  "expected_behavior": "As normas não garantem aprovação em 30 dias; o prazo de análise é outro."
+ },
+ {
+  "id": "DN04",
+  "question": "Que documentos são exigidos para licenciar uma fábrica de foguetes espaciais?",
+  "expected_behavior": "Essa atividade não consta da lista de atividades das normas."
+ }
 ]

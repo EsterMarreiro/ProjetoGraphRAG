@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import platform
@@ -24,9 +25,9 @@ from licenciagraph.evaluation.evaluator import (
 )
 from licenciagraph.evaluation.judge import Judge, summarize
 from licenciagraph.graph import GraphConnection, SchemaManager
-from licenciagraph.ingestion.extraction import LearningExtractor
+from licenciagraph.ingestion.curated import build_documents
+from licenciagraph.ingestion.facts import FactsExtractor
 from licenciagraph.ingestion.llm import OpenAIClient
-from licenciagraph.ingestion.loader import load_documents
 from licenciagraph.ingestion.pipeline import IngestionPipeline
 from licenciagraph.ingestion.writer import GraphWriter
 from licenciagraph.retrieval.generation import AnswerGenerator
@@ -96,7 +97,7 @@ class RecordedService:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skip-ingest", action="store_true")
+    parser.add_argument("--ingest", action="store_true")
     parser.add_argument("--force-ingest", action="store_true")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--case-ids", nargs="+")
@@ -120,6 +121,7 @@ def main():
     if args.limit is not None and args.limit <= 0:
         parser.error("--limit deve ser positivo")
     cases = load_cases(args.dataset)
+    raw_cases = json.loads(args.dataset.read_text(encoding="utf-8"))
     if args.case_ids:
         unknown = set(args.case_ids) - {case.id for case in cases}
         if unknown:
@@ -137,11 +139,7 @@ def main():
     judge = (
         None
         if args.no_judge
-        else Judge.from_directory(
-            OpenAIClient.from_settings(settings),
-            model=args.judge_model,
-            directory=ROOT / "data/raw",
-        )
+        else Judge(OpenAIClient.from_settings(settings), model=args.judge_model)
     )
     metadata = {
         "started_at": datetime.now(UTC).isoformat(),
@@ -162,7 +160,8 @@ def main():
         "models": {"chat": settings.chat_model, "embedding": settings.embedding_model},
         "chat_options": llm.chat_options,
         "corpus": {
-            doc.path.name: doc.checksum for doc in load_documents(ROOT / "data/raw")
+            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted((ROOT / "data/curated").glob("*.json"))
         },
         "modes": args.modes,
         "case_ids": [case.id for case in cases],
@@ -177,16 +176,14 @@ def main():
         SchemaManager(
             connection.graph, embedding_dimension=settings.embedding_dimension
         ).ensure()
-        if not args.skip_ingest:
+        if args.ingest:
             report = IngestionPipeline(
                 writer=GraphWriter(connection.graph),
-                extractor=LearningExtractor(llm, model=settings.extraction_model),
+                extractor=FactsExtractor(llm, model=settings.extraction_model),
                 llm=llm,
                 embedding_model=settings.embedding_model,
                 embedding_dimension=settings.embedding_dimension,
-                chunk_size=settings.chunk_size,
-                chunk_overlap=settings.chunk_overlap,
-            ).run(ROOT / "data/raw", force=args.force_ingest)
+            ).run(build_documents(ROOT / "data/curated"), force=args.force_ingest)
             write_json(directory / "ingestion.json", report.as_dict())
         write_json(
             directory / "graph-stats.json",
@@ -220,6 +217,8 @@ def main():
             )
             results = []
             verdicts = []
+            evidence = {item["id"]: item["evidence"] for item in raw_cases}
+            facts = {item["id"]: item["expected_facts"] for item in raw_cases}
             for case in cases:
                 print(f"{mode}: {case.id}", flush=True)
                 results.extend(evaluate_service(service, [case]).cases)
@@ -234,7 +233,8 @@ def main():
                                 case.id,
                                 case.question,
                                 last.answer,
-                                case.expected_concepts,
+                                facts[case.id],
+                                evidence[case.id],
                             )
                         )
                     write_json(

@@ -115,9 +115,9 @@ def evaluate_service(
 
 
 def evaluate_answer(case: EvaluationCase, answer: GroundedAnswer) -> CaseResult:
-    retrieved = tuple(dict.fromkeys(hit.filename for hit in answer.retrieval.hits))
-    expected = {_normalize_filename(source) for source in case.expected_sources}
-    found = {_normalize_filename(source) for source in retrieved}
+    retrieved = tuple(dict.fromkeys(hit.chunk_id for hit in answer.retrieval.hits))
+    expected = set(case.expected_sources)
+    found = set(retrieved)
     source_recall = len(expected & found) / len(expected) if expected else 1.0
     source_precision = len(expected & found) / len(found) if found else 0.0
 
@@ -240,10 +240,6 @@ def _normalize(value: str) -> str:
     value = unicodedata.normalize("NFKD", value.casefold())
     value = "".join(char for char in value if not unicodedata.combining(char))
     return re.sub(r"\s+", " ", value).strip()
-
-
-def _normalize_filename(value: str) -> str:
-    return Path(value).name.casefold()
 
 
 def _has_multihop_path(edges: list[GraphEdge]) -> bool:

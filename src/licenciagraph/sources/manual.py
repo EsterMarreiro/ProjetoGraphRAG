@@ -321,6 +321,7 @@ def _read_items(
 ) -> None:
     closed_page = 0
     annex: dict[int, list[str]] = {}
+    item_page = 0
     for line, page in zip(lines, pages, strict=True):
         if closed_page:
             if page == closed_page:
@@ -332,12 +333,17 @@ def _read_items(
             closed_page = page
             checklist.notes.append(line)
             continue
+        if checklist.items and page > item_page + 1:
+            annex.setdefault(page, []).append(line)
+            continue
         expected = first_number + len(checklist.items)
         same_line = re.match(rf"^{expected}\s+(\S.*)$", line)
         if line == str(expected):
             checklist.items.append(ChecklistItem(number=expected, text=""))
+            item_page = page
         elif same_line and (not checklist.items or checklist.items[-1].text):
             checklist.items.append(ChecklistItem(expected, same_line.group(1)))
+            item_page = page
         elif checklist.items:
             item = checklist.items[-1]
             item.text = f"{item.text}\n{line}".strip()

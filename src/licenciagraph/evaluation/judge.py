@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
 from licenciagraph.ingestion.llm import OpenAIClient
@@ -58,29 +57,33 @@ NEGATIVE_SCHEMA = {
     "additionalProperties": False,
 }
 
-CLAIM_RULES = """Decomponha a resposta em afirmações atômicas sobre o catálogo (ignore
-marcadores [F1], avisos de que o catálogo é fictício e frases de recusa). Para cada
-afirmação, copie em quote a(s) frase(s) do corpus que a confirmam ou refutam; use
-quote vazio se não houver. verdict: supported (o corpus confirma),
-contradicted (o corpus afirma o contrário) ou unverifiable (o corpus não trata do
-assunto). Afirmações que combinam fatos de várias frases do corpus são supported
-se cada fato combinado é verdadeiro. Afirmar que o catálogo NÃO informa algo é
-supported quando o corpus de fato não trata do assunto. Não marque como
-problema o que o corpus afirma; só use contradicted ou unverifiable quando o
-corpus não sustentar."""
+CLAIM_RULES = """\
+Decomponha a resposta em afirmações atômicas sobre licenciamento ambiental (ignore
+marcadores [F1], avisos de caráter orientativo e frases de recusa). Para cada
+afirmação, copie em quote a(s) frase(s) das EVIDÊNCIAS que a confirmam ou refutam;
+use quote vazio se não houver. verdict: supported (as evidências confirmam),
+contradicted (as evidências afirmam o contrário ou outro valor) ou unverifiable (as
+evidências não tratam do assunto). As evidências são os trechos oficiais relevantes
+para a pergunta, mas podem ser incompletas: afirmações plausíveis que não constam
+delas são unverifiable, não contradicted. Afirmações que combinam fatos de várias
+frases são supported se cada fato combinado é verdadeiro. Afirmar que a norma NÃO
+informa algo é supported quando as evidências de fato não tratam do assunto."""
 
-POSITIVE_SYSTEM = f"""Você é um revisor rigoroso. Recebe o CORPUS completo de um
-catálogo fictício, uma pergunta, uma resposta e fatos de referência.
+POSITIVE_SYSTEM = f"""Você é um revisor rigoroso. Recebe EVIDÊNCIAS oficiais (trechos
+do Manual de Licenciamento Ambiental e da NA-101 da SUDEMA), uma pergunta, uma
+resposta e fatos de referência.
 {CLAIM_RULES}
 Também diga, para cada fato de referência, se a resposta o afirma corretamente
 (stated_correctly) e se a resposta atende ao que foi perguntado."""
 
-NEGATIVE_SYSTEM = f"""Você é um revisor rigoroso. Recebe o CORPUS completo de um
-catálogo fictício, uma pergunta cuja resposta NÃO está no corpus (ou que traz
-premissa falsa) e o comportamento esperado.
+NEGATIVE_SYSTEM = f"""Você é um revisor rigoroso. Recebe EVIDÊNCIAS oficiais (trechos
+do Manual de Licenciamento Ambiental e da NA-101 da SUDEMA), uma pergunta cuja
+resposta NÃO está nas normas (ou que traz premissa falsa) e o comportamento
+esperado.
 {CLAIM_RULES}
 declines_or_corrects é verdadeiro se a resposta admite a ausência da informação
-ou corrige a premissa falsa."""
+ou corrige a premissa falsa. Neste caso, qualquer afirmação factual que não conste
+das evidências deve ser marcada como unverifiable."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,34 +93,27 @@ class Verdict:
     complete: bool
     false_claims: tuple[str, ...]
     detail: dict[str, Any]
+    unsupported: tuple[str, ...] = ()
 
 
 class Judge:
-    def __init__(self, client: OpenAIClient, *, model: str, corpus: str) -> None:
+    def __init__(self, client: OpenAIClient, *, model: str) -> None:
         self.client = client
         self.model = model
-        self.corpus = corpus
-
-    @classmethod
-    def from_directory(cls, client: OpenAIClient, *, model: str, directory: Path):
-        parts = [
-            f"## {path.name}\n{path.read_text(encoding='utf-8')}"
-            for path in sorted(directory.glob("*.txt"))
-        ]
-        return cls(client, model=model, corpus="\n\n".join(parts))
 
     @staticmethod
-    def _false_claims(claims) -> tuple[str, ...]:
-        return tuple(item["claim"] for item in claims if item["verdict"] != "supported")
+    def _problems(claims, *, strict: bool) -> tuple[str, ...]:
+        bad = {"contradicted"} if not strict else {"contradicted", "unverifiable"}
+        return tuple(item["claim"] for item in claims if item["verdict"] in bad)
 
     def judge_positive(
-        self, case_id: str, question: str, answer: str, facts
+        self, case_id: str, question: str, answer: str, facts, evidence
     ) -> Verdict:
         raw = self.client.chat_json(
             model=self.model,
             system=POSITIVE_SYSTEM,
             prompt=(
-                f"CORPUS:\n{self.corpus}\n\nPERGUNTA: {question}\n\n"
+                f"EVIDÊNCIAS:\n{_evidence_text(evidence)}\n\nPERGUNTA: {question}\n\n"
                 f"RESPOSTA: {_clean(answer)}\n\nFATOS DE REFERÊNCIA: {list(facts)}"
             ),
             schema=POSITIVE_SCHEMA,
@@ -126,33 +122,42 @@ class Judge:
         complete = bool(raw["facts"]) and all(
             f["stated_correctly"] for f in raw["facts"]
         )
-        false_claims = self._false_claims(raw["claims"])
+        false_claims = self._problems(raw["claims"], strict=False)
         return Verdict(
             case_id,
             correct=complete and not false_claims and bool(raw["answers_question"]),
             complete=complete,
             false_claims=false_claims,
             detail=raw,
+            unsupported=tuple(
+                c["claim"] for c in raw["claims"] if c["verdict"] == "unverifiable"
+            ),
         )
 
     def judge_negative(
-        self, case_id: str, question: str, answer: str, expected
+        self, case_id: str, question: str, answer: str, expected, evidence=()
     ) -> Verdict:
         raw = self.client.chat_json(
             model=self.model,
             system=NEGATIVE_SYSTEM,
             prompt=(
-                f"CORPUS:\n{self.corpus}\n\nPERGUNTA: {question}\n\n"
+                f"EVIDÊNCIAS:\n{_evidence_text(evidence)}\n\nPERGUNTA: {question}\n\n"
                 f"COMPORTAMENTO ESPERADO: {expected}\n\nRESPOSTA: {_clean(answer)}"
             ),
             schema=NEGATIVE_SCHEMA,
             strict=True,
         )
-        fabricated = self._false_claims(raw["claims"])
+        fabricated = self._problems(raw["claims"], strict=True)
         ok = bool(raw["declines_or_corrects"]) and not fabricated
         return Verdict(
             case_id, correct=ok, complete=ok, false_claims=fabricated, detail=raw
         )
+
+
+def _evidence_text(evidence) -> str:
+    if not evidence:
+        return "(nenhuma evidência de referência para este caso)"
+    return "\n\n".join(f"[{i}] {text}" for i, text in enumerate(evidence, 1))
 
 
 def summarize(verdicts: list[Verdict]) -> dict[str, float | int]:
@@ -165,6 +170,7 @@ def summarize(verdicts: list[Verdict]) -> dict[str, float | int]:
         "accuracy": round(sum(v.correct for v in verdicts) / total, 4),
         "complete": sum(v.complete for v in verdicts),
         "with_false_claims": sum(bool(v.false_claims) for v in verdicts),
+        "with_unsupported_claims": sum(bool(v.unsupported) for v in verdicts),
         "hallucination_rate": round(
             sum(bool(v.false_claims) for v in verdicts) / total, 4
         ),

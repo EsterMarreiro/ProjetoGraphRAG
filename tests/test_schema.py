@@ -51,14 +51,14 @@ class SchemaManagerTests(unittest.TestCase):
         graph = FakeGraph()
         report = SchemaManager(graph, embedding_dimension=768).ensure()
 
-        self.assertEqual(report.indices_created, 21)
-        self.assertEqual(report.constraints_created, 25)
+        self.assertEqual(report.indices_created, 39)
+        self.assertEqual(report.constraints_created, 46)
         unique_labels = {
             item["label"] for item in graph.constraints if item["type"] == "UNIQUE"
         }
         self.assertEqual(unique_labels, set(ENTITY_LABELS))
         vector_calls = [call for call in graph.index_calls if call[0] == "vector"]
-        self.assertEqual(len(vector_calls), 3)
+        self.assertEqual(len(vector_calls), 4)
         self.assertTrue(
             all(call[3]["similarity_function"] == "cosine" for call in vector_calls)
         )
@@ -69,11 +69,11 @@ class SchemaManagerTests(unittest.TestCase):
         first = manager.ensure()
         second = manager.ensure()
 
-        self.assertEqual(first.indices_existing, 21)
-        self.assertEqual(first.constraints_created, 25)
-        self.assertEqual(second.indices_existing, 21)
+        self.assertEqual(first.indices_existing, 39)
+        self.assertEqual(first.constraints_created, 46)
+        self.assertEqual(second.indices_existing, 39)
         self.assertEqual(second.constraints_created, 0)
-        self.assertEqual(second.constraints_existing, 25)
+        self.assertEqual(second.constraints_existing, 46)
 
     def test_does_not_hide_unexpected_index_errors(self) -> None:
         class BrokenGraph(FakeGraph):

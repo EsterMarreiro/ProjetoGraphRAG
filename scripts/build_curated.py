@@ -9,6 +9,7 @@ from pathlib import Path
 from licenciagraph.sources import na101
 from licenciagraph.sources.curate import curate_manual, curate_na101
 from licenciagraph.sources.manual import parse_manual
+from licenciagraph.sources.prose import chunk_blocks, pdf_blocks
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,13 +30,44 @@ def main() -> None:
         na101.parse_base_criteria(norm),
         na101.parse_activity_lists(norm),
         manual,
+        na101.parse_master_list(norm),
     )
+    prose = {
+        "documents": [
+            {
+                "id": "manual-capitulos",
+                "title": "Manual de Licenciamento Ambiental, 5ª edição: capítulos I a IV",
+                "file": "manual-licenciamento-5a-edicao.pdf",
+                "chunks": chunk_blocks(
+                    pdf_blocks(
+                        args.sources / "manual-licenciamento-5a-edicao.pdf", 9, 30
+                    )
+                ),
+            },
+            {
+                "id": "na101-texto",
+                "title": "NA-101, 5ª edição (2026): disposições gerais e atividades específicas",
+                "file": "na-101-5a-edicao-2026.pdf",
+                "chunks": chunk_blocks(pdf_blocks(norm, 5, 17)),
+            },
+            {
+                "id": "na101-observacoes-custos",
+                "title": "NA-101, 5ª edição (2026): observações sobre custos de análise",
+                "file": "na-101-5a-edicao-2026.pdf",
+                "chunks": chunk_blocks(pdf_blocks(norm, 383, 389)),
+            },
+        ]
+    }
     for name, data in (("manual", manual), ("na101", na_data)):
         target = args.output / f"{name}.json"
         target.write_text(
             json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
         )
         print(name, json.dumps(data["report"], ensure_ascii=False, indent=1))
+    (args.output / "prosa.json").write_text(
+        json.dumps(prose, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
+    print({d["id"]: len(d["chunks"]) for d in prose["documents"]})
 
 
 if __name__ == "__main__":

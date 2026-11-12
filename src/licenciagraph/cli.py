@@ -11,7 +11,8 @@ from pathlib import Path
 from licenciagraph.config import Settings
 from licenciagraph.evaluation import evaluate_service, load_cases, render_markdown
 from licenciagraph.graph import GraphConnection, SchemaManager
-from licenciagraph.ingestion.extraction import LearningExtractor
+from licenciagraph.ingestion.curated import build_documents
+from licenciagraph.ingestion.facts import FactsExtractor
 from licenciagraph.ingestion.llm import OpenAIClient
 from licenciagraph.ingestion.pipeline import IngestionPipeline
 from licenciagraph.ingestion.writer import GraphWriter
@@ -27,9 +28,14 @@ def build_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("health", help="verifica a conexao com o FalkorDB")
     commands.add_parser("setup-schema", help="cria indices e constraints")
-    ingest = commands.add_parser("ingest", help="ingere os arquivos TXT")
-    ingest.add_argument("--data-dir", type=Path, default=Path("data/raw"))
+    ingest = commands.add_parser(
+        "ingest", help="ingere os dados curados e o texto das normas"
+    )
+    ingest.add_argument("--curated-dir", type=Path, default=Path("data/curated"))
     ingest.add_argument("--force", action="store_true")
+    ingest.add_argument(
+        "--reset", action="store_true", help="apaga o grafo antes de ingerir"
+    )
     ask = commands.add_parser("ask", help="responde usando recuperacao hibrida")
     ask.add_argument("question", help="pergunta em linguagem natural")
     evaluate = commands.add_parser(
@@ -65,6 +71,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             elif args.command == "ingest":
                 connection.healthcheck()
+                if args.reset:
+                    connection.graph.delete()
                 SchemaManager(
                     connection.graph,
                     embedding_dimension=settings.embedding_dimension,
@@ -73,16 +81,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                 payload = (
                     IngestionPipeline(
                         writer=GraphWriter(connection.graph),
-                        extractor=LearningExtractor(
-                            llm, model=settings.extraction_model
-                        ),
+                        extractor=FactsExtractor(llm, model=settings.extraction_model),
                         llm=llm,
                         embedding_model=settings.embedding_model,
                         embedding_dimension=settings.embedding_dimension,
-                        chunk_size=settings.chunk_size,
-                        chunk_overlap=settings.chunk_overlap,
+                        progress=_progress,
                     )
-                    .run(args.data_dir, force=args.force)
+                    .run(build_documents(args.curated_dir), force=args.force)
                     .as_dict()
                 )
             elif args.command == "ask":
@@ -167,6 +172,10 @@ def _build_answering_service(
             verifier_model=settings.verifier_model,
         ),
     )
+
+
+def _progress(document: str, done: int, total: int) -> None:
+    print(f"{document}: {done}/{total}", file=sys.stderr, flush=True)
 
 
 def _write_text(path: Path, content: str) -> None:

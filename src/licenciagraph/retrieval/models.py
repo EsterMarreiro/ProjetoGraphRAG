@@ -14,6 +14,7 @@ class SearchHit:
     filename: str
     score: float
     channels: set[str] = field(default_factory=set)
+    page: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,6 +22,7 @@ class GraphNode:
     id: str
     label: str
     name: str
+    aliases: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +32,7 @@ class GraphEdge:
     relationship_type: str
     confidence: float | None = None
     chunk_id: str | None = None
+    properties: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

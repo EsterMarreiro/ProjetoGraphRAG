@@ -1,21 +1,31 @@
-"""Orquestracao da ingestao de TXT para o grafo."""
+"""Orquestração da ingestão dos documentos para o grafo."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Protocol
+from typing import Any
 
 from licenciagraph.ingestion.canonicalization import EntityCanonicalizer
-from licenciagraph.ingestion.chunking import split_document
+from licenciagraph.ingestion.curated import PlannedChunk, SourceDocument
+from licenciagraph.ingestion.extraction import Extractor
 from licenciagraph.ingestion.llm import OpenAIClient
-from licenciagraph.ingestion.loader import load_documents
-from licenciagraph.ingestion.models import ExtractionResult
+from licenciagraph.ingestion.models import ExtractedEntity, ExtractionResult
 from licenciagraph.ingestion.writer import GraphWriter
 
-
-class Extractor(Protocol):
-    def extract(self, text: str) -> ExtractionResult: ...
+EMBEDDED_LABELS = frozenset(
+    {
+        "Atividade",
+        "DocumentoExigido",
+        "Modalidade",
+        "Estudo",
+        "Orgao",
+        "Norma",
+        "Sistema",
+        "Grupo",
+        "Subgrupo",
+    }
+)
+BATCH_CHUNKS = 24
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,72 +53,45 @@ class IngestionPipeline:
         self,
         *,
         writer: GraphWriter,
-        extractor: Extractor,
+        extractor: Extractor | None,
         llm: OpenAIClient,
         embedding_model: str,
         embedding_dimension: int,
-        chunk_size: int = 1200,
-        chunk_overlap: int = 200,
+        progress: Any = None,
     ) -> None:
         self.writer = writer
         self.extractor = extractor
         self.llm = llm
         self.embedding_model = embedding_model
         self.embedding_dimension = embedding_dimension
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
         self.canonicalizer = EntityCanonicalizer()
+        self.progress = progress
+        self._embedded: set[str] = set()
 
-    def run(self, data_dir: Path, *, force: bool = False) -> IngestionReport:
-        documents = load_documents(data_dir)
+    def run(
+        self, documents: list[SourceDocument], *, force: bool = False
+    ) -> IngestionReport:
         processed = skipped = chunks_count = entities_count = relations_count = 0
-
-        for document in documents:
-            if not force and self.writer.is_document_current(document):
+        for source in documents:
+            if not force and self.writer.is_document_current(source.document):
                 skipped += 1
                 continue
-
-            chunks = split_document(
-                document,
-                chunk_size=self.chunk_size,
-                overlap=self.chunk_overlap,
-            )
-            self.writer.prepare_document(document)
-            for chunk in chunks:
-                extraction = self.extractor.extract(chunk.text)
-                for entity in extraction.entities:
-                    self.canonicalizer.canonicalize(entity)
-
-                entity_texts = [
-                    _entity_embedding_text(entity.name, entity.properties)
-                    for entity in extraction.entities
-                ]
-                embeddings = self.llm.embed(
-                    model=self.embedding_model,
-                    texts=[chunk.text, *entity_texts],
-                    dimensions=self.embedding_dimension,
-                )
-                self.writer.upsert_chunk(chunk, embeddings[0])
-
-                entities_by_ref = {entity.ref: entity for entity in extraction.entities}
-                for entity, embedding in zip(
-                    extraction.entities, embeddings[1:], strict=True
-                ):
-                    self.writer.upsert_entity(entity, embedding)
-                    self.writer.link_mention(chunk.id, entity)
-                for relationship in extraction.relationships:
-                    self.writer.upsert_relationship(
-                        relationship,
-                        entities_by_ref,
-                        chunk_id=chunk.id,
+            self.writer.prepare_document(source.document)
+            for start in range(0, len(source.chunks), BATCH_CHUNKS):
+                batch = source.chunks[start : start + BATCH_CHUNKS]
+                results = [self._extract(item) for item in batch]
+                self._write_batch(batch, results)
+                chunks_count += len(batch)
+                entities_count += sum(len(r.entities) for r in results)
+                relations_count += sum(len(r.relationships) for r in results)
+                if self.progress:
+                    self.progress(
+                        source.document.id, start + len(batch), len(source.chunks)
                     )
-
-                chunks_count += 1
-                entities_count += len(extraction.entities)
-                relations_count += len(extraction.relationships)
-            self.writer.complete_document(document)
+            self.writer.complete_document(source.document)
             processed += 1
-
+        if processed:
+            self.writer.remove_orphans()
         return IngestionReport(
             documents_found=len(documents),
             documents_processed=processed,
@@ -118,7 +101,56 @@ class IngestionPipeline:
             relationships_processed=relations_count,
         )
 
+    def _extract(self, item: PlannedChunk) -> ExtractionResult:
+        if item.extraction is not None:
+            result = item.extraction
+        elif self.extractor is not None:
+            result = self.extractor.extract(item.chunk.text)
+        else:
+            result = ExtractionResult()
+        for entity in result.entities:
+            if entity.canonical_id is None:
+                self.canonicalizer.canonicalize(entity)
+        return result
 
-def _entity_embedding_text(name: str, properties: dict[str, object]) -> str:
-    description = properties.get("descricao")
-    return f"{name}. {description}" if description else name
+    def _write_batch(
+        self, batch: list[PlannedChunk], results: list[ExtractionResult]
+    ) -> None:
+        texts = [item.chunk.text for item in batch]
+        pending: list[ExtractedEntity] = []
+        for result in results:
+            for entity in result.entities:
+                key = entity.canonical_id or entity.ref
+                if entity.label in EMBEDDED_LABELS and key not in self._embedded:
+                    self._embedded.add(key)
+                    pending.append(entity)
+        vectors = self.llm.embed(
+            model=self.embedding_model,
+            texts=[*texts, *(_entity_text(e) for e in pending)],
+            dimensions=self.embedding_dimension,
+        )
+        entity_vectors = {
+            (e.canonical_id or e.ref): vector
+            for e, vector in zip(pending, vectors[len(texts) :], strict=True)
+        }
+        for item, vector, result in zip(batch, vectors, results, strict=False):
+            self.writer.upsert_chunk(item.chunk, vector)
+            by_ref = {entity.ref: entity for entity in result.entities}
+            for entity in result.entities:
+                key = entity.canonical_id or entity.ref
+                self.writer.upsert_entity(entity, entity_vectors.pop(key, None))
+                self.writer.link_mention(item.chunk.id, entity)
+            for relationship in result.relationships:
+                self.writer.upsert_relationship(
+                    relationship, by_ref, chunk_id=item.chunk.id
+                )
+
+
+def _entity_text(entity: ExtractedEntity) -> str:
+    properties = entity.properties
+    context = [
+        str(properties[key])
+        for key in ("grupo", "subgrupo", "categoria", "descricao")
+        if properties.get(key) and str(properties[key]) != entity.name
+    ]
+    return ". ".join([entity.name, *context[:2]])

@@ -6,25 +6,47 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-ENTITY_LABELS = (
-    "Area",
-    "Curso",
-    "Competencia",
-    "Perfil",
-    "Nivel",
-    "Trilha",
-    "Documento",
-    "Trecho",
-)
-
 NAMED_LABELS = (
-    "Area",
-    "Curso",
-    "Competencia",
-    "Perfil",
-    "Nivel",
-    "Trilha",
+    "Grupo",
+    "Subgrupo",
+    "Atividade",
+    "Modalidade",
+    "Checklist",
+    "DocumentoExigido",
+    "Estudo",
+    "Orgao",
+    "Sistema",
+    "Norma",
+    "Porte",
+    "Faixa",
+    "LetraCusto",
 )
+ENTITY_LABELS = (*NAMED_LABELS, "Documento", "Trecho")
+RANGE_PROPERTIES = (
+    ("Atividade", "nome"),
+    ("Atividade", "codigo"),
+    ("Checklist", "codigo"),
+    ("Modalidade", "sigla"),
+    ("DocumentoExigido", "nome"),
+    ("DocumentoExigido", "categoria"),
+    ("Orgao", "nome"),
+    ("Estudo", "nome"),
+    ("Norma", "nome"),
+    ("Grupo", "codigo"),
+    ("Subgrupo", "codigo"),
+)
+FULLTEXT_PROPERTIES = (
+    ("Atividade", ("nome", "descricao")),
+    ("Checklist", ("nome", "descricao")),
+    ("DocumentoExigido", ("nome", "condicao")),
+    ("Modalidade", ("nome", "descricao")),
+    ("Estudo", ("nome",)),
+    ("Orgao", ("nome",)),
+    ("Norma", ("nome",)),
+    ("Sistema", ("nome",)),
+    ("Trecho", ("texto",)),
+)
+VECTOR_LABELS = ("Trecho", "Atividade", "DocumentoExigido", "Modalidade")
 
 
 @dataclass(frozen=True, slots=True)
@@ -62,42 +84,25 @@ class SchemaManager:
             for label in ENTITY_LABELS
         )
         index_operations.extend(
-            (
-                lambda: self.graph.create_node_range_index("Area", "nome"),
-                lambda: self.graph.create_node_range_index("Curso", "codigo"),
-                lambda: self.graph.create_node_range_index("Area", "tipo"),
-                lambda: self.graph.create_node_range_index("Curso", "nome"),
-                lambda: self.graph.create_node_range_index("Curso", "tipo"),
-                lambda: self.graph.create_node_range_index("Competencia", "nome"),
-                lambda: self.graph.create_node_fulltext_index(
-                    "Area", "nome", "descricao"
-                ),
-                lambda: self.graph.create_node_fulltext_index(
-                    "Curso", "nome", "descricao"
-                ),
-                lambda: self.graph.create_node_fulltext_index(
-                    "Competencia", "nome", "descricao"
-                ),
-                lambda: self.graph.create_node_fulltext_index("Trecho", "texto"),
-                lambda: self.graph.create_node_vector_index(
-                    "Trecho",
-                    "embedding",
-                    dim=self.embedding_dimension,
-                    similarity_function="cosine",
-                ),
-                lambda: self.graph.create_node_vector_index(
-                    "Area",
-                    "embedding",
-                    dim=self.embedding_dimension,
-                    similarity_function="cosine",
-                ),
-                lambda: self.graph.create_node_vector_index(
-                    "Curso",
-                    "embedding",
-                    dim=self.embedding_dimension,
-                    similarity_function="cosine",
-                ),
+            lambda label=label, prop=prop: self.graph.create_node_range_index(
+                label, prop
             )
+            for label, prop in RANGE_PROPERTIES
+        )
+        index_operations.extend(
+            lambda label=label, props=props: self.graph.create_node_fulltext_index(
+                label, *props
+            )
+            for label, props in FULLTEXT_PROPERTIES
+        )
+        index_operations.extend(
+            lambda label=label: self.graph.create_node_vector_index(
+                label,
+                "embedding",
+                dim=self.embedding_dimension,
+                similarity_function="cosine",
+            )
+            for label in VECTOR_LABELS
         )
 
         for operation in index_operations:

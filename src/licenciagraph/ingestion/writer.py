@@ -14,24 +14,50 @@ from licenciagraph.ingestion.models import (
 )
 
 ENTITY_PROPERTY_KEYS = frozenset(
-    {"descricao", "tipo", "provedor", "codigo", "aliases", "carga_horaria", "edicao"}
+    {
+        "descricao",
+        "tipo",
+        "codigo",
+        "sigla",
+        "aliases",
+        "grupo",
+        "subgrupo",
+        "familia",
+        "modalidade",
+        "paginas",
+        "categoria",
+        "condicao",
+        "criterio",
+        "letra",
+        "classe",
+        "ar",
+        "agua",
+        "solo",
+        "anotacao",
+        "porte",
+        "unidade_porte",
+    }
 )
-RELATIONSHIP_PROPERTY_KEYS = frozenset({"ordem", "observacao"})
+RELATIONSHIP_PROPERTY_KEYS = frozenset(
+    {"ordem", "observacao", "validade", "letra", "valor_ufr"}
+)
 
 
 class GraphWriter:
     def __init__(self, graph: Any) -> None:
         self.graph = graph
+        self._known: set[tuple[str, str]] = set()
 
     def _node_clause(
         self, alias: str, label: str, node_id: str, required: tuple[str, ...]
     ) -> str:
         # Some engine versions enforce mandatory properties at CREATE, before
         # a following SET. Include them in the pattern when creating a node.
-        exists = self.graph.ro_query(
+        exists = (label, node_id) in self._known or self.graph.ro_query(
             f"MATCH (n:{label} {{id: $id}}) RETURN count(n)",
             params={"id": node_id},
         ).result_set[0][0]
+        self._known.add((label, node_id))
         if exists:
             return f"MATCH ({alias}:{label} {{id: $id}})"
         properties = ", ".join(f"{key}: ${key}" for key in ("id", *required))
@@ -82,6 +108,15 @@ class GraphWriter:
             },
         )
 
+    def remove_orphans(self) -> int:
+        """Remove entidades de domínio sem nenhuma relação (restos de reingestões)."""
+        result = self.graph.query(
+            "MATCH (n) WHERE NOT n:Trecho AND NOT n:Documento AND NOT (n)--() "
+            "DELETE n RETURN count(n)"
+        ).result_set
+        self._known.clear()
+        return int(result[0][0]) if result else 0
+
     def complete_document(self, document: Document) -> None:
         self.graph.query(
             "MATCH (d:Documento {id: $id, checksum: $checksum}) "
@@ -90,6 +125,7 @@ class GraphWriter:
         )
 
     def upsert_chunk(self, chunk: Chunk, embedding: list[float]) -> None:
+        self._known.discard(("Trecho", chunk.id))
         clause = self._node_clause("t", "Trecho", chunk.id, ("texto",))
         self.graph.query(
             """
@@ -99,6 +135,8 @@ class GraphWriter:
             + """
             SET t.texto = $texto,
                 t.ordem = $ordem,
+                t.pagina = $pagina,
+                t.tipo = $tipo,
                 t.embedding = vecf32($embedding)
             MERGE (d)-[:CONTEM]->(t)
             """,
@@ -107,20 +145,23 @@ class GraphWriter:
                 "id": chunk.id,
                 "texto": chunk.text,
                 "ordem": chunk.position,
+                "pagina": chunk.page if chunk.page is not None else 0,
+                "tipo": chunk.kind,
                 "embedding": embedding,
             },
         )
 
-    def upsert_entity(self, entity: ExtractedEntity, embedding: list[float]) -> None:
+    def upsert_entity(
+        self, entity: ExtractedEntity, embedding: list[float] | None
+    ) -> None:
         if entity.label not in ALLOWED_LABELS or entity.canonical_id is None:
             raise ValueError("Entidade nao validada ou nao canonicalizada")
 
-        params: dict[str, Any] = {
-            "id": entity.canonical_id,
-            "nome": entity.name,
-            "embedding": embedding,
-        }
-        assignments = ["e.nome = $nome", "e.embedding = vecf32($embedding)"]
+        params: dict[str, Any] = {"id": entity.canonical_id, "nome": entity.name}
+        assignments = ["e.nome = $nome"]
+        if embedding is not None:
+            params["embedding"] = embedding
+            assignments.append("e.embedding = vecf32($embedding)")
         for key, value in entity.properties.items():
             if key in ENTITY_PROPERTY_KEYS and value is not None:
                 params[key] = value

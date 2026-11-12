@@ -1,4 +1,4 @@
-"""Preferências de aprendizagem explicitadas na consulta."""
+"""Preferências explicitadas pelo empreendedor e acrescentadas à pergunta."""
 
 from __future__ import annotations
 
@@ -6,20 +6,18 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
-class LearningFilters:
-    area: str = ""
-    competency: str = ""
-    profile: str = ""
-    level: str = ""
+class ProcessFilters:
+    activity: str = ""
+    modality: str = ""
+    porte: str = ""
 
     def augment_question(self, question: str) -> str:
         criteria = [
             f"{label}: {value.strip()}"
             for label, value in (
-                ("área", self.area),
-                ("competência", self.competency),
-                ("perfil", self.profile),
-                ("nível", self.level),
+                ("atividade", self.activity),
+                ("modalidade", self.modality),
+                ("porte", self.porte),
             )
             if value.strip()
         ]

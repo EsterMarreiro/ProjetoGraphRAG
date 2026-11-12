@@ -34,6 +34,7 @@ def reciprocal_rank_fusion(
                     filename=hit.filename,
                     score=0.0,
                     channels=set(),
+                    page=hit.page,
                 )
             combined[hit.chunk_id].channels.add(channel)
             rrf_scores[hit.chunk_id] = rrf_scores.get(hit.chunk_id, 0.0) + (

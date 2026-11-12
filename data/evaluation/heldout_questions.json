@@ -1,17 +1,334 @@
 [
-  {"id": "H01", "question": "Quais cursos pertencem à trilha Dados e Conhecimento?", "expected_sources": ["03_estruturas.txt", "04_relacional.txt", "10_grafos.txt", "11_busca.txt", "12_hibrida.txt"], "expected_concepts": ["Estruturas de Dados", "Modelagem Relacional", "Grafos de Conhecimento", "Busca Semântica", "Recuperação Híbrida"], "requires_multihop": false},
-  {"id": "H02", "question": "Quais cursos do catálogo têm nível Avançado?", "expected_sources": ["09_integracao.txt", "10_grafos.txt", "12_hibrida.txt"], "expected_concepts": ["Integração Contínua", "Grafos de Conhecimento", "Recuperação Híbrida"], "requires_multihop": false},
-  {"id": "H03", "question": "Qual é a carga horária fictícia de Testes Automatizados?", "expected_sources": ["07_testes.txt"], "expected_concepts": ["24"], "requires_multihop": false},
-  {"id": "H04", "question": "Qual é o pré-requisito de Contêineres e que área esse pré-requisito aborda?", "expected_sources": ["08_conteineres.txt", "06_apis.txt"], "expected_concepts": ["APIs Web", "Programação"], "requires_multihop": true},
-  {"id": "H05", "question": "Quais cursos exigem Programação Python como pré-requisito?", "expected_sources": ["03_estruturas.txt", "04_relacional.txt", "06_apis.txt", "11_busca.txt"], "expected_concepts": ["Estruturas de Dados", "Modelagem Relacional", "APIs Web", "Busca Semântica"], "requires_multihop": false},
-  {"id": "H06", "question": "Quais cursos são indicados para o perfil Estudantes?", "expected_sources": ["01_logica.txt", "02_python.txt"], "expected_concepts": ["Lógica de Programação", "Programação Python"], "requires_multihop": false},
-  {"id": "H07", "question": "Que competência desenvolve o curso exigido tanto por Grafos de Conhecimento quanto por Busca Semântica?", "expected_sources": ["10_grafos.txt", "11_busca.txt", "03_estruturas.txt"], "expected_concepts": ["Estruturas de Dados", "Organização de coleções"], "requires_multihop": true},
-  {"id": "H08", "question": "Qual é a cadeia de pré-requisitos que liga Integração Contínua a Lógica de Programação?", "expected_sources": ["09_integracao.txt", "07_testes.txt", "06_apis.txt", "02_python.txt", "01_logica.txt"], "expected_concepts": ["Testes Automatizados", "APIs Web", "Programação Python", "Lógica de Programação"], "requires_multihop": true},
-  {"id": "H09", "question": "A qual trilha pertence o curso que desenvolve Validação de software e qual é o nível dele?", "expected_sources": ["07_testes.txt"], "expected_concepts": ["Desenvolvimento Web", "Intermediário"], "requires_multihop": true},
-  {"id": "H10", "question": "Quais competências são desenvolvidas pelos cursos da área Infraestrutura?", "expected_sources": ["05_http.txt", "08_conteineres.txt"], "expected_concepts": ["Compreensão de protocolos", "Empacotamento de aplicações"], "requires_multihop": true},
-  {"id": "H11", "question": "Quantas horas tem o curso que desenvolve Representação de relações e quais são os pré-requisitos dele?", "expected_sources": ["10_grafos.txt"], "expected_concepts": ["30", "Modelagem Relacional", "Estruturas de Dados"], "requires_multihop": false},
-  {"id": "H12", "question": "Quais são os pré-requisitos diretos de Integração Contínua e em que nível está cada um deles?", "expected_sources": ["09_integracao.txt", "07_testes.txt", "08_conteineres.txt"], "expected_concepts": ["Testes Automatizados", "Contêineres", "Intermediário"], "requires_multihop": true},
-  {"id": "H13", "question": "Quais cursos de nível Iniciante existem na trilha Desenvolvimento Web?", "expected_sources": ["01_logica.txt", "02_python.txt", "05_http.txt"], "expected_concepts": ["Lógica de Programação", "Programação Python", "Redes e HTTP"], "requires_multihop": false},
-  {"id": "H14", "question": "Que competência Redes e HTTP desenvolve e para qual perfil é indicado?", "expected_sources": ["05_http.txt"], "expected_concepts": ["Compreensão de protocolos", "Desenvolvedores"], "requires_multihop": false},
-  {"id": "H15", "question": "Quais cursos da área Dados dependem, direta ou indiretamente, de Programação Python?", "expected_sources": ["04_relacional.txt", "10_grafos.txt"], "expected_concepts": ["Modelagem Relacional", "Grafos de Conhecimento"], "requires_multihop": true}
+ {
+  "id": "H01",
+  "question": "Que documentos específicos a Licença Prévia exige para Estrutura para instalação de sistemas de telecomunicações e equipamentos afins instaladas em área de preservação?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0061",
+   "documento:fichas-atividades:trecho:0019"
+  ],
+  "expected_concepts": [
+   "Documentação da pessoa física",
+   "Autorização da ANAC/Aeronáutica",
+   "Autorização da FUNAI",
+   "Autorização do IPHAN ou IPHAEP"
+  ],
+  "expected_facts": [
+   "O checklist ST-01 exige Documentação da pessoa física.",
+   "O checklist ST-01 exige Autorização da ANAC/Aeronáutica.",
+   "O checklist ST-01 exige Autorização da FUNAI.",
+   "O checklist ST-01 exige Autorização do IPHAN ou IPHAEP."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist ST-01: Licença Prévia (LP). Grupo de atividades: Sistemas de telecomunicações. LICENÇA PRÉVIA\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 129):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos in dividuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Assentimento do Ministério da Aeronáutica, quando a estação se localizar em zonas de proteção a aeródromos\n6. Autorização da FUNAI (caso empreendimento esteja em área indígena)\n7. Autorização do IPHAN ou IPHAEP, caso necessário\n8. Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação aplicável ao uso e ocupação do solo\n9. Comprovação de titularidade (propriedade, posse ou cessão de uso) da área do empreendimento ou carta de anuência do proprietário, com firma reconhecida,para áreas locadas, arrendadas, etc\n10. Documentos cartográficos e dados geoespaciais em meio analógico e digital, de acordo com a Portaria SUDEMA Nº 100 de 27/12/2022\n11. Memorial de Caracterização do Empreendimento",
+   "Atividade 24.33.666: Estrutura para instalação de sistemas de telecomunicações e equipamentos afins instaladas em área de preservação.\nGrupo 24 SISTEMA DE TELECOMUNICAÇÕES. Subgrupo 24.33 ESTRUTURA.\nEncerramento: checklist ST-11.\nLicença de Alteração de Instalação (LAI): checklist ST-08.\nLicença de Alteração de Operação (LAO): checklist ST-09.\nLicença de Instalação (LI): checklist ST-02.\nLicença de Operação (LO): checklist ST-03.\nLicença de Operação Corretiva (LOC): checklist ST-06.\nLicença Prévia (LP): checklist ST-01.\nRenovação da Licença de Instalação (RLI): checklist ST-10.\nRenovação da Licença de Operação (RLO): checklist ST-04.\nPorte (critério: Área efetiva para implantação da estrutura (m²)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -.\n- Pequeno: ≤ 50, letra K, potencial poluidor ar P, água M, solo G.\n- Médio: >50 ≤ 300, letra L, potencial poluidor ar P, água M, solo G.\n- Grande: > 300, letra M, potencial poluidor ar P, água M, solo G.\n- Extraordinário: -.\nFontes: Manual p. 128, NA-101 porte p. 81."
+  ]
+ },
+ {
+  "id": "H02",
+  "question": "Que documentos específicos a Licença de Instalação exige para Lavra Envasamento e Gaseificação de água mineral (Poço ou Surgência)?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0333",
+   "documento:fichas-atividades:trecho:0363"
+  ],
+  "expected_concepts": [
+   "Anotação de Responsabilidade Técnica (ART)",
+   "Certidão de Registro e Quitação do CREA-PB",
+   "Comunicado da ANM julgando satisfatório o PAE",
+   "Cópia do protocolo de Autorização para Uso Alternativo do Solo"
+  ],
+  "expected_facts": [
+   "O checklist LM-33 exige Anotação de Responsabilidade Técnica (ART).",
+   "O checklist LM-33 exige Certidão de Registro e Quitação do CREA-PB.",
+   "O checklist LM-33 exige Comunicado da ANM julgando satisfatório o PAE.",
+   "O checklist LM-33 exige Cópia do protocolo de Autorização para Uso Alternativo do Solo."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist LM-33: Licença de Instalação (LI). Grupo de atividades: Lavra de minérios. LICENÇA DE INSTALAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 470):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados\n6. Certidão de Registro e Quitação emitida pelo CREA-PB, em caso de Pessoa Jurídica\n7. Comunicado da ANM julgando satisfatório o PAE (Plano de Aproveitamento Econômico)\n8. Cópia da autorização de uso alternativo do solo expedida pelo órgão ambiental competente, conforme Código Florestal (Lei 12.651, de 25 de maio de 2012), quando couber\n9. Cópia da Licença anterior\n10. Documentos cartográficos e dados geoespaciais em meio analógico e digital, de acordo com a Portaria SUDEMA Nº 100 de 27/12/2022\n11. Extrato do processo ANM no cadastro mineiro\n12. Fluxograma do processo produtivo\n13. Plano de Controle Ambiental – PCA\n14. Planta Baixa atualizada do empreendimento\n15. Projeto Ambiental do empreendimento, contendo: Memorial Descritivo; Projeto de Arquitetura contendo situação e locação, planta baixa, corte e fachada (01 cópia); Projeto do Sistema de Esgotamento Sanitário (01 cópia), com Memorial de Cálculo, Cronograma de Manutenção e Teste de Absorção do Solo; Cronograma Físico; Plano de Gerenciamento de Resíduos da Construção Civil, conforme disposto na Resolução CONAMA n° 307/2002 e na legislação municipal específica, quando couber;\n16. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior A depender do tipo, do porte, da localização e do potencial de impacto do empreendimento. A SUDEMA em qualquer momento da análise do processo poderá solicitar outras informações (estudos, projetos e documentos) caso julgue necessário melhor esclarecimento.",
+   "Atividade 64.16.499: Lavra Envasamento e Gaseificação de água mineral (Poço ou Surgência).\nGrupo 64 LAVRA DE MINÉRIOS. Subgrupo 64.16 LAVRA DE ÁGUA MINERAL.\nLicença de Alteração de Instalação (LAI): checklist LM-37.\nLicença de Alteração de Operação (LAO): checklist LM-38.\nLicença de Instalação (LI): checklist LM-33.\nLicença de Operação (LO): checklist LM-35.\nLicença de Operação Corretiva (LOC): checklist LM-29.\nLicença Prévia (LP): checklist LM-32.\nRenovação da Licença de Instalação (RLI): checklist LM-34.\nRenovação da Licença de Operação (RLO): checklist LM-36.\nPorte (critério: Capacidade de produção (L/H)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 2000, letra G, potencial poluidor ar M, água M, solo M.\n- Pequeno: > 2000 ≤ 2500, letra H, potencial poluidor ar M, água M, solo M.\n- Médio: > 2500 ≤ 3000, letra I, potencial poluidor ar M, água M, solo M.\n- Grande: > 3000 ≤ 6000, letra J, potencial poluidor ar M, água M, solo M.\n- Extraordinário: > 6000, letra K, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 429, NA-101 porte p. 159."
+  ]
+ },
+ {
+  "id": "H03",
+  "question": "Que documentos específicos a Licença de Operação exige para Unidade de triagem e compostagem de resíduos?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0080",
+   "documento:fichas-atividades:trecho:0048"
+  ],
+  "expected_concepts": [
+   "Alvará de localização e funcionamento",
+   "Comprovante de cadastro na ferramenta MTR do SINIR",
+   "Cópia da Licença de Operação",
+   "Comprovante das instalações de água e esgoto"
+  ],
+  "expected_facts": [
+   "O checklist RS-07 exige Alvará de localização e funcionamento.",
+   "O checklist RS-07 exige Comprovante de cadastro na ferramenta MTR do SINIR.",
+   "O checklist RS-07 exige Cópia da Licença de Operação.",
+   "O checklist RS-07 exige Comprovante das instalações de água e esgoto."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist RS-07: Licença de Operação (LO). Grupo de atividades: Resíduos e produtos. LICENÇA DE OPERAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 153):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Alvará de localização e funcionamento fornecido pelo órgão municipal ou distrital onde a entidade tenha sede\n6. Comprovante de cadastro na ferramenta MTR do Sistema Nacional de Informações sobre a Gestão de Resíduos Sólidos – SINIR\n7. Cópia da Licença anterior\n8. Comprovante de abastecimento de água e de ligação à rede de coleta de esgotos (Obs: caso o empreendimento possua poço, apresentar a cópia da outorga emitida pela AESA; caso o empreendimento possua sistema individual de tratamento de efluentes sanitários, apresentar documentação que comprove o bom funcionamento: projeto do sistema acompanhado de ART, cronograma de limpeza e recibos de limpeza; ou apresentar Declaração de Viabilidade Técnica de ligação para as redes de água e esgoto da concessionária local, quando couber)\n9. Plano de Gerenciamento de Resíduos Sólidos – PGRS atualizado, acompanhado da Anotação de Responsabilidade Técnica ART, enfatizando os resíduos gerados no empreendimento, contendo no mínimo (conforme a Lei n° 12.305, de 2 de agosto de 2010): I - Descrição do empreendimento e atividade; II- Fundamentação nas normas e legislações vigentes que tratam sobre identificação, organização, acondicionamento, armazenamento dos resíduos, destinação etc.; III- Diagnóstico dos resíduos sólidos gerados ou administrados, contendo a origem, o volume e a caracterização dos resíduos, incluindo os passivos ambientais a eles relacionados; IV- Explicitação dos responsáveis por cada etapa do gerenciamento de resídu\n10. Plano de monitoramento do lençol freático, para unidades de compostagem;\n11. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior\n12. Plano de Controle Ambiental – PCA, da fase de operação, devidamente assinado;\n13. Relatório de Controle Ambiental – RCA, da fase de operação, devidamente assinado;\n14. Documento comprobatório da correta destinação dos resíduos gerados durante a instalação do empreendimento, conforme o Plano de Gerenciamento de Resíduos da Construção Civil (PGRCC)",
+   "Atividade 32.30.750: Unidade de triagem e compostagem de resíduos.\nGrupo 32 COLETA, TRANSPORTE, ARMAZENAMENTO, DESTINAÇÃO E TRATAMENTO DE RESÍDUOS E PRODUTOS. Subgrupo 32.30 TRIAGEM DE RECICLÁVEIS E COMPOSTAGEM.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Unidade de triagem de produtos recicláveis orgânicos e inorgânicos, para até 10 ton (dez toneladas) por dia).\nLicença de Alteração de Instalação (LAI): checklist RS-06.\nLicença de Alteração de Operação (LAO): checklist RS-09.\nLicença de Instalação (LI): checklist RS-05.\nLicença de Operação (LO): checklist RS-07.\nLicença de Operação Corretiva (LOC): checklist RS-10.\nLicença Prévia (LP): checklist RS-04.\nRenovação da Licença de Instalação (RLI): checklist RS-05.1.\nRenovação da Licença de Operação (RLO): checklist RS-08.\nPorte (critério: TONELADA/DIA), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 10, letra F, potencial poluidor ar P, água P, solo P, (LAU).\n- Pequeno: > 10 ≤ 30, letra H, potencial poluidor ar P, água M, solo M.\n- Médio: > 30 ≤ 90, letra I, potencial poluidor ar P, água M, solo M.\n- Grande: > 90 ≤ 180, letra K, potencial poluidor ar P, água M, solo M.\n- Extraordinário: > 180, letra L, potencial poluidor ar P, água M, solo M.\nFontes: Manual p. 141, NA-101 porte p. 87."
+  ]
+ },
+ {
+  "id": "H04",
+  "question": "Que documentos específicos a Licença Prévia exige para Parques de diversão e temáticos, permanentes?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0175",
+   "documento:fichas-atividades:trecho:0098"
+  ],
+  "expected_concepts": [
+   "Anteprojeto do empreendimento",
+   "Cadastro Ambiental Rural (CAR)",
+   "Certidão de uso e ocupação do solo",
+   "Comprovação de titularidade da área do empreendimento"
+  ],
+  "expected_facts": [
+   "O checklist CS-02 exige Anteprojeto do empreendimento.",
+   "O checklist CS-02 exige Cadastro Ambiental Rural (CAR).",
+   "O checklist CS-02 exige Certidão de uso e ocupação do solo.",
+   "O checklist CS-02 exige Comprovação de titularidade da área do empreendimento."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist CS-02: Licença Prévia (LP). Grupo de atividades: Comércio e serviços. Parques aquáticos, hotéis fazenda, balneários, clube de campo, clube recreativo e similares; Parques de diversão e temáticos, permanentes. LICENÇA PRÉVIA\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 275):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal - Declaração de Faturamento ou Previsão anual emitido pelo contador\n4. Guia de Recolhimento devidamente quitada\n5. Anteprojeto do empreendimento\n6. Cadastro Ambiental Rural (CAR)\n7. Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação aplicável ao uso e ocupação do solo\n8. Comprovação de titularidade (propriedade, posse ou cessão de uso) da área do empreendimento ou carta de anuência do proprietário, com firma reconhecida,para áreas locadas, arrendadas, etc\n9. Croqui de localização do empreendimento e/ou atividade com fornecimento das coordenadas geográficas\n10. Declaração de viabilidade de abastecimento d’água e esgotamento sanitário emitida pela concessionária local\n11. Memorial Descritivo, devidamente assinado e acompanhado de documento de Responsabilidade Técnica contendo: Descrição geral do empreendimento, com detalhamento da atividade e caracterização conforme descrito no Art. 5º, inciso I, alíneas e a g da Resolução CONAMA Nº 273/2000; Croqui de localização e situação do empreendimento, georreferenciada, conforme descrito no Art. 5º, inciso I, alíneas a e c da Resolução CONAMA Nº 273/2000; Informações sobre o sistema de abastecimento de água e esgotamento sanitário\n12. Produto cartográfico georreferenciada em meio analógico e digital (apresentados em extensão “*.kml” ou “*.kmz”), devidamente assinado e acompanhada de documento de Responsabilidade Técnica, conforme Portaria SUDEMA 100/2022 de 27/12/2022",
+   "Atividade 48.11.572: Parques de diversão e temáticos, permanentes.\nGrupo 48 COMÉRCIO E SERVIÇOS. Subgrupo 48.11 LAZER.\nLicença de Alteração de Instalação (LAI): checklist CS-13.\nLicença de Alteração de Operação (LAO): checklist CS-29.\nLicença de Instalação (LI): checklist CS-07.\nLicença de Operação (LO): checklist CS-15.\nLicença de Operação Corretiva (LOC): checklist CS-30.\nLicença Prévia (LP): checklist CS-02.\nRenovação da Licença de Instalação (RLI): checklist CS-14.\nRenovação da Licença de Operação (RLO): checklist CS-22.\nPorte (critério: Área do), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 1, letra D, potencial poluidor ar P, água P, solo M.\n- Pequeno: > 1 e < 5, letra E, potencial poluidor ar P, água P, solo M.\n- Médio: ≥ 5 e < 10, letra G, potencial poluidor ar P, água M, solo M.\n- Grande: ≥ 10 e < 15, letra J, potencial poluidor ar M, água M, solo G.\n- Extraordinário: ≥ 15, letra M, potencial poluidor ar M, água G, solo G.\nFontes: Manual p. 267, NA-101 porte p. 103."
+  ]
+ },
+ {
+  "id": "H05",
+  "question": "Que documentos específicos a Licença de Operação exige para Atividades ou empreendimentos esportivos (Quadra, Ginásio, Campo de Futebol, Estádios...) com infraestrutura completa?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0243",
+   "documento:fichas-atividades:trecho:0320"
+  ],
+  "expected_concepts": [
+   "Comprovante das instalações de água e esgoto",
+   "Cópia da Licença de Operação",
+   "Declaração de Responsabilidade",
+   "Documento comprobatório da correta destinação dos resíduos gerados"
+  ],
+  "expected_facts": [
+   "O checklist OC-22 exige Comprovante das instalações de água e esgoto.",
+   "O checklist OC-22 exige Cópia da Licença de Operação.",
+   "O checklist OC-22 exige Declaração de Responsabilidade.",
+   "O checklist OC-22 exige Documento comprobatório da correta destinação dos resíduos gerados."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist OC-22: Licença de Operação (LO). Grupo de atividades: Obras civis. Atividades e empreendimentos residenciais unifamiliar/multifamiliar, comerciais; Edificações verticais; Empreendimentos lineares: condomínios fechados rurais e urbanos e loteamentos – COM INFRAESTRUTURA COMPLETA. LICENÇA DE OPERAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 369):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Comprovante de abastecimento d’água e esgotamento sanitário, emitida pela concessionária local (Projeto aprovado, cópia da fatura atualizada de cobrança do serviço, emitida pela concessionária de água e esgoto)\n6. Cópia da Licença anterior\n7. Declaração do profissional responsável pela obra informando que o empreendimento foi executado conforme projeto apresentado\n8. Documento comprobatório da correta destinação dos resíduos gerados durante a instalação do empreendimento, conforme Projeto de Gerenciamento de Resíduos da Construção Civil e Demolição\n9. Memorial Descritivo atualizado do empreendimento\n10. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior",
+   "Atividade 56.17.424: Atividades ou empreendimentos esportivos (Quadra, Ginásio, Campo de Futebol, Estádios...) com infraestrutura completa.\nGrupo 56 OBRAS CIVIS. Subgrupo 56.17 EMPREENDIMENTOS URBANOS, RURAIS E PROJETOS DE ASSENTAMENTO RURAL.\nLicença de Alteração de Instalação (LAI): checklist OC-20.\nLicença de Alteração de Operação (LAO): checklist OC-25.\nLicença de Instalação (LI): checklist OC-09.\nLicença de Operação (LO): checklist OC-22.\nLicença de Operação Corretiva (LOC): checklist OC-28.\nLicença Prévia (LP): checklist OC-03.\nRenovação da Licença de Instalação (RLI): checklist OC-19.\nRenovação da Licença de Operação (RLO): checklist OC-24.\nPorte (critério: Área do), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤ 600, letra G, potencial poluidor ar P, água P, solo P.\n- Pequeno: > 600 ≤ 1500, letra H, potencial poluidor ar P, água P, solo P.\n- Médio: > 1500 ≤ 3000, letra I, potencial poluidor ar P, água M, solo M.\n- Grande: > 3000 ≤ 5000, letra J, potencial poluidor ar P, água M, solo M.\n- Extraordinário: > 5000, letra K, potencial poluidor ar P, água G, solo G.\nFontes: Manual p. 342, NA-101 porte p. 137."
+  ]
+ },
+ {
+  "id": "H06",
+  "question": "Qual a validade e a letra de custo do licenciamento (Licença Ambiental Única (LAU)) para Unidade de triagem de produtos recicláveis orgânicos e inorgânicos, para até 10 ton (dez toneladas) por dia?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0159"
+  ],
+  "expected_concepts": [
+   "5",
+   "F"
+  ],
+  "expected_facts": [
+   "A validade é de 5 anos.",
+   "A letra de custo é F."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 49.13.333: Unidade de triagem de produtos recicláveis orgânicos e inorgânicos, para até 10 ton (dez toneladas) por dia.\nGrupo 49 ATIVIDADES PASSIVEIS LICENCIAMENTO AMBIENTAL ÚNICO. Subgrupo 49.13 RESÍDUOS SÓLIDOS.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F.\nChecklist LAU-01 (Licença Ambiental Única (LAU)).\nFontes: Manual p. 52, NA-101 lau p. 31."
+  ]
+ },
+ {
+  "id": "H07",
+  "question": "Qual a validade e a letra de custo do licenciamento (Licença Ambiental por Adesão e Compromisso (LAC)) para Comércio varejista de antiguidades com área útil de 50 a 120m²?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0202"
+  ],
+  "expected_concepts": [
+   "5",
+   "B"
+  ],
+  "expected_facts": [
+   "A validade é de 5 anos.",
+   "A letra de custo é B."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 49.56.380: Comércio varejista de antiguidades com área útil de 50 a 120m².\nGrupo 49 ATIVIDADES PASSIVEIS DE LICENCIAMENTO POR ADESÃO E COMPROMISSO. Subgrupo 49.56 ATIVIDADES DE COMÉRCIO DE SERVIÇOS.\nPode ser enquadrada em: Licença Ambiental por Adesão e Compromisso (LAC), com validade de 5 anos e letra de custo B.\nChecklist LAC-04 (Licença Ambiental por Adesão e Compromisso (LAC)).\nFontes: Manual p. 38, NA-101 lac p. 27."
+  ]
+ },
+ {
+  "id": "H08",
+  "question": "Quanto custa, em UFR-PB, a análise da Licença de Operação para Avicultura industrial (postura e corte) de porte grande?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0011",
+   "documento:na101-custos:trecho:0001"
+  ],
+  "expected_concepts": [
+   "I",
+   "42 UFR-PB"
+  ],
+  "expected_facts": [
+   "O porte grande usa a letra I.",
+   "A análise da Licença de Operação custa 42 UFR-PB."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Atividade 16.15.599: Avicultura industrial (postura e corte).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.15 AVICULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Avicultura industrial (postura e corte) superior a 210.000 e até 840.000 animais em sistemas de criação de pressão negativa).\nLicença de Alteração de Instalação (LAI): checklist AG-04.\nLicença de Alteração de Operação (LAO): checklist AG-06.\nLicença de Instalação (LI): checklist AG-02.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-01.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de cabeças), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -, potencial poluidor ar P, água P, solo P.\n- Pequeno: -, potencial poluidor ar M, água M, solo M.\n- Médio: >210.000 ≤ 840.000, letra H, potencial poluidor ar M, água M, solo M, (LAU).\n- Grande: >840.000 ≤ 1.000.000, letra I, potencial poluidor ar M, água M, solo M.\n- Extraordinário: >1.000.000, letra J, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 77.",
+   "Custos de análise (NA-101, 5ª edição, Anexo B, p. 19). Cada letra de custo corresponde a um valor em UFR-PB conforme a modalidade:\nLetra A: LP 4 UFR-PB; LI 5 UFR-PB; LO 4 UFR-PB; LOP 7 UFR-PB; LAU 4 UFR-PB; LAC 4 UFR-PB; LAI 4 UFR-PB; LAO 4 UFR-PB; AA 4 UFR-PB; LTE 4 UFR-PB; LVPE 4 UFR-PB; REGISTRO isento.\nLetra B: LP 5 UFR-PB; LI 6 UFR-PB; LO 5 UFR-PB; LOP 14 UFR-PB; LAU 5 UFR-PB; LAC 5 UFR-PB; LAI 5 UFR-PB; LAO 5 UFR-PB; AA 5 UFR-PB; LTE 5 UFR-PB; LVPE 5 UFR-PB; REGISTRO 1 UFR-PB.\nLetra C: LP 6 UFR-PB; LI 7 UFR-PB; LO 6 UFR-PB; LOP 21 UFR-PB; LAU 6 UFR-PB; LAC 6 UFR-PB; LAI 6 UFR-PB; LAO 6 UFR-PB; AA 6 UFR-PB; LTE 6 UFR-PB; LVPE 6 UFR-PB; REGISTRO 2 UFR-PB.\nLetra D: LP 7 UFR-PB; LI 8 UFR-PB; LO 7 UFR-PB; LOP 35 UFR-PB; LAU 7 UFR-PB; LAC 7 UFR-PB; LAI 7 UFR-PB; LAO 7 UFR-PB; AA 7 UFR-PB; LTE 7 UFR-PB; LVPE 7 UFR-PB; REGISTRO 3 UFR-PB.\nLetra E: LP 8 UFR-PB; LI 11 UFR-PB; LO 8 UFR-PB; LOP 70 UFR-PB; LAU 8 UFR-PB; LAC 8 UFR-PB; LAI 8 UFR-PB; LAO 8 UFR-PB; AA 8 UFR-PB; LTE 8 UFR-PB; LVPE 8 UFR-PB; REGISTRO 4 UFR-PB.\nLetra F: LP 12 UFR-PB; LI 19 UFR-PB; LO 14 UFR-PB; LOP 140 UFR-PB; LAU 10 UFR-PB; LAC 10 UFR-PB; LAI 13 UFR-PB; LAO 13 UFR-PB; AA 13 UFR-PB; LTE 13 UFR-PB; LVPE 14 UFR-PB; REGISTRO 5 UFR-PB.\nLetra G: LP 17 UFR-PB; LI 25 UFR-PB; LO 21 UFR-PB; LOP 210 UFR-PB; LAU 12 UFR-PB; LAC 12 UFR-PB; LAI 15 UFR-PB; LAO 15 UFR-PB; AA 17 UFR-PB; LTE 17 UFR-PB; LVPE 21 UFR-PB; REGISTRO 6 UFR-PB.\nLetra H: LP 21 UFR-PB; LI 38 UFR-PB; LO 30 UFR-PB; LOP 280 UFR-PB; LAU 16 UFR-PB; LAC 14 UFR-PB; LAI 17 UFR-PB; LAO 17 UFR-PB; AA 21 UFR-PB; LTE 21 UFR-PB; LVPE 30 UFR-PB; REGISTRO 8 UFR-PB.\nLetra I: LP 30 UFR-PB; LI 55 UFR-PB; LO 42 UFR-PB; LOP 350 UFR-PB; LAU 20 UFR-PB; LAC 16 UFR-PB; LAI 25 UFR-PB; LAO 25 UFR-PB; AA 25 UFR-PB; LTE 25 UFR-PB; LVPE 42 UFR-PB; REGISTRO 10 UFR-PB."
+  ]
+ },
+ {
+  "id": "H09",
+  "question": "Qual o porte de Autorização Para Uso Alternativo do Solo (AUS) com 35 (área do empreendimento (ha))?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0001"
+  ],
+  "expected_concepts": [
+   "Médio",
+   "E"
+  ],
+  "expected_facts": [
+   "O porte é médio.",
+   "A letra de custo é E."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 08.49.100: Autorização Para Uso Alternativo do Solo (AUS).\nGrupo 08 ATIVIDADES FLORESTAIS. Subgrupo 08.49 AUTORIZAÇÃO PARA ATIVIDADES FLORESTAIS.\nPode ser enquadrada em: Autorização Ambiental (AA), com validade de 1 ano.\nPode ser enquadrada em: Autorização Ambiental (AA).\nChecklist AF-01 (Autorização Ambiental (AA)).\nPorte (critério: Área do empreendimento (HA)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: ≤3, letra C, potencial poluidor ar P, água P, solo P.\n- Pequeno: >3 ≤20, letra D, potencial poluidor ar P, água M, solo M.\n- Médio: >20 <50, letra E, potencial poluidor ar P, água G, solo G.\n- Grande: ≤50 ≤100, letra G, potencial poluidor ar P, água G, solo G, (EVA).\n- Extraordinário: >100, letra H, potencial poluidor ar P, água G, solo G, (*) (EIA /RIMA).\nFontes: Manual p. 69, NA-101 aa p. 35, NA-101 porte p. 72."
+  ]
+ },
+ {
+  "id": "H10",
+  "question": "Qual o porte de Avicultura industrial (postura e corte) com 525000 (número de cabeças)?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0011"
+  ],
+  "expected_concepts": [
+   "Médio",
+   "H"
+  ],
+  "expected_facts": [
+   "O porte é médio.",
+   "A letra de custo é H."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 16.15.599: Avicultura industrial (postura e corte).\nGrupo 16 AGROPECUÁRIA. Subgrupo 16.15 AVICULTURA.\nPode ser enquadrada em: Licença Ambiental Única (LAU), com validade de 5 anos e letra de custo F (caso: Avicultura industrial (postura e corte) superior a 210.000 e até 840.000 animais em sistemas de criação de pressão negativa).\nLicença de Alteração de Instalação (LAI): checklist AG-04.\nLicença de Alteração de Operação (LAO): checklist AG-06.\nLicença de Instalação (LI): checklist AG-02.\nLicença de Operação (LO): checklist AG-03.\nLicença de Operação Corretiva (LOC): checklist AG-14.\nLicença Prévia (LP): checklist AG-01.\nRenovação da Licença de Instalação (RLI): checklist AG-08.\nRenovação da Licença de Operação (RLO): checklist AG-05.\nPorte (critério: Número de cabeças), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -, potencial poluidor ar P, água P, solo P.\n- Pequeno: -, potencial poluidor ar M, água M, solo M.\n- Médio: >210.000 ≤ 840.000, letra H, potencial poluidor ar M, água M, solo M, (LAU).\n- Grande: >840.000 ≤ 1.000.000, letra I, potencial poluidor ar M, água M, solo M.\n- Extraordinário: >1.000.000, letra J, potencial poluidor ar M, água M, solo M.\nFontes: Manual p. 98, NA-101 porte p. 77."
+  ]
+ },
+ {
+  "id": "H11",
+  "question": "A atividade \"Manutenção de Iluminação Pública em área urbana e rural em que não ocorra corte/supressão de arvores\" é passível de dispensa de licenciamento ambiental?",
+  "expected_sources": [
+   "documento:fichas-atividades:trecho:0077"
+  ],
+  "expected_concepts": [
+   "dispensa"
+  ],
+  "expected_facts": [
+   "A atividade está na lista de atividades passíveis de dispensa de licenciamento."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "Atividade 35.817: Manutenção de Iluminação Pública em área urbana e rural em que não ocorra corte/supressão de arvores e vegetação, nem transposição de áreas de preservação permanente.\nGrupo 35 SERVIÇOS E OBRAS DIRECIONADAS À MANUTENÇÃO E AO MELHORAMENTO DA INFRAESTRUTURA EM INSTALAÇÕES PREEXISTENTES OU EM FAIXAS DE DOMÍNIO E DE SERVIDÃO.\nPode ser enquadrada em: Dispensa de Licenciamento Ambiental.\nFontes: Manual p. 33, NA-101 dispensa p. 21."
+  ]
+ },
+ {
+  "id": "H12",
+  "question": "Que documentos específicos a Licença de Instalação exige para Central de recebimento, armazenamento temporário, triagem de eletroeletrônicos com a separação de componentes?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0077",
+   "documento:fichas-atividades:trecho:0051"
+  ],
+  "expected_concepts": [
+   "Cadastro Ambiental Rural (CAR)",
+   "Certidão de uso e ocupação do solo",
+   "Comprovação de titularidade da área do empreendimento",
+   "Planta planimétrica da área do empreendimento"
+  ],
+  "expected_facts": [
+   "O checklist RS-05 exige Cadastro Ambiental Rural (CAR).",
+   "O checklist RS-05 exige Certidão de uso e ocupação do solo.",
+   "O checklist RS-05 exige Comprovação de titularidade da área do empreendimento.",
+   "O checklist RS-05 exige Planta planimétrica da área do empreendimento."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist RS-05: Licença de Instalação (LI). Grupo de atividades: Resíduos e produtos. LICENÇA DE INSTALAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 149):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Cadastro Ambiental Rural – CAR, quando a área estiver situada em zona rural ou nas demais situações que a norma vigente prever;\n6. Certidão de Uso e Ocupação do Solo ou documento que comprove a conformidade da atividade com a legislação aplicável ao uso e ocupação do solo;\n7. Cópia de comprovação de titularidade (escritura, posse ou cessão de uso) da área do empreendimento e carta de anuência do proprietário (para áreas locadas, arrendadas e etc.);\n8. Planta planimétrica da área do empreendimento, com identificação das áreas construídas, equipamentos, estação de tratamento de efluentes ou sumidouro, áreas de armazenamento e disposição de resíduos acompanhada da ART do responsável técnico do projeto;\n9. Memorial descritivo contendo informações: Para casos de Pátio de Compostagem: a) Apresentar características do sistema de impermeabilização, a área deve possuir impermeabilização de base com piso de concreto, geomembrana ou sistemas similares; b) Apresentar sistema de coleta, contenção e tratamento dos efluentes eventualmente gerados, bem como a drenagem das águas pluviais; c) Descrição do sistema de produção do composto, incluindo as características dos equipamentos utilizados e da estrutura física das instalações; d) Utilização a ser dada ao composto produzido. Para casos de Triagem de Recicláveis: a) Descrição do sistema de recepção e triagem de resíduos, incluindo os equipamentos utiliza\n10. Plano de Controle Ambiental – PCA, da fase de implantação, devidamente assinado;\n11. Relatório de Controle Ambiental – RCA, da fase de implantação, devidamente assinado;\n12. Plano de Gerenciamento de Resíduos da Construção Civil (PGRCC), conforme disposto na Resolução CONAMA n° 307/2002\n13. Autorização para Uso Alternativo do Solo",
+   "Atividade 32.45.429: Central de recebimento, armazenamento temporário, triagem de eletroeletrônicos com a separação de componentes.\nGrupo 32 COLETA, TRANSPORTE, ARMAZENAMENTO, DESTINAÇÃO E TRATAMENTO DE RESÍDUOS E PRODUTOS. Subgrupo 32.45 RECEBIMENTO E ARMAZENAMENTO.\nLicença de Alteração de Instalação (LAI): checklist RS-06.\nLicença de Alteração de Operação (LAO): checklist RS-09.\nLicença de Instalação (LI): checklist RS-05.\nLicença de Operação (LO): checklist RS-07.\nLicença de Operação Corretiva (LOC): checklist RS-10.\nLicença Prévia (LP): checklist RS-04.\nRenovação da Licença de Instalação (RLI): checklist RS-05.1.\nRenovação da Licença de Operação (RLO): checklist RS-08.\nPorte (critério: Área do), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -.\n- Pequeno: ≤ 500, letra H, potencial poluidor ar P, água M, solo G.\n- Médio: > 500 ≤ 1000, letra I, potencial poluidor ar P, água M, solo G.\n- Grande: > 1000 ≤ 10000, letra J, potencial poluidor ar P, água M, solo G.\n- Extraordinário: > 10000, letra K, potencial poluidor ar P, água M, solo G.\nFontes: Manual p. 141, NA-101 porte p. 88."
+  ]
+ },
+ {
+  "id": "H13",
+  "question": "Que documentos específicos a Licença de Instalação exige para Empresa prestadora de serviço aero médico e táxi aéreo?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0179",
+   "documento:fichas-atividades:trecho:0102"
+  ],
+  "expected_concepts": [
+   "Anotação de Responsabilidade Técnica (ART)",
+   "Autorização para Uso Alternativo do Solo",
+   "Cópia da Licença de Operação",
+   "Outorga de uso de recursos hídricos"
+  ],
+  "expected_facts": [
+   "O checklist CS-06 exige Anotação de Responsabilidade Técnica (ART).",
+   "O checklist CS-06 exige Autorização para Uso Alternativo do Solo.",
+   "O checklist CS-06 exige Cópia da Licença de Operação.",
+   "O checklist CS-06 exige Outorga de uso de recursos hídricos."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist CS-06: Licença de Instalação (LI). Grupo de atividades: Comércio e serviços. COMÉRCIO E SERVIÇOS EM GERAL LICENÇA DE INSTALAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 279):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal - Declaração de Faturamento ou Previsão anual emitido pelo contador\n4. Guia de Recolhimento devidamente quitada\n5. Anotação de Responsabilidade Técnica (ART’s) referente aos projetos, planos e produtos técnicos apresentados\n6. Autorização para Uso Alternativo do Solo\n7. Cópia da Licença anterior\n8. Cópia da Licença de Obra Hídrica ou Isenção de Captação, nos casos que for necessário a execução de poço subterrâneo e/ou captação superficial ou Outorga de Direito de Uso dos Recursos Hídricos, emitido pela AESA (para abastecimento por poço ou outra fonte hídrica)\n9. Cronograma Físico de Execução\n10. Plano de Gerenciamento de Resíduos da Construção Civil e Demolição, conforme disposto na Resolução CONAMA n° 307/2002 e/ou na legislação municipal específica;\n11. Produto cartográfico georreferenciada em meio analógico e digital (apresentados em extensão “*.kml” ou “*.kmz”), devidamente assinado e acompanhada de documento de Responsabilidade Técnica, conforme Portaria SUDEMA 100/2022 de 27/12/2022\n12. Projeto Arquitetônico do empreendimento devidamente aprovado pela gestão municipal, contendo: Memorial Descritivo; Projeto como construído contendo situação e locação, layout do empreendimento, planta baixa, corte e fachada;\n13. Projeto do Sistema de Esgotamento Sanitário, com Memorial de Cálculo, Cronograma de Manutenção e Teste de Absorção do Solo, (quanto houver efluentes de esgoto sanitário e não houver viabilidade de esgotamento sanitário por concessionária local);\n14. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior\n15. Plano de Controle Ambiental – PCA, da fase de implantação, devidamente assinado;\n16. Relatório de Controle Ambiental – RCA, da fase de implantação, devidamente assinado;",
+   "Atividade 48.22.090: Empresa prestadora de serviço aero médico e táxi aéreo.\nGrupo 48 COMÉRCIO E SERVIÇOS. Subgrupo 48.22 COMERCIO E SERVIÇO EM GERAL.\nLicença de Alteração de Instalação (LAI): checklist CS-13.\nLicença de Alteração de Operação (LAO): checklist CS-29.\nLicença de Instalação (LI): checklist CS-06.\nLicença de Operação (LO): checklist CS-15.\nLicença de Operação Corretiva (LOC): checklist CS-30.\nLicença Prévia (LP): checklist CS-01.\nRenovação da Licença de Instalação (RLI): checklist CS-14.\nRenovação da Licença de Operação (RLO): checklist CS-22.\nPorte (critério: não informado), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: sem faixa, letra D, potencial poluidor ar M, água P, solo P.\n- Pequeno: sem faixa, letra E, potencial poluidor ar M, água P, solo P.\n- Médio: sem faixa, letra F, potencial poluidor ar M, água M, solo M.\n- Grande: sem faixa, letra I, potencial poluidor ar G, água M, solo M.\n- Extraordinário: sem faixa, letra L, potencial poluidor ar G, água G, solo G.\nFontes: Manual p. 267, NA-101 porte p. 105."
+  ]
+ },
+ {
+  "id": "H14",
+  "question": "Que documentos específicos a Licença de Operação exige para Linha de Transmissão acima de 138 kV?",
+  "expected_sources": [
+   "documento:manual-checklists:trecho:0124",
+   "documento:fichas-atividades:trecho:0082"
+  ],
+  "expected_concepts": [
+   "Cópia da Licença de Operação",
+   "Croqui de localização do empreendimento",
+   "Relatório de cumprimento de condicionantes",
+   "Plano de Controle Ambiental (PCA)"
+  ],
+  "expected_facts": [
+   "O checklist EN-09 exige Cópia da Licença de Operação.",
+   "O checklist EN-09 exige Croqui de localização do empreendimento.",
+   "O checklist EN-09 exige Relatório de cumprimento de condicionantes.",
+   "O checklist EN-09 exige Plano de Controle Ambiental (PCA)."
+  ],
+  "requires_multihop": true,
+  "evidence": [
+   "Checklist EN-09: Licença de Operação (LO). Grupo de atividades: Geração, transmissão e distribuição de energia. LICENÇA DE OPERAÇÃO\nDocumentos exigidos para abrir o processo (Manual de Licenciamento Ambiental da SUDEMA, 5ª edição, p. 218):\n1. Requerimento padrão SUDEMA\n2. Cadastro devidamente preenchido conforme a natureza da atividade\n3. Documentos individuais do requerente: • Pessoa física: - RG - CPF - Comprovante de residência • Pessoa jurídica: - CNPJ - Declaração atualizada do capital social emitida pela Junta Comercial do Estado da Paraíba/ Contrato Social - FGTS DIGITAL: Guia de Trabalhadores - Procuração em nome do representante legal - RG do representante legal - CPF do representante legal\n4. Guia de Recolhimento devidamente quitada\n5. Cópia da Licença anterior\n6. Croqui de localização do empreendimento e/ou atividade com fornecimento das coordenadas geográficas\n7. Relatório de cumprimento de condicionantes, contendo inclusive os documentos exigidos nos condicionantes da licença anterior\n8. Plano de Controle Ambiental – PCA, da fase de operação, devidamente assinado;\n9. Relatório de Controle Ambiental – RCA, da fase de operação, devidamente assinado;",
+   "Atividade 40.10.600: Linha de Transmissão acima de 138 kV.\nGrupo 40 GERAÇÃO, TRANSMISSÃO E DISTRIBUIÇÃO DE ENERGIA. Subgrupo 40.10 DISTRIBUÇÃO E TRANSMISSÃO.\nLicença de Alteração de Instalação (LAI): checklist EN-08.\nLicença de Alteração de Operação (LAO): checklist EN-11.\nLicença de Instalação (LI): checklist EN-07.\nLicença de Operação (LO): checklist EN-09.\nLicença de Operação Corretiva (LOC): checklist EN-12.\nLicença Prévia (LP): checklist EN-01.\nRenovação da Licença de Operação (RLO): checklist EN-10.\nPorte (critério: Extensão (KM)), letra de custo e potencial poluidor (ar, água, solo):\n- Micro: -.\n- Pequeno: ≤50, letra J, potencial poluidor ar P, água P, solo M, (RAS).\n- Médio: >50 ≤100, letra M, potencial poluidor ar P, água P, solo M, (RAS).\n- Grande: >100 ≤200, letra O, potencial poluidor ar P, água P, solo M, (RAS).\n- Extraordinário: >200, letra P, potencial poluidor ar P, água P, solo M, (RAS).\nFontes: Manual p. 208, NA-101 porte p. 96."
+  ]
+ },
+ {
+  "id": "H15",
+  "question": "A qual secretaria o COPAM está vinculado atualmente?",
+  "expected_sources": [
+   "documento:site-copam:trecho:0001"
+  ],
+  "expected_concepts": [
+   "SEMAS",
+   "Meio Ambiente e Sustentabilidade"
+  ],
+  "expected_facts": [
+   "O COPAM está vinculado à Secretaria de Estado do Meio Ambiente e Sustentabilidade (SEMAS)."
+  ],
+  "requires_multihop": false,
+  "evidence": [
+   "COPAM: Conselho de Proteção Ambiental. COPAM O Conselho de Proteção Ambiental - COPAM, criado nos termos da Lei 4.335 de 16 de dezembro de 1981, órgão colegiado, anteriormente vinculado à Secretaria de Estado da Infraestrutura, dos Recursos Hídricos e do Meio Ambiente - SEIRHMA, integra o Sistema Estadual do Meio Ambiente. Atualmente, através da Lei nº 12.615, de 25 de abril de 2023, o COPAM está diretamente vinculado à Secretaria de Estado do Meio Ambiente e Sustentabilidade - SEMAS, atuando na prevenção e controle da poluição e degradação do meio ambiente, visando à proteção, conservação, recuperação e melhoria dos recursos ambientais, analisando todas as licenças concedidas pela Superintendência de Administração do Meio Ambiente - SUDEMA, sugerindo a manutenção, revogação ou alteração de tais licenciamentos, através da observância da legislação aplicável. Suas atribuições compreendem expedir diretrizes, normas e instruções através de deliberações referentes à proteção dos recursos ambientais, com vistas a prevenção da poluição e ao uso racional dos recursos ambientais no Estado da Paraíba. Composição do COPAM Licenciamento Ambiental Municipal Legislação Pertinente Normas Administrativas Deliberações Atas de Reunião Pautas de Reunião Calendário Uso de cookies OK"
+  ]
+ }
 ]

@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 from licenciagraph.ingestion.llm import OpenAIClient
-from licenciagraph.retrieval.algorithms import louvain_communities
 from licenciagraph.retrieval.fusion import reciprocal_rank_fusion
-from licenciagraph.retrieval.models import RetrievalResult
+from licenciagraph.retrieval.models import GraphNode, RetrievalResult
 from licenciagraph.retrieval.planning import CypherPlanner
 from licenciagraph.retrieval.repository import (
     FULLTEXT_QUERY,
-    NEIGHBOR_QUERY,
+    OUTGOING_QUERY,
     SEED_QUERY,
     SOURCE_QUERY,
     VECTOR_QUERY,
@@ -18,8 +17,9 @@ from licenciagraph.retrieval.repository import (
 
 PATH_QUERY = (
     "MATCH (a {id: $source}), (b {id: $target}) "
-    "RETURN shortestPath((a)-[:PRE_REQUISITO*..6]-(b))"
+    "RETURN shortestPath((a)-[:PRECEDE*..6]-(b))"
 )
+COMMUNITY_LIMIT = 8
 
 
 class HybridRetriever:
@@ -76,7 +76,7 @@ class HybridRetriever:
         )
         channels = {"vector": vector_hits, "fulltext": fulltext_hits}
         weights = {"vector": 0.65, "fulltext": 0.35}
-        queries = [VECTOR_QUERY, FULLTEXT_QUERY, SEED_QUERY, NEIGHBOR_QUERY]
+        queries = [VECTOR_QUERY, FULLTEXT_QUERY, SEED_QUERY]
         if self.planner:
             plan = self.planner.plan(question)
             if plan:
@@ -88,11 +88,17 @@ class HybridRetriever:
             weights=weights,
             limit=self.result_limit,
         )
-        path_ids = self._prerequisite_paths(question)
+        linked = self.repository.linked_entities(question)
+        similar = (
+            []
+            if any(node.label == "Atividade" for node in linked)
+            else self.repository.similar_activities(embedding)
+        )
+        path_ids = self._modality_paths(linked)
         nodes, edges = self.repository.expand(
             [hit.chunk_id for hit in hits],
-            max_hops=2,
-            question=question,
+            max_hops=3,
+            seeds=[*linked, *similar],
             seed_ids=[node_id for path in path_ids for node_id in path],
         )
         # Every graph fact provided to the generator must have its actual
@@ -108,6 +114,7 @@ class HybridRetriever:
         paths = [
             [names[i].name for i in path if i in names] for path in path_ids if path
         ]
+        queries.append(OUTGOING_QUERY)
         if paths:
             queries.append(PATH_QUERY)
         return RetrievalResult(
@@ -119,32 +126,29 @@ class HybridRetriever:
             confidence=_retrieval_confidence(hits, len(edges)),
             warnings=list(warnings) if isinstance(warnings, list) else [],
             paths=paths,
-            communities=_course_communities(nodes, edges),
+            communities=self._activity_communities(nodes),
         )
 
-    def _prerequisite_paths(self, question: str) -> list[list[str]]:
-        linked = getattr(self.repository, "linked_entities", None)
-        if linked is None:
-            return []
-        courses = [node for node in linked(question) if node.label == "Curso"]
+    def _modality_paths(self, linked: list[GraphNode]) -> list[list[str]]:
+        modalities = [node for node in linked if node.label == "Modalidade"]
         paths = []
-        for index, first in enumerate(courses):
-            for second in courses[index + 1 :]:
-                path = self.repository.prerequisite_path(first.id, second.id)
+        for index, first in enumerate(modalities):
+            for second in modalities[index + 1 :]:
+                path = self.repository.precedence_path(first.id, second.id)
                 if len(path) > 2:
                     paths.append(path)
         return paths[:3]
 
-
-def _course_communities(nodes, edges) -> list[list[str]]:
-    courses = {node.id: node.name for node in nodes if node.label == "Curso"}
-    links = [
-        (edge.source, edge.target)
-        for edge in edges
-        if edge.source in courses and edge.target in courses
-    ]
-    groups = louvain_communities(links)
-    return [[courses[i] for i in group] for group in groups if len(group) > 1]
+    def _activity_communities(self, nodes: list[GraphNode]) -> list[list[str]]:
+        activities = [node.id for node in nodes if node.label == "Atividade"][:3]
+        if not activities:
+            return []
+        groups = []
+        for community in self.repository.activity_communities():
+            ids = [member.id for member in community]
+            if any(activity in ids for activity in activities) and len(ids) > 1:
+                groups.append([member.name for member in community][:COMMUNITY_LIMIT])
+        return groups[:3]
 
 
 def _retrieval_confidence(hits, edge_count: int) -> float:

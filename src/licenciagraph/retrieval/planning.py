@@ -46,19 +46,23 @@ class CypherPlanner:
 
     def plan(self, question: str) -> CypherPlan | None:
         prompt = json.dumps({"pergunta": question}, ensure_ascii=False)
-        system = """Planeje uma consulta ao catálogo de cursos.
+        system = """Planeje uma consulta ao grafo de licenciamento ambiental da SUDEMA.
 Retorne label, relationship e name para uma entidade explicitamente nomeada na
 pergunta. name deve ser copiado literalmente da pergunta. Não invente nomes.
-Tipos: Curso=disciplinas; Competencia=habilidades; Area=áreas de conhecimento;
-Trilha=percursos temáticos; Perfil=públicos; Nivel=dificuldade.
-Relações: Curso ABORDA Area; Curso DESENVOLVE Competencia;
-Curso PRE_REQUISITO Curso (o primeiro exige o segundo);
-Trilha INCLUI Curso; Curso INDICADO_PARA Perfil; Curso CLASSIFICADO_EM Nivel.
+Tipos: Atividade=atividade licenciável; Grupo e Subgrupo=classificação das
+atividades; Modalidade=tipo de licença (LP, LI, LO, LAC, LAU, AA, dispensa);
+Checklist=lista de documentos de uma licença; DocumentoExigido=documento pedido;
+Estudo=PCA, RCA, RAS, EIA/RIMA; Orgao=SUDEMA, COPAM, AESA, IPHAN; Norma=lei ou
+resolução; Porte=Micro a Extraordinário; LetraCusto=letra do custo de análise.
+Relações: Atividade ENQUADRADA_EM Modalidade; Atividade EXIGE_CHECKLIST Checklist;
+Checklist EXIGE_DOCUMENTO DocumentoExigido; Atividade TEM_FAIXA Faixa;
+Faixa USA_LETRA LetraCusto; LetraCusto CUSTA Modalidade; Modalidade PRECEDE
+Modalidade; DocumentoExigido EMITIDO_POR Orgao; Atividade CLASSIFICADA_EM Subgrupo.
 Escolha uma relação que toque o tipo da entidade nomeada e ajude a pergunta.
-Exemplo: "Qual curso desenvolve Recuperação vetorial?" -> label Competencia,
-relationship DESENVOLVE, name Recuperação vetorial.
-Exemplo: "O que é exigido antes de APIs Web?" -> label Curso,
-relationship PRE_REQUISITO, name APIs Web.
+Exemplo: "Que documentos a Licença de Instalação exige?" -> label Modalidade,
+relationship DO_TIPO, name Licença de Instalação.
+Exemplo: "Qual licença preciso para avicultura industrial?" -> label Atividade,
+relationship ENQUADRADA_EM, name avicultura industrial.
 Use os três campos vazios se nenhuma entidade específica for mencionada.
 A aplicação compila o plano em Cypher de leitura e percorre até dois saltos.
 """

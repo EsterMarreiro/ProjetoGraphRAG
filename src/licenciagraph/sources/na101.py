@@ -183,6 +183,7 @@ def _new_table(region: list[_Word], page: int) -> PorteTable:
         and header_y
         and w.y0 > header_y
         and w.text not in {"CRITÉRIO", "DE", "PORTE:"}
+        and w.text not in PORTE_LABELS
     ]
     return PorteTable(
         codes=codes,
@@ -502,3 +503,66 @@ def prose_pages(path: Path, first: int, last: int) -> list[dict[str, Any]]:
         )
         pages.append({"page": number, "text": text})
     return pages
+
+
+MASTER_PAGES = (40, 71)
+
+
+@dataclass(slots=True)
+class MasterActivity:
+    code: str
+    name: str
+    group_code: str
+    group_name: str
+    subgroup_code: str
+    subgroup_name: str
+
+
+def parse_master_list(path: Path) -> list[MasterActivity]:
+    """Lista mestra de atividades (Anexo I) com a hierarquia grupo e subgrupo."""
+    document = pymupdf.open(path)
+    group = ["", ""]
+    subgroup = ["", ""]
+    pending: list[str] | None = None
+    code = ""
+    mode = ""
+    found: list[MasterActivity] = []
+
+    def close() -> None:
+        nonlocal pending
+        if pending is not None and code:
+            name = " ".join(pending).replace("*", "").strip()
+            if name and "não previstas" not in name and "não previsto" not in name:
+                found.append(
+                    MasterActivity(
+                        code, name, group[0], group[1], subgroup[0], subgroup[1]
+                    )
+                )
+        pending = None
+
+    for number in range(MASTER_PAGES[0], MASTER_PAGES[1] + 1):
+        for raw in document[number - 1].get_text().split("\n"):
+            line = raw.strip()
+            if not line or re.fullmatch(r"\d+", line) and int(line) == number:
+                continue
+            if line in {"CÓDIGO", "GRUPO/ATIVIDADE"} or line.startswith(
+                ("* As", "Lei ")
+            ):
+                continue
+            if LIST_SUBGROUP.match(line):
+                close()
+                subgroup, mode = [line, ""], "subgroup"
+            elif LIST_ACTIVITY.match(line):
+                close()
+                code, pending, mode = line, [], "activity"
+            elif LIST_GROUP.match(line):
+                close()
+                group, subgroup, mode = [line, ""], ["", ""], "group"
+            elif mode == "activity" and pending is not None:
+                pending.append(line)
+            elif mode == "subgroup":
+                subgroup[1] = f"{subgroup[1]} {line}".strip()
+            elif mode == "group":
+                group[1] = f"{group[1]} {line}".strip()
+    close()
+    return found

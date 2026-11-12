@@ -23,10 +23,10 @@ class FakeService:
     def answer(self, question: str) -> GroundedAnswer:
         hit = SearchHit(
             chunk_id="trecho:1",
-            text="O Morro do Pai Inacio fica em Palmeiras.",
+            text="O checklist AG-02 exige a ART e o CAR.",
             document_id="doc:1",
-            title="Chapada Diamantina",
-            filename="05_chapada.txt",
+            title="Manual de Licenciamento Ambiental",
+            filename="manual.pdf",
             score=0.9,
             channels={"vector", "fulltext"},
         )
@@ -35,14 +35,14 @@ class FakeService:
             hits=[hit],
             nodes=[],
             edges=[
-                GraphEdge("rota:1", "atracao:1", "INCLUI"),
-                GraphEdge("atracao:1", "localidade:1", "ABORDA"),
+                GraphEdge("atividade:1", "checklist:1", "EXIGE_CHECKLIST"),
+                GraphEdge("checklist:1", "modalidade:li", "DO_TIPO"),
             ],
             queries=["MATCH ..."],
             confidence=0.8,
         )
         return GroundedAnswer(
-            answer="O Morro do Pai Inácio fica em Palmeiras [F1].",
+            answer="O checklist AG-02 exige a ART e o CAR [F1].",
             citations=["F1"],
             caveats=[],
             retrieval=retrieval,
@@ -54,9 +54,9 @@ class EvaluationTests(unittest.TestCase):
     def test_scores_sources_concepts_citations_and_graph(self) -> None:
         case = EvaluationCase(
             id="Q1",
-            question="Onde fica?",
-            expected_sources=("05_chapada.txt",),
-            expected_concepts=("Morro do Pai Inacio", "Palmeiras"),
+            question="Que documentos o checklist exige?",
+            expected_sources=("trecho:1",),
+            expected_concepts=("AG-02", "ART"),
             requires_multihop=True,
         )
 
@@ -73,7 +73,7 @@ class EvaluationTests(unittest.TestCase):
             {
                 "id": "Q1",
                 "question": "Pergunta",
-                "expected_sources": ["fonte.txt"],
+                "expected_sources": ["trecho:1"],
                 "expected_concepts": ["conceito"],
             }
         ]

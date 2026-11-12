@@ -17,7 +17,7 @@ def capture(directory: Path) -> None:
         [
             *ROOT.glob("src/**/*.py"),
             *ROOT.glob("scripts/*.py"),
-            *ROOT.glob("data/raw/*.txt"),
+            *ROOT.glob("data/curated/*.json"),
             *ROOT.glob("data/evaluation/*.json"),
             ROOT / "pyproject.toml",
             ROOT / ".env.example",

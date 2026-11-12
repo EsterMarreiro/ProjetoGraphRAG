@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from licenciagraph.config import Settings
 from licenciagraph.graph import GraphConnection
+from licenciagraph.guide import LicensingGuide
 from licenciagraph.ingestion.llm import OpenAIClient
 from licenciagraph.retrieval.generation import AnswerGenerator
 from licenciagraph.retrieval.planning import CypherPlanner
@@ -20,6 +21,7 @@ class UIRuntime:
     connection: GraphConnection
     llm: OpenAIClient
     service: QuestionAnsweringService
+    guide: LicensingGuide
 
     def close(self) -> None:
         self.connection.close()
@@ -44,4 +46,4 @@ def build_runtime(settings: Settings | None = None) -> UIRuntime:
             verifier_model=settings.verifier_model,
         ),
     )
-    return UIRuntime(settings, connection, llm, service)
+    return UIRuntime(settings, connection, llm, service, LicensingGuide(graph))

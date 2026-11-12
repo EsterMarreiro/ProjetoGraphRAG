@@ -1,7 +1,27 @@
 [
-  {"id": "HN01", "question": "Qual é a duração em semanas do curso Docker Avançado?", "expected_behavior": "O catálogo não tem esse curso nem durações em semanas; não inventar."},
-  {"id": "HN02", "question": "Quem é o professor responsável por Redes e HTTP?", "expected_behavior": "O catálogo não informa docentes; não inventar nomes."},
-  {"id": "HN03", "question": "Qual é a nota mínima de aprovação em APIs Web?", "expected_behavior": "O catálogo não informa notas ou critérios de aprovação."},
-  {"id": "HN04", "question": "Programação Python exige Cálculo Diferencial como pré-requisito?", "expected_behavior": "Premissa falsa: o único pré-requisito é Lógica de Programação."},
-  {"id": "HN05", "question": "Qual curso do catálogo ensina Kubernetes?", "expected_behavior": "Kubernetes não consta; não atribuir a Contêineres uma competência que ele não tem."}
+ {
+  "id": "HN01",
+  "question": "Qual a multa em reais por operar uma avicultura sem licença?",
+  "expected_behavior": "Valores de multa não constam das fontes consultadas."
+ },
+ {
+  "id": "HN02",
+  "question": "O IBAMA emite a Licença de Instalação de uma granja de aves na Paraíba?",
+  "expected_behavior": "As normas tratam do licenciamento estadual pela SUDEMA; licenciamento federal não consta."
+ },
+ {
+  "id": "HN03",
+  "question": "Quanto custa em reais a análise da Licença Prévia da avicultura industrial de porte médio?",
+  "expected_behavior": "O custo consta em UFR-PB; a conversão em reais não consta."
+ },
+ {
+  "id": "HN04",
+  "question": "A Licença de Operação da avicultura industrial dispensa o Cadastro Ambiental Rural?",
+  "expected_behavior": "Premissa falsa ou não confirmada; as normas devem ser consultadas e a premissa não confirmada."
+ },
+ {
+  "id": "HN05",
+  "question": "Qual o telefone do núcleo regional da SUDEMA em Sousa?",
+  "expected_behavior": "Não existe núcleo regional em Sousa nas fontes; há núcleos em Campina Grande e Patos."
+ }
 ]

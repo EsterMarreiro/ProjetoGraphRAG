@@ -10,9 +10,10 @@ import uuid
 from dataclasses import replace
 from pathlib import Path
 
+from licenciagraph.ingestion.loader import load_documents
+
 from licenciagraph.config import Settings
 from licenciagraph.graph import GraphConnection, SchemaManager
-from licenciagraph.ingestion.loader import load_documents
 from licenciagraph.ingestion.models import (
     ExtractedEntity,
     ExtractedRelationship,

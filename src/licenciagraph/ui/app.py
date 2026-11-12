@@ -4,31 +4,44 @@ from __future__ import annotations
 
 import streamlit as st
 
+from licenciagraph.guide import (
+    ActivityProfile,
+    Band,
+    LicensingGuide,
+    band_for_value,
+    checklist_markdown,
+)
 from licenciagraph.retrieval.generation import SCOPE_CAVEAT
 from licenciagraph.retrieval.models import GroundedAnswer
-from licenciagraph.ui.filters import LearningFilters
+from licenciagraph.ui.filters import ProcessFilters
 from licenciagraph.ui.graph_view import LABEL_COLORS, create_graph_figure
 from licenciagraph.ui.runtime import UIRuntime, build_runtime
 
-AREAS = (
+MODALITIES = (
     "",
-    "Fundamentos",
-    "Programação",
-    "Dados",
-    "Infraestrutura",
-    "Qualidade",
-    "Inteligência Artificial",
+    "Dispensa",
+    "LAC",
+    "LAU",
+    "AA",
+    "LP",
+    "LI",
+    "LO",
+    "RLI",
+    "RLO",
+    "LAI",
+    "LAO",
+    "LOC",
 )
-COMPETENCIES = (
-    "",
-    "Decomposição de problemas",
-    "Implementação de funções",
-    "Construção de endpoints",
-    "Recuperação vetorial",
-    "Fundamentação por evidências",
+PORTES = ("", "Micro", "Pequeno", "Médio", "Grande", "Extraordinário")
+EXAMPLES = (
+    "Quais documentos preciso para a Licença de Instalação de uma avicultura "
+    "industrial?",
+    "Qual a validade e o custo em UFR-PB da LAU para avicultura industrial de "
+    "porte médio?",
+    "Qual a sequência entre Licença Prévia, de Instalação e de Operação?",
+    "Quais atividades de comércio e serviços de saúde são dispensadas de "
+    "licenciamento?",
 )
-PROFILES = ("", "Estudantes", "Desenvolvedores", "Analistas de dados")
-LEVELS = ("", "Iniciante", "Intermediário", "Avançado")
 
 
 @st.cache_resource(
@@ -43,12 +56,14 @@ def get_runtime() -> UIRuntime:
 def main() -> None:
     st.set_page_config(
         page_title="LicenciaGraph",
-        page_icon="📚",
+        page_icon="🌿",
         layout="wide",
         initial_sidebar_state="expanded",
     )
-    st.title("📚 LicenciaGraph")
-    st.caption("Percursos de aprendizagem explicados com evidências e grafos")
+    st.title("🌿 LicenciaGraph")
+    st.caption(
+        "Guia de licenciamento ambiental da SUDEMA (Paraíba), com evidências e grafos"
+    )
 
     try:
         runtime = get_runtime()
@@ -58,42 +73,49 @@ def main() -> None:
         st.stop()
 
     filters, services_ready = render_sidebar(runtime)
+    chat_tab, guide_tab = st.tabs(["💬 Perguntar", "🧭 Assistente de enquadramento"])
+    with chat_tab:
+        render_chat(runtime, filters, services_ready)
+    with guide_tab:
+        render_guide(runtime.guide)
+
+
+def render_chat(
+    runtime: UIRuntime, filters: ProcessFilters, services_ready: bool
+) -> None:
     initialize_history()
     render_history()
-
     prompt = st.chat_input(
-        "Pergunte sobre cursos, competências, trilhas ou pré-requisitos...",
+        "Pergunte sobre licenças, documentos, porte, custos ou prazos...",
         disabled=not services_ready,
     )
-    if prompt:
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    if not prompt:
+        return
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-        augmented_question = filters.augment_question(prompt)
-        with st.chat_message("assistant"):
-            try:
-                with st.spinner("Buscando evidências e percorrendo o grafo..."):
-                    answer = runtime.service.answer(augmented_question)
-                render_answer(answer)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": answer.answer, "answer": answer}
-                )
-            except Exception as exc:
-                message = f"Não foi possível responder: {exc}"
-                st.error(message)
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": message}
-                )
+    augmented_question = filters.augment_question(prompt)
+    with st.chat_message("assistant"):
+        try:
+            with st.spinner("Buscando evidências e percorrendo o grafo..."):
+                answer = runtime.service.answer(augmented_question)
+            render_answer(answer)
+            st.session_state.messages.append(
+                {"role": "assistant", "content": answer.answer, "answer": answer}
+            )
+        except Exception as exc:
+            message = f"Não foi possível responder: {exc}"
+            st.error(message)
+            st.session_state.messages.append({"role": "assistant", "content": message})
 
 
-def render_sidebar(runtime: UIRuntime) -> tuple[LearningFilters, bool]:
+def render_sidebar(runtime: UIRuntime) -> tuple[ProcessFilters, bool]:
     with st.sidebar:
-        st.header("Preferências de aprendizagem")
-        area = st.selectbox("Área", AREAS)
-        competency = st.selectbox("Competência", COMPETENCIES)
-        profile = st.selectbox("Perfil", PROFILES)
-        level = st.selectbox("Nível", LEVELS)
+        st.header("Contexto da pergunta")
+        activity = st.text_input("Atividade (opcional)")
+        modality = st.selectbox("Modalidade", MODALITIES)
+        porte = st.selectbox("Porte", PORTES)
 
         st.divider()
         st.subheader("Estado dos serviços")
@@ -105,14 +127,147 @@ def render_sidebar(runtime: UIRuntime) -> tuple[LearningFilters, bool]:
             st.session_state.messages = []
             st.rerun()
         st.caption(
-            "Catálogo didático fictício. As trilhas não representam ofertas reais "
-            "nem equivalência acadêmica."
+            "Base: Manual de Licenciamento Ambiental (5ª ed.) e NA-101 (5ª ed., 2026) "
+            "da SUDEMA. Orientação; não substitui a análise do órgão ambiental."
         )
 
     return (
-        LearningFilters(area, competency, profile, level),
+        ProcessFilters(activity, modality, porte),
         database_ok and llm_ok,
     )
+
+
+def render_guide(guide: LicensingGuide) -> None:
+    st.markdown(
+        "Informe a atividade e o porte para ver a modalidade, o custo de análise "
+        "(em UFR-PB), a validade e a lista de documentos. Esta aba consulta o grafo "
+        "diretamente, sem modelo de linguagem."
+    )
+    query = st.text_input("Atividade (nome ou código)", key="guide_query")
+    options = guide.search_activities(query) if query.strip() else []
+    if query.strip() and not options:
+        st.info("Nenhuma atividade encontrada. Tente outro termo, como 'avicultura'.")
+        return
+    if not options:
+        return
+    chosen = st.selectbox(
+        "Atividades encontradas",
+        options,
+        format_func=lambda option: f"{option.code} · {option.name}",
+        key="guide_option",
+    )
+    profile = guide.profile(chosen.id)
+    if profile is None:
+        st.warning("Atividade não encontrada no grafo.")
+        return
+    st.subheader(profile.name)
+    st.caption(f"Código {profile.code} · {profile.group} · {profile.subgroup}")
+    render_regimes(profile)
+    band = choose_band(profile)
+    render_band(guide, profile, band)
+    render_checklists(guide, profile)
+    st.caption(SCOPE_CAVEAT)
+
+
+def render_regimes(profile: ActivityProfile) -> None:
+    if not profile.regimes:
+        st.info("Nenhuma modalidade de licenciamento consta para esta atividade.")
+        return
+    st.markdown("**Modalidades possíveis**")
+    st.dataframe(
+        [
+            {
+                "sigla": regime.modality,
+                "modalidade": regime.name,
+                "validade": regime.validity.lower(),
+                "letra de custo": regime.letter,
+            }
+            for regime in profile.regimes
+        ],
+        hide_index=True,
+        width="stretch",
+    )
+
+
+def choose_band(profile: ActivityProfile) -> Band | None:
+    bands = [band for band in profile.bands if band.criterion or band.letter]
+    if not bands:
+        return None
+    st.markdown("**Porte**")
+    unit = profile.porte_unit or "critério do porte"
+    has_ranges = any(band.interval for band in bands)
+    value = (
+        st.number_input(f"Informe o valor ({unit})", min_value=0.0, value=0.0)
+        if has_ranges
+        else 0.0
+    )
+    matched = band_for_value(bands, value) if has_ranges and value > 0 else None
+    labels = [band.label for band in bands]
+    default = labels.index(matched.label) if matched else 0
+    label = st.radio("Porte aplicado", labels, index=default, horizontal=True)
+    return next(band for band in bands if band.label == label)
+
+
+def render_band(
+    guide: LicensingGuide, profile: ActivityProfile, band: Band | None
+) -> None:
+    if band is None:
+        return
+    cols = st.columns(3)
+    cols[0].metric("Porte", band.label)
+    cols[1].metric("Letra de custo", band.letter or "n/d")
+    cols[2].metric(
+        "Potencial poluidor",
+        f"ar {band.air or '-'} · água {band.water or '-'} · solo {band.soil or '-'}",
+    )
+    if band.note:
+        st.info(f"Anotação da NA-101 para este porte: {band.note}")
+    modalities = sorted(
+        {regime.modality for regime in profile.regimes}
+        | {checklist.modality for checklist in profile.checklists}
+    )
+    costs = guide.costs(band.letter, modalities)
+    if costs:
+        st.markdown("**Custo de análise (UFR-PB) por modalidade**")
+        st.dataframe(
+            [
+                {"modalidade": modality, "UFR-PB": costs[modality]}
+                for modality in modalities
+                if modality in costs
+            ],
+            hide_index=True,
+            width="stretch",
+        )
+        st.caption(
+            "Os valores estão em UFR-PB; a conversão para reais depende do valor "
+            "vigente da UFR-PB."
+        )
+
+
+def render_checklists(guide: LicensingGuide, profile: ActivityProfile) -> None:
+    if not profile.checklists:
+        return
+    st.markdown("**Documentos exigidos por checklist**")
+    for checklist in profile.checklists:
+        with st.expander(f"{checklist.title} · p. {checklist.pages}"):
+            items = guide.requirements(checklist.id)
+            if not items:
+                st.info("Itens do checklist indisponíveis.")
+                continue
+            for item in items:
+                extra = []
+                if item.agency:
+                    extra.append(f"órgão: {item.agency}")
+                if item.condition:
+                    extra.append(item.condition)
+                suffix = f" _({'; '.join(extra)})_" if extra else ""
+                st.markdown(f"{item.number}. {item.text}{suffix}")
+            st.download_button(
+                "Baixar checklist (Markdown)",
+                checklist_markdown(profile, checklist, items),
+                file_name=f"{checklist.code}.md",
+                key=f"download-{checklist.id}",
+            )
 
 
 def _database_status(runtime: UIRuntime) -> bool:
@@ -155,12 +310,7 @@ def render_history() -> None:
     if not st.session_state.messages:
         with st.container(border=True):
             st.markdown("**Experimente perguntar:**")
-            st.markdown(
-                "- Que competências sustentam os pré-requisitos "
-                "de Recuperação Híbrida?\n"
-                "- Quais cursos preciso estudar antes de APIs Web?\n"
-                "- Como Integração Contínua se conecta a Testes Automatizados?"
-            )
+            st.markdown("\n".join(f"- {example}" for example in EXAMPLES))
         return
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -267,11 +417,11 @@ def render_trace(answer: GroundedAnswer) -> None:
     )
     retrieval = answer.retrieval
     if retrieval.paths:
-        st.markdown("**Caminho mais curto por pré-requisitos**")
+        st.markdown("**Sequência de licenças (caminho mais curto)**")
         for path in retrieval.paths:
             st.write(" → ".join(path))
     if retrieval.communities:
-        st.markdown("**Comunidades de cursos (Louvain)**")
+        st.markdown("**Atividades com checklists em comum (Louvain)**")
         for group in retrieval.communities:
             st.write(", ".join(group))
     st.markdown("**Consultas executadas**")

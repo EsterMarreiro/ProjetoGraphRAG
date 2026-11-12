@@ -8,38 +8,44 @@ from typing import Any
 
 ALLOWED_LABELS = frozenset(
     {
-        "Area",
-        "Curso",
-        "Competencia",
-        "Perfil",
-        "Nivel",
-        "Trilha",
-    }
-)
-
-ALLOWED_RELATIONSHIPS = frozenset(
-    {
-        "PERTENCE_A",
-        "ABORDA",
-        "DESENVOLVE",
-        "INDICADO_PARA",
-        "CLASSIFICADO_EM",
-        "REQUER",
-        "INCLUI",
-        "PRE_REQUISITO",
+        "Grupo",
+        "Subgrupo",
+        "Atividade",
+        "Modalidade",
+        "Checklist",
+        "DocumentoExigido",
+        "Estudo",
+        "Orgao",
+        "Sistema",
+        "Norma",
+        "Porte",
+        "Faixa",
+        "LetraCusto",
     }
 )
 
 RELATIONSHIP_ENDPOINTS = {
-    "PERTENCE_A": ("Area", "Area"),
-    "ABORDA": ("Curso", "Area"),
-    "DESENVOLVE": ("Curso", "Competencia"),
-    "INDICADO_PARA": ("Curso", "Perfil"),
-    "CLASSIFICADO_EM": ("Curso", "Nivel"),
-    "REQUER": ("Curso", "Competencia"),
-    "INCLUI": ("Trilha", "Curso"),
-    "PRE_REQUISITO": ("Curso", "Curso"),
+    "SUBGRUPO_DE": ("Subgrupo", "Grupo"),
+    "CLASSIFICADA_EM": ("Atividade", "Subgrupo"),
+    "ENQUADRADA_EM": ("Atividade", "Modalidade"),
+    "EXIGE_CHECKLIST": ("Atividade", "Checklist"),
+    "DO_TIPO": ("Checklist", "Modalidade"),
+    "EXIGE_DOCUMENTO": ("Checklist", "DocumentoExigido"),
+    "EMITIDO_POR": ("DocumentoExigido", "Orgao"),
+    "EXIGE_ESTUDO": ("Checklist", "Estudo"),
+    "TEM_FAIXA": ("Atividade", "Faixa"),
+    "DE_PORTE": ("Faixa", "Porte"),
+    "USA_LETRA": ("Faixa", "LetraCusto"),
+    "ESTUDO_DA_FAIXA": ("Faixa", "Estudo"),
+    "CUSTA": ("LetraCusto", "Modalidade"),
+    "PRECEDE": ("Modalidade", "Modalidade"),
+    "REGULADO_POR": ("Modalidade", "Norma"),
+    "EMITIDA_POR": ("Modalidade", "Orgao"),
+    "REQUER_ESTUDO": ("Modalidade", "Estudo"),
+    "OPERA": ("Orgao", "Sistema"),
+    "VINCULADO_A": ("Orgao", "Orgao"),
 }
+ALLOWED_RELATIONSHIPS = frozenset(RELATIONSHIP_ENDPOINTS)
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,6 +63,8 @@ class Chunk:
     document_id: str
     position: int
     text: str
+    page: int | None = None
+    kind: str = "texto"
 
 
 @dataclass(slots=True)

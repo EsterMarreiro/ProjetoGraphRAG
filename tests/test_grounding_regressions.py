@@ -36,7 +36,7 @@ def context():
 class GroundingRegressions(unittest.TestCase):
     def test_citation_ids_refer_to_chunks_not_unique_filenames(self):
         answer = GroundedAnswer("B faz parte de C [F2].", ["F2"], [], context())
-        case = EvaluationCase("q", "Onde?", ("same.txt",), ("C",))
+        case = EvaluationCase("q", "Onde?", ("t1", "t2"), ("C",))
         self.assertEqual(evaluate_answer(case, answer).citation_validity, 1.0)
 
     def test_rejects_invalid_inline_and_unknown_citation(self):
@@ -132,6 +132,8 @@ class HybridPlanRegression(unittest.TestCase):
         )
         repository.sources.return_value = [graph_source]
         repository.linked_entities.return_value = []
+        repository.similar_activities.return_value = []
+        repository.activity_communities.return_value = []
         result = HybridRetriever(
             repository=repository,
             llm=embedding,
@@ -196,63 +198,86 @@ class AlgorithmCompatibilityTests(unittest.TestCase):
         self.assertEqual(path.length, 3)
 
 
-class ExtractionDirectionTests(unittest.TestCase):
-    def raw(self, reversed_direction):
-        return {
-            "entities": [
-                {"ref": "t", "label": "Trilha", "name": "Web", "properties": {}},
-                {"ref": "c", "label": "Curso", "name": "Python", "properties": {}},
-            ],
-            "relationships": [
-                {
-                    "source_ref": "c" if reversed_direction else "t",
-                    "target_ref": "t" if reversed_direction else "c",
-                    "relationship_type": "INCLUI",
-                    "properties": {},
-                    "confidence": 1.0,
-                }
-            ],
+class FactsExtractionTests(unittest.TestCase):
+    def test_accepts_grounded_facts_with_known_modalities(self):
+        from licenciagraph.ingestion.facts import parse_facts
+
+        text = (
+            "A Licença Prévia é emitida pela SUDEMA e regulada pela Lei nº 6.938/1981."
+        )
+        result = parse_facts(
+            {
+                "facts": [
+                    {"relation": "EMITIDA_POR", "subject": "LP", "object": "SUDEMA"},
+                    {
+                        "relation": "REGULADO_POR",
+                        "subject": "LP",
+                        "object": "Lei nº 6.938/1981",
+                    },
+                ]
+            },
+            text,
+        )
+        labels = {entity.ref: entity.label for entity in result.entities}
+        pairs = {
+            (labels[r.source_ref], r.relationship_type, labels[r.target_ref])
+            for r in result.relationships
         }
+        self.assertEqual(
+            pairs,
+            {
+                ("Modalidade", "EMITIDA_POR", "Orgao"),
+                ("Modalidade", "REGULADO_POR", "Norma"),
+            },
+        )
 
-    def test_rejects_reversed_typed_relationship(self):
-        from licenciagraph.ingestion.extraction import parse_extraction
+    def test_rejects_entities_absent_from_the_text(self):
+        from licenciagraph.ingestion.facts import parse_facts
 
-        with self.assertRaisesRegex(ValueError, "INCLUI exige Trilha -> Curso"):
-            parse_extraction(self.raw(True))
+        with self.assertRaisesRegex(ValueError, "ausente no texto"):
+            parse_facts(
+                {
+                    "facts": [
+                        {"relation": "EMITIDA_POR", "subject": "LP", "object": "IBAMA"}
+                    ]
+                },
+                "A Licença Prévia é emitida pela SUDEMA.",
+            )
+
+    def test_rejects_unknown_modality(self):
+        from licenciagraph.ingestion.facts import parse_facts
+
+        with self.assertRaisesRegex(ValueError, "Modalidade desconhecida"):
+            parse_facts(
+                {
+                    "facts": [
+                        {
+                            "relation": "EMITIDA_POR",
+                            "subject": "XYZ",
+                            "object": "SUDEMA",
+                        }
+                    ]
+                },
+                "XYZ SUDEMA",
+            )
 
     def test_retries_invalid_extraction_with_feedback(self):
-        from licenciagraph.ingestion.extraction import LearningExtractor
+        from licenciagraph.ingestion.facts import FactsExtractor
 
         client = Mock()
-        valid = {
-            "courses": [
-                {
-                    "name": "Python",
-                    "area": "",
-                    "competencies": [],
-                    "level": "",
-                    "profiles": [],
-                    "prerequisites": [],
-                    "trails": ["Web"],
-                    "code": "",
-                    "hours": 0,
-                }
-            ]
+        invalid = {
+            "facts": [{"relation": "EMITIDA_POR", "subject": "LP", "object": "IBAMA"}]
         }
-        invalid = {"courses": [{**valid["courses"][0], "name": "Ruby"}]}
+        valid = {
+            "facts": [{"relation": "EMITIDA_POR", "subject": "LP", "object": "SUDEMA"}]
+        }
         client.chat_json.side_effect = [invalid, valid]
-        result = LearningExtractor(client, model="fake").extract(
-            "A trilha Web inclui Python."
+        result = FactsExtractor(client, model="fake").extract(
+            "A Licença Prévia é emitida pela SUDEMA."
         )
-        relation = result.relationships[0]
-        labels = {entity.ref: entity.label for entity in result.entities}
-        self.assertEqual(labels[relation.source_ref], "Trilha")
-        self.assertEqual(labels[relation.target_ref], "Curso")
+        self.assertEqual(len(result.relationships), 1)
         self.assertEqual(client.chat_json.call_count, 2)
-        self.assertIn(
-            "Entidade ausente no texto: Ruby",
-            client.chat_json.call_args.kwargs["prompt"],
-        )
+        self.assertIn("ausente no texto", client.chat_json.call_args.kwargs["prompt"])
 
 
 class ComparisonMetricTests(unittest.TestCase):
@@ -262,11 +287,11 @@ class ComparisonMetricTests(unittest.TestCase):
             edges=[],
             hits=[
                 context().hits[0],
-                replace(context().hits[1], filename="irrelevant.txt"),
+                replace(context().hits[1], chunk_id="irrelevante"),
             ],
         )
         answer = GroundedAnswer("Python [F1].", ["F1"], [], retrieval)
-        case = EvaluationCase("q", "Pergunta", ("same.txt",), ("Python",), True)
+        case = EvaluationCase("q", "Pergunta", ("t1",), ("Python",), True)
         result = evaluate_answer(case, answer)
         self.assertTrue(result.content_checks_passed)
         self.assertFalse(result.passed)
@@ -274,54 +299,44 @@ class ComparisonMetricTests(unittest.TestCase):
 
 
 class StructuredAnswerTests(unittest.TestCase):
-    def test_offering_claims_from_the_model_are_replaced_by_fixed_notice(self):
-        client = Mock()
-        client.chat_json.return_value = {
-            "claims": [{"text": "O curso emite um certificado.", "citations": ["F1"]}],
-            "abstained": False,
-            "caveats": [],
-        }
-        for question in (
-            "Quanto custa a inscrição em Recuperação Híbrida?",
-            "Qual certificado é emitido em APIs Web?",
-        ):
-            with self.subTest(question=question):
-                answer = AnswerGenerator(client, model="fake").generate(
-                    replace(context(), question=question)
-                )
-                self.assertTrue(answer.abstained)
-                self.assertFalse(answer.citations)
-                self.assertFalse(answer.supporting_edges)
-                self.assertNotIn("emite", answer.answer)
-                self.assertIn("não comprova equivalência", answer.answer)
-
-    def test_mixed_question_keeps_available_facts_and_drops_offering_claims(self):
+    def test_claims_with_reais_not_in_the_cited_source_are_dropped(self):
         client = Mock()
         client.chat_json.return_value = {
             "claims": [
-                {
-                    "text": "A carga horária fictícia é de 32 horas.",
-                    "citations": ["F1"],
-                },
-                {
-                    "text": "O curso comprova equivalência acadêmica.",
-                    "citations": ["F1"],
-                },
+                {"text": "A análise custa R$ 1.200,00.", "citations": ["F1"]},
+                {"text": "A letra de custo é a F.", "citations": ["F1"]},
             ],
             "abstained": False,
             "caveats": [],
         }
         answer = AnswerGenerator(client, model="fake").generate(
-            replace(
-                context(),
-                question="Qual a carga horária e ela comprova equivalência acadêmica?",
-            )
+            replace(context(), question="Quanto custa a análise em reais?")
         )
-        self.assertFalse(answer.abstained)
-        self.assertEqual(answer.citations, ["F1"])
-        self.assertIn("32 horas", answer.answer)
-        self.assertNotIn("comprova equivalência acadêmica. [F1]", answer.answer)
-        self.assertIn("não constam do catálogo", answer.answer)
+        self.assertNotIn("1.200", answer.answer)
+        self.assertIn("letra de custo", answer.answer)
+
+    def test_ufr_notice_is_added_to_cost_answers(self):
+        client = Mock()
+        client.chat_json.return_value = {
+            "claims": [{"text": "A análise custa 16 UFR-PB.", "citations": ["F1"]}],
+            "abstained": False,
+            "caveats": [],
+        }
+        answer = AnswerGenerator(client, model="fake").generate(
+            replace(context(), question="Quanto custa a análise da LAU?")
+        )
+        self.assertIn("16 UFR-PB", answer.answer)
+        self.assertIn("conversão para reais", answer.answer)
+
+    def test_ufr_notice_is_not_added_to_other_questions(self):
+        client = Mock()
+        client.chat_json.return_value = {
+            "claims": [{"text": "A validade é de 5 anos.", "citations": ["F1"]}],
+            "abstained": False,
+            "caveats": [],
+        }
+        answer = AnswerGenerator(client, model="fake").generate(context())
+        self.assertNotIn("conversão para reais", answer.answer)
 
     def test_formats_declared_sources_and_retains_selected_edges(self):
         client = Mock()
@@ -366,7 +381,7 @@ class CaveatGroundingTests(unittest.TestCase):
         }
         answer = AnswerGenerator(client, model="fake").generate(context())
         self.assertNotIn("O curso exige a si próprio.", answer.caveats)
-        self.assertIn("fictício", answer.caveats[0])
+        self.assertIn("orientativa", answer.caveats[0])
         self.assertIn("Fato sustentado.", answer.answer)
 
 
@@ -470,5 +485,7 @@ class VerificationTests(unittest.TestCase):
                 communities=[["A", "B"]],
             )
         )
-        self.assertIn("CAMINHO MAIS CURTO POR PRÉ-REQUISITOS: A -> B -> C", text)
-        self.assertIn("COMUNIDADE (Louvain): A, B", text)
+        self.assertIn(
+            "SEQUÊNCIA DE LICENÇAS (caminho mais curto por PRECEDE): A -> B -> C", text
+        )
+        self.assertIn("COMUNIDADE DE LOUVAIN", text.upper())
