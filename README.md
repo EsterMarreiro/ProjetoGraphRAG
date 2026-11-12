@@ -1,6 +1,21 @@
 # LicenciaGraph
 
-Guia de licenciamento ambiental da SUDEMA (Paraíba) com GraphRAG. O empreendedor pergunta em linguagem natural (que licença preciso, quais documentos levo, qual o porte, quanto custa a análise em UFR-PB, quanto tempo vale) e recebe uma resposta com **fonte e página**, o **subgrafo usado** e as **consultas executadas**. Uma segunda aba, o **assistente de enquadramento**, consulta o grafo diretamente, sem modelo de linguagem: atividade, porte, custo, validade e checklist de documentos.
+Assistente de licenciamento ambiental da SUDEMA (Paraíba) com GraphRAG. O empreendedor pergunta em linguagem natural (que licença preciso, quais documentos levo, qual o porte, quanto custa a análise em UFR-PB, quanto tempo vale) e recebe uma resposta com **fonte e página**, o **subgrafo usado** e as **consultas executadas**. Uma segunda aba, o **assistente de enquadramento**, consulta o grafo diretamente, sem modelo de linguagem: atividade, porte, custo, validade e checklist de documentos.
+
+## Objetivo
+
+**Objetivo geral.** Facilitar o acesso do empreendedor paraibano à informação de licenciamento ambiental da SUDEMA, hoje espalhada entre o Manual de Licenciamento Ambiental (585 páginas), a NA-101 (389 páginas) e o portal, e difícil de achar e de interpretar no dia a dia. A aplicação responde em linguagem simples, com fonte e página, e ajuda a enquadrar a atividade do empreendedor.
+
+**Por que importa.** Quem precisa de uma licença hoje procura as regras em documentos extensos ou recorre ao atendimento da SUDEMA, onde as mesmas dúvidas básicas se repetem. A premissa do projeto é que uma ferramenta de apoio pode aliviar essa demanda e padronizar o entendimento de todos (empreendedores, consultores e o próprio atendimento). Essa premissa **não foi medida**: a avaliação mede a qualidade das respostas, não a redução da carga do atendimento.
+
+**Objetivos específicos.**
+
+1. Reunir as normas em um grafo de conhecimento, com a página de origem de cada fato.
+2. Entender a atividade descrita com as palavras do empreendedor ("vender porcos", "estúdio de tatuagem"), enquadrá-la entre as atividades listadas e dizer modalidade, porte, custo em UFR-PB, validade e documentos, pedindo os dados que faltam.
+3. Tirar dúvidas gerais (o que é LP, LI, LO, LAC, LAU, prazos, etapas) em linguagem acessível.
+4. Reduzir alucinações: citar fonte e página, verificar as afirmações, abster-se quando a norma não informa e nunca afirmar valores sem fonte.
+5. Oferecer uma interface simples, no formato de conversa, com um assistente de enquadramento passo a passo.
+6. Avaliar o sistema contra uma busca vetorial simples e medir se ele identifica a atividade em fala coloquial.
 
 A aplicação é **orientativa**. A fonte oficial é a SUDEMA; as respostas não substituem a análise técnica do órgão ambiental nem a legislação vigente.
 
@@ -52,14 +67,14 @@ ruff check src tests scripts
 - `src/licenciagraph/ingestion/`: construção dos trechos e do grafo, extração de fatos, escrita no FalkorDB.
 - `src/licenciagraph/retrieval/`: busca híbrida, expansão, algoritmos de grafo, geração e verificação.
 - `src/licenciagraph/guide.py`: assistente de enquadramento (consultas diretas ao grafo).
-- `src/licenciagraph/ui/`: interface Streamlit; `src/licenciagraph/evaluation/`: avaliador e juiz.
+- `src/licenciagraph/ui/`: interface Streamlit no formato de chat (`theme.py` com o tema azul e verde; `assets/` com o símbolo e os ícones copiados do repositório da SUDEMA); `src/licenciagraph/evaluation/`: avaliador e juiz.
 - `scripts/`: geração dos dados curados, dos conjuntos de avaliação e do experimento.
 - `data/curated/`: dados extraídos; `data/evaluation/`: perguntas com gabarito.
 - `docs/`: documentação por etapa (modelagem, infraestrutura, fontes, ingestão, recuperação, interface, avaliação) e auditoria dos requisitos.
 
 ## Estado
 
-Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendentes a autoria e o envio ao GitHub. As positivas não foram reexecutadas após o resolvedor e a última regra para atividade próxima não foi reavaliada (créditos da API esgotados).
+Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendentes a autoria e o envio ao GitHub. Resultado final, com o resolvedor: 41/42 nas positivas (baseline vetorial 23/42), 24/26 na fala coloquial (antes 12/26) e 6/10 nas negativas (antes 7/10; vetorial 5/10).
 
 ## Limites
 

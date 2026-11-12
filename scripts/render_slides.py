@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def _evaluation_text(runs: Path) -> str:
     rows = []
     for label, name in (
-        ("Híbrido, desenvolvimento", "run-dev-hybrid-v1/hybrid"),
-        ("Híbrido, retido", "run-heldout-hybrid/hybrid"),
+        ("Híbrido, desenvolvimento", "run-dev-hybrid-v3/hybrid"),
+        ("Híbrido, retido", "run-heldout-hybrid-v3/hybrid"),
         ("Vetorial, desenvolvimento", "run-dev-vector/vector"),
         ("Vetorial, retido", "run-heldout-vector/vector"),
     ):
@@ -38,7 +38,7 @@ def _evaluation_text(runs: Path) -> str:
         "Acertos segundo o juiz (gpt-4o):\n"
         + "\n".join(rows)
         + "\n\nSoma das positivas: híbrido 41/42, vetorial 23/42. Fala coloquial "
-        "(26 perguntas): resolvedor 24 a 25, método anterior 12.\nNegativas (juiz "
+        "(26 perguntas): resolvedor 24, método anterior 12.\nNegativas (juiz "
         "estrito): resolvedor 6/10, antes 7/10, vetorial 5/10. Custo: US$ 0,03 a "
         "0,05 por pergunta."
     )
@@ -91,12 +91,23 @@ def main():
     )
     slide(
         "Problema e objetivo",
-        "O empreendedor precisa descobrir qual licença se aplica, quais documentos "
-        "levar, qual o porte, o custo da análise e a validade.\n\n"
-        "A informação está espalhada entre o Manual, a NA-101 e o portal da SUDEMA "
-        "e a resposta depende de relações: atividade, modalidade, checklist, porte "
-        "e custo.\n\nObjetivo: responder com fonte e página e mostrar o caminho "
-        "no grafo.",
+        "O empreendedor precisa saber qual licença se aplica, quais documentos "
+        "levar, o porte, o custo e a validade. Essa informação está espalhada em "
+        "mais de 970 páginas e é difícil de achar no dia a dia; as dúvidas "
+        "básicas tendem a recair sobre o atendimento da SUDEMA (premissa, não "
+        "medida).\n\nObjetivo geral: facilitar o acesso do empreendedor, com "
+        "respostas em linguagem simples, com fonte e página, e ajudar a enquadrar "
+        "a atividade, aliviando o atendimento e padronizando o entendimento.",
+    )
+    slide(
+        "Objetivos específicos",
+        "1. Reunir as normas em um grafo, com a página de cada fato.\n"
+        "2. Entender a atividade na fala do empreendedor e enquadrá-la: "
+        "modalidade, porte, custo, validade e documentos.\n"
+        "3. Tirar dúvidas gerais (siglas, prazos, etapas).\n"
+        "4. Reduzir alucinações: citar, verificar, abster-se.\n"
+        "5. Interface simples, em formato de conversa, e assistente passo a "
+        "passo.\n6. Avaliar contra uma busca vetorial e na fala coloquial.",
     )
     slide(
         "Fontes e dados",
@@ -146,21 +157,21 @@ def main():
         "não informa ou a pergunta é de outro estado.",
     )
     page = slide("Interface", "")
-    page.insert_image(
-        pymupdf.Rect(60, 110, 320, 490),
-        filename=str(ROOT / "docs/artigo/interface.png"),
-    )
-    page.insert_image(
-        pymupdf.Rect(340, 110, 600, 490),
-        filename=str(ROOT / "docs/artigo/assistente.png"),
-    )
+    chat = ROOT / "docs/artigo/interface.png"
+    page.insert_image(pymupdf.Rect(48, 112, 478, 400), filename=str(chat))
+    source = pymupdf.Pixmap(str(ROOT / "docs/artigo/assistente.png"))
+    top = pymupdf.IRect(0, 0, source.width, 900)
+    cropped = pymupdf.Pixmap(source.colorspace, top)
+    cropped.copy(source, top)
+    page.insert_image(pymupdf.Rect(482, 112, 912, 400), pixmap=cropped)
     page.insert_textbox(
-        pymupdf.Rect(630, 120, 908, 480),
-        "Chat: resposta com fontes, subgrafo, consultas e a atividade "
-        "interpretada; entende perguntas de seguimento.\n\n"
-        "Assistente de enquadramento: atividade, porte, custo em UFR-PB, "
-        "validade e checklist, direto do grafo, sem modelo de linguagem.",
-        fontsize=15,
+        pymupdf.Rect(52, 410, 908, 495),
+        "Conversa no estilo de chat: caixa de mensagem fixa, lista de conversas "
+        "na barra lateral, configurações em janela, atividade interpretada, "
+        "fontes, subgrafo e perguntas de seguimento. Assistente de enquadramento "
+        "em três passos: atividade, porte e custo, validade e documentos, direto "
+        "do grafo.",
+        fontsize=14,
         fontname="helv",
     )
     slide("Avaliação", _evaluation_text(args.runs))
@@ -170,9 +181,9 @@ def main():
         "arquivos curados.\nValor da UFR-PB em reais, licenciamento federal e "
         "municipal fora da base não constam.\nDocumentos canônicos e fatos do texto "
         "vêm de um LLM, amostrados.\nPerguntas geradas das tabelas: faltam "
-        "perguntas escritas por pessoas de fora do projeto.\nAs positivas não foram "
-        "reexecutadas após o resolvedor; com ele, as negativas caíram de 7 para "
-        "6 de 10 por mostrarem atividade próxima.",
+        "perguntas escritas por pessoas de fora do projeto.\nCom o resolvedor, as "
+        "negativas caíram de 7 para 6 de 10 por mostrarem atividade próxima.\n"
+        "A redução da carga do atendimento da SUDEMA é premissa, não foi medida.",
     )
     output = ROOT / "docs/APRESENTACAO.pdf"
     document.save(output, garbage=4, deflate=True)
