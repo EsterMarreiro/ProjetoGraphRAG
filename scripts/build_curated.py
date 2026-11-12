@@ -14,6 +14,12 @@ from licenciagraph.sources.prose import chunk_blocks, pdf_blocks
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _dispensa_note(sources: Path) -> list[tuple[int, str]]:
+    blocks = pdf_blocks(sources / "manual-licenciamento-5a-edicao.pdf", 36, 36)
+    start = next(i for i, b in enumerate(blocks) if b[1].startswith("Nota explicativa"))
+    return blocks[start:]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sources", type=Path, default=ROOT / "data/sources")
@@ -43,6 +49,12 @@ def main() -> None:
                         args.sources / "manual-licenciamento-5a-edicao.pdf", 9, 30
                     )
                 ),
+            },
+            {
+                "id": "manual-nota-dispensa",
+                "title": "Manual de Licenciamento Ambiental, 5ª edição: nota sobre a dispensa",
+                "file": "manual-licenciamento-5a-edicao.pdf",
+                "chunks": chunk_blocks(_dispensa_note(args.sources)),
             },
             {
                 "id": "na101-texto",

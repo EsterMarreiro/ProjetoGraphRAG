@@ -1,62 +1,65 @@
-# TrilhaGraph
+# LicenciaGraph
 
-Assistente GraphRAG/KAG para explorar percursos de aprendizagem em engenharia de software. Responde a partir de um **catálogo didático fictício e autoral** de 12 cursos; não representa ofertas reais, certificados ou equivalência acadêmica.
+Guia de licenciamento ambiental da SUDEMA (Paraíba) com GraphRAG. O empreendedor pergunta em linguagem natural (que licença preciso, quais documentos levo, qual o porte, quanto custa a análise em UFR-PB, quanto tempo vale) e recebe uma resposta com **fonte e página**, o **subgrafo usado** e as **consultas executadas**. Uma segunda aba, o **assistente de enquadramento**, consulta o grafo diretamente, sem modelo de linguagem: atividade, porte, custo, validade e checklist de documentos.
 
-Combina embeddings OpenAI, busca textual e Cypher selecionado por LLM em gramática restrita. Entidades citadas na pergunta viram sementes de uma expansão em dois saltos, com caminho mínimo por pré-requisitos, comunidades de Louvain e PageRank; as afirmações são verificadas antes de serem exibidas. O chat exibe fontes, subgrafo interativo, nós, consultas e confiança heurística.
+A aplicação é **orientativa**. A fonte oficial é a SUDEMA; as respostas não substituem a análise técnica do órgão ambiental nem a legislação vigente.
+
+## Fontes
+
+| Fonte | Conteúdo usado |
+|---|---|
+| Manual de Licenciamento Ambiental, 5ª edição (SUDEMA) | capítulos conceituais; Anexo A: atividades por modalidade e 394 checklists de documentos |
+| Norma Administrativa NA-101, 5ª edição (2026) | porte, potencial poluidor, letras de custo em UFR-PB, validade, dispensa, LAC, LAU e observações de custos |
+| Portal da SUDEMA | unidades regionais, COPAM, licenciamento municipal, legislação, EIA/RIMA, fiscalização |
+
+Os PDFs não são versionados: o Manual vem do portal da SUDEMA e a NA-101 de `sudema.pb.gov.br/institucional/copam-1/normas-administrativas`; coloque-os em `data/sources/` como `manual-licenciamento-5a-edicao.pdf` e `na-101-5a-edicao-2026.pdf`. O que o projeto extrai deles fica em `data/curated/` (versionado, com a página de origem de cada fato).
+
+## Como funciona
+
+1. **Tabelas** (Anexo A e NA-101): leitores determinísticos com PyMuPDF (`src/licenciagraph/sources/`). A modalidade de cada checklist vem do título da própria página, não da coluna da tabela. 394 checklists, 4.946 itens, 825 atividades, 614 tabelas de porte e a matriz de custos, verificados por testes de integridade cruzada.
+2. **Itens dos checklists**: um LLM normaliza os 706 textos distintos em 317 documentos canônicos, com categoria e órgão emissor (`scripts/normalize_documents.py`, resultado em `data/curated/documentos.json`).
+3. **Texto corrido** (capítulos, NA-101, portal): um LLM extrai fatos institucionais (órgão emite modalidade, órgão opera sistema, vínculo entre órgãos) com vocabulário controlado; o que foge do vocabulário é descartado.
+4. **Grafo** no FalkorDB: `Atividade`, `Grupo`, `Subgrupo`, `Modalidade`, `Checklist`, `DocumentoExigido`, `Estudo`, `Orgao`, `Sistema`, `Norma`, `Porte`, `Faixa`, `LetraCusto`, com proveniência por trecho (`Documento` e `Trecho`).
+5. **Recuperação híbrida**: vetor, texto e Cypher planejado por LLM em gramática finita, fundidos por RRF; ligação de entidades pela pergunta (por nome, sigla e vetor de atividades); expansão em até três saltos pelas arestas de saída, restrita à modalidade e ao porte citados; caminho mais curto entre modalidades (`PRECEDE`), comunidades de Louvain entre atividades que compartilham checklists e PageRank.
+6. **Geração** com afirmações citadas, verificador, regra de custo em UFR-PB (sem conversão para reais) e aviso de caráter orientativo.
 
 ## Reprodução local
 
-Requisitos: Python 3.12 ou superior, Docker e Compose e uma chave da API da OpenAI. Execute na raiz:
+Requisitos: Python 3.12 ou superior, Docker e uma chave da API da OpenAI.
 
 ```bash
 cp .env.example .env   # preencha OPENAI_API_KEY; o .env nunca é versionado
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 python -m pip install -e '.[dev]'
 docker compose up -d falkordb
-trilhagraph health
-trilhagraph setup-schema
-trilhagraph ingest --data-dir data/raw
+licenciagraph health
+licenciagraph ingest --reset
 streamlit run streamlit_app.py
 ```
 
-O modelo de chat padrão é `gpt-4.1` (planejamento, geração e verificação), o de extração é `gpt-4o-mini` (`EXTRACTION_MODEL`) e o de embeddings é `text-embedding-3-small` com 768 dimensões; todos são configuráveis. `VERIFIER_MODEL` vazio desliga a verificação. Mudar modelo de embeddings ou dimensão exige novo `FALKORDB_GRAPH` e nova ingestão. O `.env.example` usa FalkorDB em `6380` e navegador em `3001`, evitando conflito com Redis na porta 6379. A chave pode ser gerada em https://platform.openai.com/api-keys; o custo de uma ingestão e avaliação completas do catálogo é de poucos centavos de dólar.
+`licenciagraph ingest` lê apenas `data/curated/`; os PDFs só são necessários para regenerar esses arquivos (`python scripts/build_curated.py`, `python scripts/fetch_site.py`). Modelos padrão: `gpt-4.1` (plano, resposta, verificação e normalização), `gpt-4o-mini` (fatos do texto) e `text-embedding-3-small` com 768 dimensões. A ingestão completa custa poucos dólares.
 
 ```bash
-trilhagraph ask 'Que competências dos pré-requisitos sustentam Recuperação Híbrida?'
-trilhagraph evaluate --json-output artifacts/evaluation-report.json --markdown-output artifacts/evaluation-report.md
-python -m unittest discover -s tests -v
-python tests/integration_smoke.py
+licenciagraph ask 'Quais documentos preciso para a Licença de Instalação de uma avicultura industrial?'
+python -m pytest
 ruff check src tests scripts
 ```
 
-O smoke test usa FalkorDB real em um grafo temporário próprio, com extrator e embeddings determinísticos. Não comprova a qualidade do LLM. A avaliação real usa os modelos configurados, sem respostas pré-gravadas; `python scripts/run_experiment.py` ingere e executa os modos híbrido e vetorial, registrando tudo em `artifacts/run-*`. Perguntas negativas para revisão factual estão em `data/evaluation/negative_questions.json`.
+## Organização
 
-## Organização e documentação
+- `src/licenciagraph/sources/`: leitores das fontes oficiais e normalização dos documentos.
+- `src/licenciagraph/ingestion/`: construção dos trechos e do grafo, extração de fatos, escrita no FalkorDB.
+- `src/licenciagraph/retrieval/`: busca híbrida, expansão, algoritmos de grafo, geração e verificação.
+- `src/licenciagraph/guide.py`: assistente de enquadramento (consultas diretas ao grafo).
+- `src/licenciagraph/ui/`: interface Streamlit; `src/licenciagraph/evaluation/`: avaliador e juiz.
+- `scripts/`: geração dos dados curados, dos conjuntos de avaliação e do experimento.
+- `data/curated/`: dados extraídos; `data/evaluation/`: perguntas com gabarito.
+- `docs/`: documentação por etapa (modelagem, infraestrutura, fontes, ingestão, recuperação, interface, avaliação) e auditoria dos requisitos.
 
-- [Proposta e esquema LPG](docs/01-proposta-modelagem.md).
-- [Infraestrutura](docs/02-infraestrutura.md), [corpus](docs/03-dataset.md), [ingestão](docs/04-ingestao.md), [recuperação](docs/05-recuperacao.md) e [interface](docs/06-interface-streamlit.md).
-- [Auditoria dos requisitos](docs/AUDITORIA_REQUISITOS.md), [avaliação e entrega](docs/07-avaliacao-entrega.md).
-- [Texto do artigo](docs/ARTIGO_TECNICO.md), [PDF SBC](docs/artigo/main.pdf), [fontes LaTeX](docs/artigo/) e [apresentação PDF](docs/APRESENTACAO.pdf); falta apenas a autoria.
-- [Roteiro da defesa](docs/APRESENTACAO.md) e [evidências de execução](artifacts/README.md).
-- Guias para a apresentação: [completo](docs/guia/TrilhaGraph-guia-completo.pdf) e [resumido](docs/guia/TrilhaGraph-guia-resumo.pdf), com fontes LaTeX em `docs/guia/`.
+## Estado
 
-A implementação é independente do ZIP do professor. O novo domínio substitui o turismo da versão anterior; o namespace `trilhagraph_aprendizagem` mantém o grafo separado. Os materiais da Aula 08 e os modelos de TCC foram analisados e estão identificados em [referências da atividade](docs/referencias/README.md). FalkorDB substitui Neo4j (a atividade cita Neo4j) com autorização presencial do professor, informada pela equipe.
+Produto e dados prontos e testados. **Avaliação experimental, artigo e guias pendentes**: a conta da API ficou sem créditos antes do experimento (ver `docs/07-avaliacao.md` e `docs/AUDITORIA_REQUISITOS.md`).
 
-O catálogo pode ser recriado com `python scripts/build_catalog.py`. Essa rotina escreve os TXT e gabaritos; o pipeline normal extrai entidades e relações da prosa via LLM. A tabela do gerador não é carregada diretamente no grafo.
+## Limites
 
-## Resultados
-
-Julgados por um LLM com acesso ao corpus (`gpt-4o`) sobre 30 perguntas positivas (15 de desenvolvimento e 15 retidas) e 8 negativas:
-
-| Configuração | Positivas corretas | Negativas |
-|---|---:|---:|
-| Pipeline inicial (gpt-4o-mini) | 21/30 | 6/8 |
-| Versão final (gpt-4.1) | 30/30 | 8/8 |
-| Baseline vetorial (gpt-4.1) | 18/30 | 8/8 |
-
-A extração reproduziu 76 de 76 relações esperadas. A ablação mostra que o ganho vem da recuperação e do modelo, e que o verificador não mudou o resultado com `gpt-4.1`. Limites: corpus pequeno e sintético, perguntas retidas escritas pelos próprios autores e juiz LLM. Registros em `artifacts/README.md`; análise em `docs/ARTIGO_TECNICO.md` e `docs/AUDITORIA_REQUISITOS.md`.
-
-## Pendências fora do código
-
-Nomes da equipe (2 a 5 alunos) para o artigo e a defesa; acesso do docente ao repositório.
+O Manual e a NA-101 mudam; os testes de integridade permitem reingerir uma nova edição. Licenciamento federal, municipal fora da base e de outros estados não consta. O valor da UFR-PB em reais não consta das fontes. Documentos canônicos e fatos do texto vêm de um LLM e foram amostrados, não revisados um a um. A avaliação usa perguntas geradas a partir das tabelas curadas, de modo que sua cobertura é limitada; perguntas escritas por quem não conhece o sistema devem complementá-la.

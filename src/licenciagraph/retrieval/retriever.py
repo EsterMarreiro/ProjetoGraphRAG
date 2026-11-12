@@ -75,18 +75,19 @@ class HybridRetriever:
             question, limit=self.candidate_limit
         )
         channels = {"vector": vector_hits, "fulltext": fulltext_hits}
-        weights = {"vector": 0.65, "fulltext": 0.35}
+        weights = {"vector": 0.55, "fulltext": 0.45}
         queries = [VECTOR_QUERY, FULLTEXT_QUERY, SEED_QUERY]
         if self.planner:
             plan = self.planner.plan(question)
             if plan:
                 channels["cypher"] = self.repository.structured_search(plan)
-                weights = {"vector": 0.45, "fulltext": 0.25, "cypher": 0.3}
+                weights = {"vector": 0.4, "fulltext": 0.35, "cypher": 0.25}
                 queries.extend([plan.cypher, SOURCE_QUERY])
         hits = reciprocal_rank_fusion(
             channels,
             weights=weights,
             limit=self.result_limit,
+            reserve_top=1,
         )
         linked = self.repository.linked_entities(question)
         similar = (

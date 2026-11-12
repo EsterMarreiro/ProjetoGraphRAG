@@ -6,14 +6,22 @@ import pymupdf
 
 ROOT = Path(__file__).resolve().parents[1]
 BOXES = [
-    ("Text-to-Graph", "TXT → segmentos → LLM", "validação e canonicalização"),
-    ("FalkorDB LPG", "entidades, relações e fontes", "índices e constraints"),
+    ("Fontes → dados", "tabelas: leitor determinístico", "texto: LLM com vocabulário"),
+    (
+        "FalkorDB LPG",
+        "atividades, checklists, porte",
+        "custos em UFR-PB e proveniência",
+    ),
     (
         "Recuperação e geração",
         "vetor + texto + Cypher + grafo",
         "caminho, Louvain, PageRank, verificação",
     ),
-    ("Interface Streamlit", "resposta com citações", "fontes, subgrafo e consultas"),
+    (
+        "Interface Streamlit",
+        "chat com fontes e subgrafo",
+        "assistente de enquadramento",
+    ),
 ]
 parts = [
     '<svg xmlns="http://www.w3.org/2000/svg" width="1000" '

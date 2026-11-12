@@ -1,9 +1,0 @@
-Título: Redes e HTTP
-Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
-Versão do catálogo: 1.0, 11 de novembro de 2026.
-O curso Redes e HTTP aborda a área Infraestrutura e desenvolve a competência Compreensão de protocolos.
-O curso Redes e HTTP é classificado no nível Iniciante e é indicado para o perfil Desenvolvedores.
-O curso Redes e HTTP tem código 05_http e carga horária fictícia de 18 horas.
-A trilha Desenvolvimento Web inclui o curso Redes e HTTP.
-O curso Redes e HTTP exige como pré-requisito o curso Lógica de Programação.
-As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

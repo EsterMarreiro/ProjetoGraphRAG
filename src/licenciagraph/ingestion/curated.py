@@ -41,6 +41,65 @@ MODALITIES = {
     "ENC": "Encerramento",
     "COMPENSACAO": "Termo de compensação ambiental",
 }
+MODALITY_DEFINITIONS = {
+    "LP": (
+        "Concedida na fase preliminar do planejamento, aprova a localização e a "
+        "concepção, atesta a viabilidade ambiental e estabelece requisitos e "
+        "condicionantes para as próximas fases."
+    ),
+    "LI": (
+        "Autoriza a instalação do empreendimento ou atividade conforme as "
+        "especificações dos planos, programas e projetos aprovados, incluindo as "
+        "medidas de controle ambiental e demais condicionantes."
+    ),
+    "LO": (
+        "Permite a operação da atividade ou empreendimento, aprova as ações de "
+        "controle e monitoramento ambiental e estabelece condicionantes para a "
+        "operação."
+    ),
+    "LAI": (
+        "Condicionada à existência e à validade da LI, permite alterações durante "
+        "a instalação que gerem novos impactos não previstos."
+    ),
+    "LAO": (
+        "Condicionada à existência e à validade da LO, permite alterações durante a "
+        "operação que gerem novos impactos não previstos."
+    ),
+    "LAU": (
+        "Atesta, em uma única etapa, a viabilidade da instalação, da ampliação e "
+        "da operação da atividade."
+    ),
+    "LOP": "Autoriza atividade de pesquisa mineral que envolva Guia de Utilização.",
+    "LIO": (
+        "Autoriza exclusivamente a implantação ou a regularização de projetos de "
+        "assentamento de reforma agrária."
+    ),
+    "LOC": (
+        "Regulariza atividade ou empreendimento que opera sem licença ambiental, "
+        "fixando condicionantes que viabilizam sua continuidade."
+    ),
+    "LAC": (
+        "Atesta a viabilidade da instalação, ampliação e operação mediante "
+        "declaração de adesão e compromisso do empreendedor a requisitos "
+        "preestabelecidos."
+    ),
+    "LTE": (
+        "Concedida para transporte de produtos perigosos e resíduos no território "
+        "paraibano, de caráter não eventual, limitada a 20 veículos por licença."
+    ),
+    "LVPE": (
+        "Regulariza veículos de publicidade volante ou fonte sonora em eventos, "
+        "de caráter não eventual, exigida por unidade veicular."
+    ),
+    "AA": (
+        "Autoriza operação de empreendimentos, atividades, pesquisas e serviços de "
+        "caráter temporário ou obras que não caracterizem instalações permanentes."
+    ),
+    "DISPENSA": (
+        "Atividades de baixo impacto listadas na norma têm tramitação automática no "
+        "SISLA, sem isentar da fiscalização do órgão ambiental."
+    ),
+}
 FAMILIES = {
     "AF": "Atividades florestais",
     "AG": "Agropecuária",
@@ -585,6 +644,15 @@ def cost_documents(data: dict[str, Any]) -> SourceDocument:
                     builder.relate(node, "CUSTA", modality, valor_ufr=0)
                     parts.append(f"{modality_code} isento")
         lines.append(f"Letra {letter}: " + "; ".join(parts) + ".")
+    na101 = builder.entity(
+        "Norma",
+        "na-101-5a-edicao-2026",
+        "Norma Administrativa NA-101, 5ª edição (2026)",
+        tipo="norma administrativa",
+    )
+    for modality_code in COST_MODALITIES.values():
+        for code in modality_code:
+            builder.relate(modality_entity(builder, code), "REGULADO_POR", na101)
     lines.append(
         "Licença Prévia e Instalação em conjunto somam LP + LI; Licença Prévia, "
         "Instalação e Operação em conjunto somam LP + LI + LO acrescidos de 10%."

@@ -202,18 +202,12 @@ class FactsExtractionTests(unittest.TestCase):
     def test_accepts_grounded_facts_with_known_modalities(self):
         from licenciagraph.ingestion.facts import parse_facts
 
-        text = (
-            "A Licença Prévia é emitida pela SUDEMA e regulada pela Lei nº 6.938/1981."
-        )
+        text = "A Licença Prévia é emitida pela SUDEMA, que opera o SIGMA."
         result = parse_facts(
             {
                 "facts": [
                     {"relation": "EMITIDA_POR", "subject": "LP", "object": "SUDEMA"},
-                    {
-                        "relation": "REGULADO_POR",
-                        "subject": "LP",
-                        "object": "Lei nº 6.938/1981",
-                    },
+                    {"relation": "OPERA", "subject": "SUDEMA", "object": "SIGMA"},
                 ]
             },
             text,
@@ -227,7 +221,7 @@ class FactsExtractionTests(unittest.TestCase):
             pairs,
             {
                 ("Modalidade", "EMITIDA_POR", "Orgao"),
-                ("Modalidade", "REGULADO_POR", "Norma"),
+                ("Orgao", "OPERA", "Sistema"),
             },
         )
 

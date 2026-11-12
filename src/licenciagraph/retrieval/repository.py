@@ -111,6 +111,19 @@ CALL db.idx.vector.queryNodes(
 RETURN node.id, 'Atividade', node.nome, (1.0 - score) AS similarity
 ORDER BY similarity DESC
 """
+LISTING_QUERY = """
+MATCH (activity:Atividade)-[relationship:ENQUADRADA_EM]->(modality:Modalidade)
+WHERE modality.id IN $modality_ids
+  AND (activity.grupo IN $group_names OR activity.subgrupo IN $subgroup_names)
+RETURN DISTINCT
+    activity.id AS focus_id, 'Atividade' AS focus_label, activity.nome AS focus_name,
+    modality.id AS other_id, 'Modalidade' AS other_label,
+    modality.nome AS other_name,
+    activity.id AS source_id, modality.id AS target_id,
+    type(relationship) AS relation, relationship.confianca AS confidence,
+    relationship.trecho_id AS chunk, properties(relationship) AS props
+LIMIT $limit
+"""
 ACTIVITY_PAIRS_QUERY = """
 MATCH (a:Atividade)-[:EXIGE_CHECKLIST]->(c:Checklist)<-[:EXIGE_CHECKLIST]-(b:Atividade)
 WHERE a.id < b.id
@@ -182,6 +195,9 @@ class RetrievalRepository:
                 if alias.isupper() and len(alias) < 6:
                     pattern = rf"(?<!\w){re.escape(alias)}(?!\w)"
                     matches = re.finditer(pattern, question)
+                elif alias.endswith("*"):
+                    stem = re.escape(normalize_text(alias[:-1]))
+                    matches = re.finditer(rf"(?<!\w){stem}\w*", asked)
                 else:
                     name = normalize_text(alias)
                     if len(name) < 3:
@@ -203,7 +219,7 @@ class RetrievalRepository:
         return list({span[2].id: span[2] for span in kept}.values())
 
     def similar_activities(
-        self, embedding: list[float], *, limit: int = 3, minimum: float = 0.4
+        self, embedding: list[float], *, limit: int = 3, minimum: float = 0.52
     ) -> list[GraphNode]:
         rows = self.graph.ro_query(
             ACTIVITY_VECTOR_QUERY, params={"embedding": embedding, "limit": limit}
@@ -299,6 +315,9 @@ class RetrievalRepository:
                         params={**params, "entity_ids": label_ids},
                     ).result_set
                 )
+            return collect(rows)
+
+        def collect(rows: list[list[Any]]) -> list[str]:
             reached: list[str] = []
             for row in rows:
                 focus = GraphNode(str(row[0]), str(row[1]), str(row[2] or row[0]))
@@ -328,6 +347,8 @@ class RetrievalRepository:
             ]
             if hop == 1 and not params["modalities"]:
                 sources = [i for i in sources if nodes[i].label != "Checklist"]
+            if hop == 2 and not params["modality_ids"]:
+                sources = [i for i in sources if nodes[i].label != "LetraCusto"]
             if not sources:
                 break
             frontier = run(OUTGOING_QUERY, sources)
@@ -339,6 +360,19 @@ class RetrievalRepository:
         ]
         if incoming:
             run(INCOMING_QUERY, incoming)
+        groups = [n.name for n in named.values() if n.label == "Grupo"]
+        subgroups = [n.name for n in named.values() if n.label == "Subgrupo"]
+        if modality_ids and (groups or subgroups):
+            rows = self.graph.ro_query(
+                LISTING_QUERY,
+                params={
+                    "modality_ids": modality_ids,
+                    "group_names": groups,
+                    "subgroup_names": subgroups,
+                    "limit": 80,
+                },
+            ).result_set
+            collect(rows)
         return list(nodes.values()), list(edges.values())
 
     @staticmethod
@@ -366,6 +400,8 @@ def _node_from_entity_row(row: list[Any]) -> GraphNode:
     aliases = [name, re.sub(r"\s*\([^)]*\)\s*$", "", name).strip()]
     if label == "Modalidade":
         aliases = [aliases[1], sigla]
+        if sigla == "DISPENSA":
+            aliases = ["dispens*"]
     elif sigla and label in {"Orgao", "Sistema", "Estudo"}:
         aliases.append(sigla)
     if code and label == "Checklist":

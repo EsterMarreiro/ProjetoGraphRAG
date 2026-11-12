@@ -10,15 +10,13 @@ import pymupdf
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
 CONFIGS = [
-    ("Pipeline inicial\n(gpt-4o-mini)", "175843", "180018", "hybrid"),
-    ("Final sem verificador\n(gpt-4.1)", "181931", "181934", "hybrid"),
-    ("Final\n(gpt-4.1)", "181919", "181922", "hybrid"),
-    ("Baseline vetorial\n(gpt-4.1)", "181919", "181922", "vector"),
+    ("LicenciaGraph\n(híbrido)", "dev-hybrid", "heldout-hybrid", "hybrid"),
+    ("Baseline vetorial", "dev-vector", "heldout-vector", "vector"),
 ]
 
 
 def accuracy(run: str, mode: str) -> float:
-    path = next(ART.glob(f"run-*{run}Z")) / f"{mode}-judge.json"
+    path = ART / f"run-{run}" / f"{mode}-judge.json"
     return json.loads(path.read_text())["summary"]["accuracy"]
 
 

@@ -11,9 +11,36 @@ import pymupdf
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _evaluation_text(runs: Path) -> str:
+    rows = []
+    for label, name in (
+        ("Híbrido, desenvolvimento", "run-dev-hybrid/hybrid"),
+        ("Híbrido, retido", "run-heldout-hybrid/hybrid"),
+        ("Vetorial, desenvolvimento", "run-dev-vector/vector"),
+        ("Vetorial, retido", "run-heldout-vector/vector"),
+    ):
+        path = runs / f"{name}-judge.json"
+        if not path.exists():
+            continue
+        summary = json.loads(path.read_text())["summary"]
+        if summary.get("total"):
+            rows.append(
+                f"{label}: {summary['correct']}/{summary['total']}, "
+                f"afirmações falsas em {summary['with_false_claims']}"
+            )
+    if not rows:
+        return (
+            "Execução pendente: a conta da API ficou sem créditos antes do "
+            "experimento.\n\nProtocolo: 30 perguntas positivas e 9 negativas, "
+            "gabarito calculado nas tabelas curadas, juiz LLM com evidências "
+            "oficiais, baseline vetorial com o mesmo modelo."
+        )
+    return "Acertos segundo o juiz:\n" + "\n".join(rows)
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run", type=Path, help="mantido por compatibilidade")
+    parser.add_argument("--runs", type=Path, default=ROOT / "artifacts")
     parser.add_argument("--authors-json", type=Path)
     args = parser.parse_args()
     authors = "Autoria em confirmação"
@@ -51,86 +78,82 @@ def main():
         return page
 
     slide(
-        "LicenciaGraph\nPercursos de aprendizagem explicáveis",
-        f"{authors}\n\nGraphRAG com FalkorDB, API OpenAI e fontes auditáveis.\n"
-        "Catálogo didático fictício e autoral: não representa ofertas reais.",
+        "LicenciaGraph",
+        f"Guia de licenciamento ambiental da SUDEMA\n{authors}\n\nGraphRAG com FalkorDB e API OpenAI, sobre o Manual de "
+        "Licenciamento Ambiental (5ª ed.) e a NA-101 (5ª ed., 2026).\n"
+        "Orientativo: não substitui a análise do órgão ambiental.",
     )
     slide(
         "Problema e objetivo",
-        "Uma descrição de curso cita pré-requisitos, mas suas competências "
-        "estão em outros documentos.\n\n"
-        "Objetivo: conectar essas evidências, explicar a resposta e mostrar "
-        "o caminho no grafo.\n\n"
-        "Exemplo: qual competência do pré-requisito sustenta um curso avançado?",
+        "O empreendedor precisa descobrir qual licença se aplica, quais documentos "
+        "levar, qual o porte, o custo da análise e a validade.\n\n"
+        "A informação está espalhada entre o Manual, a NA-101 e o portal da SUDEMA "
+        "e a resposta depende de relações: atividade, modalidade, checklist, porte "
+        "e custo.\n\nObjetivo: responder com fonte e página e mostrar o caminho "
+        "no grafo.",
     )
     slide(
-        "Corpus e LPG",
-        "12 cursos fictícios; 2 trilhas; 6 áreas; 3 níveis.\n\n"
-        "38 entidades de domínio únicas; 12 documentos; 12 trechos.\n\n"
-        "Curso -> PRE_REQUISITO -> Curso -> DESENVOLVE -> Competência\n"
-        "Trilha -> INCLUI -> Curso\n\n"
-        "Cada relação preserva o trecho de origem. "
-        "FalkorDB no lugar do Neo4j, com autorização presencial do professor.",
+        "Fontes e dados",
+        "Manual (585 páginas): 394 checklists, 4.946 itens, 473 atividades.\n"
+        "NA-101 (389 páginas): 614 tabelas de porte, letras de custo em UFR-PB, "
+        "validade, dispensa, LAC e LAU.\nPortal da SUDEMA: unidades, COPAM, "
+        "legislação.\n\nTabelas: leitores determinísticos com testes de "
+        "integridade. Itens dos checklists: LLM, 706 textos em 317 documentos. "
+        "Texto corrido: LLM com vocabulário controlado.",
     )
-    page = slide("Quatro pilares implementados", "")
+    slide(
+        "Grafo de propriedades",
+        "Atividade -> ENQUADRADA_EM -> Modalidade\n"
+        "Atividade -> EXIGE_CHECKLIST -> Checklist -> EXIGE_DOCUMENTO -> Documento\n"
+        "Atividade -> TEM_FAIXA -> Faixa -> USA_LETRA -> Letra -> CUSTA -> Modalidade\n"
+        "Modalidade -> PRECEDE -> Modalidade\n\n"
+        "Cada relação guarda o trecho e a página de origem. FalkorDB no lugar do "
+        "Neo4j, com autorização presencial do professor.",
+    )
+    page = slide("Arquitetura", "")
     with pymupdf.open(ROOT / "docs/artigo/arquitetura.pdf") as diagram:
         page.show_pdf_page(pymupdf.Rect(48, 160, 912, 330), diagram, 0)
     page.insert_textbox(
         pymupdf.Rect(52, 365, 908, 470),
-        "NER/RE tipadas por LLM; constraints e índices; busca híbrida e dois saltos; "
-        "respostas com citações e subgrafo interativo.",
+        "Busca híbrida (vetor, texto e Cypher restrito, fundidos por RRF), "
+        "ligação de entidades, expansão em até três saltos, caminho entre "
+        "modalidades, Louvain e PageRank, respostas citadas e verificadas.",
         fontsize=19,
         fontname="helv",
     )
     slide(
-        "Grounding e rastreabilidade",
-        "O LLM identifica fatos nos TXT e produz respostas estruturadas.\n\n"
-        "Cada afirmação declara fontes F e relações G de apoio. "
-        "A aplicação valida os IDs e formata as citações.\n\n"
-        "Sem informação: abstenção explícita.\n\n"
-        "Citação válida não garante correção factual; "
-        "a revisão verifica se a pergunta foi atendida.",
+        "Geração e salvaguardas",
+        "Cada afirmação declara fontes F e relações G; a aplicação valida os IDs.\n\n"
+        "Afirmação sem fonte é descartada; um verificador descarta o que não está "
+        "escrito no contexto.\n\nCustos sempre em UFR-PB, sem conversão para "
+        "reais; aviso de caráter orientativo em toda resposta; abstenção quando "
+        "a norma não informa.",
     )
-    slide(
-        "Ingestão: evidência observada",
-        "76 relações explícitas esperadas; 76 recuperadas; nenhuma extra.\n\n"
-        "25 constraints e grupos de índices dos 8 rótulos em estado operacional.\n\n"
-        "Limite: resultado de um catálogo pequeno e controlado. "
-        "Não é acurácia em documentos externos.",
+    page = slide("Interface", "")
+    page.insert_image(
+        pymupdf.Rect(60, 110, 320, 490),
+        filename=str(ROOT / "docs/artigo/interface.png"),
     )
-    slide(
-        "Recuperação em grafo",
-        "Entidades citadas na pergunta viram sementes; expansão em 2 saltos.\n\n"
-        "Caminho mínimo por pré-requisitos, comunidades de Louvain e PageRank "
-        "entram no contexto do LLM.\n\n"
-        "Verificador descarta afirmações sem apoio; temas ausentes "
-        "(preço, certificado) recebem aviso fixo.",
+    page.insert_image(
+        pymupdf.Rect(340, 110, 600, 490),
+        filename=str(ROOT / "docs/artigo/assistente.png"),
     )
-    slide(
-        "Avaliação: 38 casos, juiz com o corpus",
-        "Acertos (30 positivas | 8 negativas):\n"
-        "Pipeline inicial (gpt-4o-mini): 21 | 6\n"
-        "Versão final (gpt-4.1): 30 | 8, sem afirmações falsas\n"
-        "Baseline vetorial (gpt-4.1): 18 | 8\n\n"
-        "Ablação: recuperação +5, modelo +4, verificador 0.\n"
-        "Conjunto retido escrito pelos autores; juiz é um LLM.",
+    page.insert_textbox(
+        pymupdf.Rect(630, 120, 908, 480),
+        "Chat: resposta com fontes, subgrafo interativo e consultas.\n\n"
+        "Assistente de enquadramento: atividade, porte, custo em UFR-PB, "
+        "validade e checklist, direto do grafo, sem modelo de linguagem.",
+        fontsize=15,
+        fontname="helv",
     )
+    slide("Avaliação", _evaluation_text(args.runs))
     slide(
-        "Demonstração e revisão factual",
-        "1. Perguntar pelo curso que desenvolve "
-        "Decomposição de problemas e sua trilha.\n"
-        "2. Abrir fonte, subgrafo e relações de apoio.\n"
-        "3. Perguntar preço ou certificado e verificar a abstenção.\n\n"
-        "A primeira versão do juiz marcou como falsas afirmações verdadeiras; "
-        "o prompt foi corrigido e conferido com outro modelo.",
-    )
-    slide(
-        "Conclusões e limites",
-        "A ingestão reconstruiu o grafo controlado e preservou proveniência.\n\n"
-        "A interface permite inspecionar fontes, nós, relações e Cypher.\n\n"
-        "Corpus sintético, contexto maior que o do baseline, perguntas retidas "
-        "escritas pelos autores e juiz LLM limitam a generalização. "
-        "Não se implementou integralmente o framework KAG externo.",
+        "Limites e próximos passos",
+        "Dados vêm de normas que mudam; uma nova edição exige regenerar os "
+        "arquivos curados.\nValor da UFR-PB em reais, licenciamento federal e "
+        "municipal fora da base não constam.\nDocumentos canônicos e fatos do texto "
+        "vêm de um LLM, amostrados.\nPerguntas geradas das tabelas: faltam "
+        "perguntas escritas por pessoas de fora do projeto.",
     )
     output = ROOT / "docs/APRESENTACAO.pdf"
     document.save(output, garbage=4, deflate=True)

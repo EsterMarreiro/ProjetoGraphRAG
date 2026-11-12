@@ -1,9 +1,0 @@
-Título: Lógica de Programação
-Origem: catálogo didático fictício e autoral do projeto TrilhaGraph.
-Versão do catálogo: 1.0, 11 de novembro de 2026.
-O curso Lógica de Programação aborda a área Fundamentos e desenvolve a competência Decomposição de problemas.
-O curso Lógica de Programação é classificado no nível Iniciante e é indicado para o perfil Estudantes.
-O curso Lógica de Programação tem código 01_logica e carga horária fictícia de 20 horas.
-A trilha Desenvolvimento Web inclui o curso Lógica de Programação.
-O curso Lógica de Programação não exige pré-requisito neste catálogo.
-As cargas horárias são valores didáticos. Não há informações sobre preços, inscrições, certificados, datas de oferta ou equivalência acadêmica.

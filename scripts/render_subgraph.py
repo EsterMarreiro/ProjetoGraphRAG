@@ -9,7 +9,22 @@ from pathlib import Path
 import pymupdf
 
 ROOT = Path(__file__).resolve().parents[1]
-ROW_BY_LABEL = {"Curso": 0, "Competencia": 1}
+ROW_ORDER = [
+    "Atividade",
+    "Subgrupo",
+    "Grupo",
+    "Checklist",
+    "Faixa",
+    "DocumentoExigido",
+    "Porte",
+    "LetraCusto",
+    "Modalidade",
+    "Orgao",
+    "Estudo",
+    "Norma",
+    "Sistema",
+]
+SHADES = ["#d9d9d9", "#ececec", "#f5f5f5"]
 
 
 def main() -> None:
@@ -31,19 +46,12 @@ def main() -> None:
     edges = [retrieval["edges"][i] for i in sorted(declared)]
     names = {node["id"]: node for node in retrieval["nodes"]}
     used = {end for edge in edges for end in (edge["source"], edge["target"])}
-    level = {node_id: 0 for node_id in used}
-    for _ in used:
-        for edge in edges:
-            if edge["relationship_type"] == "PRE_REQUISITO":
-                level[edge["source"]] = max(
-                    level[edge["source"]], level[edge["target"]] + 1
-                )
-    course_levels = {level[n] for n in used if names[n]["label"] == "Curso"} or {0}
-    top = max(course_levels)
+    used_labels = [
+        lab for lab in ROW_ORDER if any(names[n]["label"] == lab for n in used)
+    ]
     rows_of_nodes: dict[int, list[str]] = {}
-    for node_id in sorted(used):
-        label = names[node_id]["label"]
-        row = top - level[node_id] if label == "Curso" else top + 1
+    for node_id in sorted(used, key=lambda n: names[n]["name"]):
+        row = used_labels.index(names[node_id]["label"])
         rows_of_nodes.setdefault(row, []).append(node_id)
     width = max(6, max(len(v) for v in rows_of_nodes.values())) * 215
     position = {}
@@ -52,7 +60,7 @@ def main() -> None:
         for i, node_id in enumerate(ids, 1):
             position[node_id] = (gap * i, 55 + row * 150)
     height = 55 + (max(rows_of_nodes) + 1) * 150
-    shade = {"Curso": "#d9d9d9", "Competencia": "#f5f5f5"}
+    shade = {lab: SHADES[i % 3] for i, lab in enumerate(used_labels)}
     svg = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
         f'viewBox="0 0 {width} {height}">',
@@ -101,7 +109,7 @@ def main() -> None:
         )
         svg.append(
             f'<text x="{x}" y="{y + 4}" font-size="12" text-anchor="middle" '
-            f'font-family="Helvetica">{node["name"]}</text>'
+            f'font-family="Helvetica">{node["name"][:28]}</text>'
         )
     svg.append("</svg>")
     with pymupdf.open(stream="".join(svg).encode(), filetype="svg") as document:

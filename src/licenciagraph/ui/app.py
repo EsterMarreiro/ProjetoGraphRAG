@@ -216,9 +216,9 @@ def render_band(
     cols = st.columns(3)
     cols[0].metric("Porte", band.label)
     cols[1].metric("Letra de custo", band.letter or "n/d")
-    cols[2].metric(
-        "Potencial poluidor",
-        f"ar {band.air or '-'} · água {band.water or '-'} · solo {band.soil or '-'}",
+    cols[2].markdown(
+        "**Potencial poluidor**\n\n"
+        f"ar {band.air or '-'} · água {band.water or '-'} · solo {band.soil or '-'}"
     )
     if band.note:
         st.info(f"Anotação da NA-101 para este porte: {band.note}")

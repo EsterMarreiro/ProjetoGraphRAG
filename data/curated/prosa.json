@@ -164,6 +164,17 @@
    ]
   },
   {
+   "id": "manual-nota-dispensa",
+   "title": "Manual de Licenciamento Ambiental, 5ª edição: nota sobre a dispensa",
+   "file": "manual-licenciamento-5a-edicao.pdf",
+   "chunks": [
+    {
+     "page": 36,
+     "text": "Nota explicativa: As atividades listadas acima, classificadas como passíveis de dispensa de licenciamento ambiental, possuem tramitação automática, não isentando de fiscalização por parte do órgão ambiental competente. O requerimento deve ser realizado por meio do SISLA – Sistema de Licenciamento Ambiental, disponível no portal eletrônico da SUDEMA, integrado ao SIGMA – Sistema de Gestão do Meio Ambiente, onde a dispensa será emitida de forma imediata, mediante o correto preenchimento das informações pelo requerente. Ressalta-se que a veracidade das informações prestadas é de inteira responsabilidade do solicitante, estando sujeita à fiscalização e às sanções previstas na legislação ambiental vigente."
+    }
+   ]
+  },
+  {
    "id": "na101-texto",
    "title": "NA-101, 5ª edição (2026): disposições gerais e atividades específicas",
    "file": "na-101-5a-edicao-2026.pdf",

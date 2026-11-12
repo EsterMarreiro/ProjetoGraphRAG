@@ -11,6 +11,7 @@ def reciprocal_rank_fusion(
     weights: dict[str, float] | None = None,
     rank_constant: int = 60,
     limit: int = 8,
+    reserve_top: int = 0,
 ) -> list[SearchHit]:
     if rank_constant <= 0:
         raise ValueError("rank_constant deve ser maior que zero")
@@ -47,4 +48,15 @@ def reciprocal_rank_fusion(
     for chunk_id, hit in combined.items():
         hit.score = rrf_scores[chunk_id] / maximum if maximum else 0.0
 
-    return sorted(combined.values(), key=lambda hit: (-hit.score, hit.chunk_id))[:limit]
+    ranked = sorted(combined.values(), key=lambda hit: (-hit.score, hit.chunk_id))
+    chosen = ranked[:limit]
+    if reserve_top:
+        # O melhor trecho de cada canal sempre entra, para que um canal forte não
+        # seja diluído pelos demais.
+        for hits in rankings.values():
+            for hit in hits[:reserve_top]:
+                if hit.chunk_id not in {c.chunk_id for c in chosen}:
+                    chosen = (
+                        [*chosen[:-1], combined[hit.chunk_id]] if chosen else chosen
+                    )
+    return chosen
