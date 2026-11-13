@@ -70,11 +70,10 @@ ruff check src tests scripts
 - `src/licenciagraph/ui/`: interface Streamlit no formato de chat (`theme.py` com o tema azul e verde; `assets/` com o símbolo e os ícones copiados do repositório da SUDEMA); `src/licenciagraph/evaluation/`: avaliador e juiz.
 - `scripts/`: geração dos dados curados, dos conjuntos de avaliação e do experimento.
 - `data/curated/`: dados extraídos; `data/evaluation/`: perguntas com gabarito.
-- `docs/`: documentação por etapa (modelagem, infraestrutura, fontes, ingestão, recuperação, interface, avaliação) e auditoria dos requisitos.
 
 ## Estado
 
-Produto e dados prontos e testados. Avaliação (42 positivas, 10 negativas, 26 perguntas em fala coloquial), artigo, slides e guias prontos em `docs/`; pendente o envio ao GitHub; a equipe consta em `docs/artigo/equipe.json`. Resultado final, com o resolvedor: 41/42 nas positivas (baseline vetorial 23/42), 24/26 na fala coloquial (antes 12/26) e 6/10 nas negativas (antes 7/10; vetorial 5/10).
+Produto e dados prontos e testados. Resultado da avaliação, com o resolvedor: 41/42 nas positivas (baseline vetorial 23/42), 24/26 na fala coloquial (antes 12/26) e 6/10 nas negativas (antes 7/10; vetorial 5/10). As perguntas foram geradas das mesmas tabelas do grafo; o efeito sobre o atendimento da SUDEMA é objetivo do projeto e não foi medido.
 
 ## Limites
 
