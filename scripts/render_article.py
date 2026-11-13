@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,10 +66,12 @@ def main() -> None:
         raw = json.loads(args.authors_json.read_text())
         people = raw.get("authors", [])
         names = [p["name"] if isinstance(p, dict) else p for p in people]
-        if not 2 <= len(names) <= 5 or not all(
+        if not 2 <= len(names) <= 6 or not all(
             isinstance(n, str) and n.strip() for n in names
         ):
-            raise ValueError("Informe de 2 a 5 autores reais")
+            raise ValueError("Informe de 2 a 6 autores reais")
+        if len(names) > 5:
+            print("Aviso: a especificação prevê equipes de 2 a 5 alunos.", file=sys.stderr)
         emails = [p["email"] for p in people if isinstance(p, dict) and p.get("email")]
         authors = " \\\\ ".join(
             ", ".join(escape(n) for n in names[i : i + 2])
