@@ -71,7 +71,9 @@ def main() -> None:
         ):
             raise ValueError("Informe de 2 a 6 autores reais")
         if len(names) > 5:
-            print("Aviso: a especificação prevê equipes de 2 a 5 alunos.", file=sys.stderr)
+            print(
+                "Aviso: a especificação prevê equipes de 2 a 5 alunos.", file=sys.stderr
+            )
         emails = [p["email"] for p in people if isinstance(p, dict) and p.get("email")]
         authors = " \\\\ ".join(
             ", ".join(escape(n) for n in names[i : i + 2])
