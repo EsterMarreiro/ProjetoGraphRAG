@@ -26,8 +26,6 @@ docs/referencias/modelo-artigo-tcc.docx
 docs/referencias/modelo-artigo-tcc.txt
 docs/referencias/modelo-tcc-latex.zip
 
-# Fontes oficiais baixadas localmente (reproduzíveis por scripts/fetch_sources.py).
-data/sources/
 
 # vídeo: renders, capturas e dependências pesadas
 out/

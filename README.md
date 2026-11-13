@@ -27,7 +27,7 @@ A aplicação é **orientativa**. A fonte oficial é a SUDEMA; as respostas não
 | Norma Administrativa NA-101, 5ª edição (2026) | porte, potencial poluidor, letras de custo em UFR-PB, validade, dispensa, LAC, LAU e observações de custos |
 | Portal da SUDEMA | unidades regionais, COPAM, licenciamento municipal, legislação, EIA/RIMA, fiscalização |
 
-Os PDFs não são versionados: o Manual vem do portal da SUDEMA e a NA-101 de `sudema.pb.gov.br/institucional/copam-1/normas-administrativas`; coloque-os em `data/sources/` como `manual-licenciamento-5a-edicao.pdf` e `na-101-5a-edicao-2026.pdf`. O que o projeto extrai deles fica em `data/curated/` (versionado, com a página de origem de cada fato).
+Os PDFs oficiais estão em `data/sources/` (`manual-licenciamento-5a-edicao.pdf` e `na-101-5a-edicao-2026.pdf`), baixados do portal da SUDEMA (a NA-101 em `sudema.pb.gov.br/institucional/copam-1/normas-administrativas`). O que o projeto extrai deles fica em `data/curated/` (versionado, com a página de origem de cada fato).
 
 ## Como funciona
 
