@@ -28,3 +28,15 @@ docs/referencias/modelo-tcc-latex.zip
 
 # Fontes oficiais baixadas localmente (reproduzíveis por scripts/fetch_sources.py).
 data/sources/
+
+# vídeo: renders, capturas e dependências pesadas
+out/
+video/node_modules/
+video/out/
+video/capture/.venv/
+video/capture/videos/
+video/capture/shots/
+video/audio/cache/
+*.webm
+*.mp4
+*.wav
